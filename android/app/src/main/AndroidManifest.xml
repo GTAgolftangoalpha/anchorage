@@ -1,0 +1,146 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- ── Permissions ──────────────────────────────────────────────────── -->
+    <!-- UsageStats: user must grant in Settings → Special app access -->
+    <uses-permission
+        android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions" />
+
+    <!-- Foreground service (guard monitor) -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <!-- Android 14+: required for foregroundServiceType="specialUse" -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+
+    <!-- Post notifications (Android 13+) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Draw over other apps — required for TYPE_APPLICATION_OVERLAY intercept -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
+    <!-- Request battery optimization exemption — prevents Samsung doze from
+         throttling or killing the guard polling handler -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+
+    <!-- Internet access for VPN DNS forwarding and blocklist updates -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Auto-start on boot -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <!-- Required to call startForeground() with type=systemExempted on API 34+.
+         Normal protection level — no user approval needed. The activate_vpn
+         condition is satisfied implicitly by BIND_VPN_SERVICE. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SYSTEM_EXEMPTED" />
+
+    <application
+        android:label="Anchorage"
+        android:name="${applicationName}"
+        android:icon="@mipmap/ic_launcher">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:taskAffinity=""
+            android:theme="@style/LaunchTheme"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize">
+            <meta-data
+                android:name="io.flutter.embedding.android.NormalTheme"
+                android:resource="@style/NormalTheme" />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <!-- Deep link from blocked page "I need support" button -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="anchorage" android:host="sos" />
+            </intent-filter>
+        </activity>
+
+        <!-- App Guard foreground service.
+             foregroundServiceType="specialUse" is used on Android 14+ (API 34+).
+             dataSync is retained as a fallback type for API 29–33. -->
+        <service
+            android:name=".AppGuardService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse|dataSync">
+            <!-- Required by Google Play for specialUse foreground services (API 34+).
+                 Describes why the service cannot use a standard foreground service type. -->
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="App guard service that monitors foreground app launches to intercept and block access to guarded apps, implementing content-blocking parental control functionality." />
+        </service>
+
+        <!-- Overlay intercept service -->
+        <service
+            android:name=".OverlayService"
+            android:exported="false" />
+
+        <!-- Boot receiver: auto-starts VPN and guard service after device boot.
+             exported="true" is required — the system sends BOOT_COMPLETED from
+             outside the app process. directBootAware="false" (default) means the
+             receiver fires only after the user's first unlock, ensuring CE-encrypted
+             SharedPreferences (guarded app list) are accessible. -->
+        <receiver
+            android:name=".BootReceiver"
+            android:exported="true"
+            android:enabled="true">
+            <intent-filter>
+                <!-- Standard Android boot -->
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <!-- Samsung fast boot / warm reboot -->
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
+
+        <!-- VPN filter service. BIND_VPN_SERVICE permission is required by the OS.
+             foregroundServiceType="systemExempted" is permitted for apps holding
+             BIND_VPN_SERVICE on Android 14+ (API 34+). -->
+        <service
+            android:name=".AnchorageVpnService"
+            android:exported="false"
+            android:foregroundServiceType="systemExempted"
+            android:permission="android.permission.BIND_VPN_SERVICE">
+            <intent-filter>
+                <action android:name="android.net.VpnService" />
+            </intent-filter>
+        </service>
+
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
+    </application>
+
+    <!-- ── Package visibility (Android 11+) ─────────────────────────────── -->
+    <!-- Required for getApplicationLabel() on guarded apps -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT" />
+            <data android:mimeType="text/plain" />
+        </intent>
+        <!-- url_launcher: open phone dialler from Emergency SOS screen -->
+        <intent>
+            <action android:name="android.intent.action.DIAL" />
+            <data android:scheme="tel" />
+        </intent>
+        <!-- url_launcher: open browser for IASP crisis centres link -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" />
+        </intent>
+        <package android:name="com.reddit.frontpage" />
+        <package android:name="com.twitter.android" />
+        <package android:name="com.android.chrome" />
+        <package android:name="org.mozilla.firefox" />
+        <package android:name="com.brave.browser" />
+        <package android:name="com.opera.browser" />
+        <package android:name="org.telegram.messenger" />
+    </queries>
+</manifest>

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "371405507511",
+    "project_id": "anchorage-ea242",
+    "storage_bucket": "anchorage-ea242.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:371405507511:android:5003a3ee0be1265e1db632",
+        "android_client_info": {
+          "package_name": "com.anchorage.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD6jTzdIuxYaaZWe7KXD4fuXJ9x0nlhTio"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

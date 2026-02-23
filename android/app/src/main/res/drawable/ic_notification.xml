@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+  <!-- Anchor icon — ANCHORAGE brand mark -->
+  <path
+      android:fillColor="#FFFFFF"
+      android:pathData="M12,2A3,3 0,0 1,15 5,3 3,0 0,1 12,8,3 3,0 0,1 9,5,3 3,0 0,1 12,2M12,4A1,1 0,0 0,11 5,1 1,0 0,0 12,6,1 1,0 0,0 13,5,1 1,0 0,0 12,4M11,8.07V9H7V11H10.26C9.5,11.5 9,12.26 9,13.14V21H11V15H13V21H15V13.14C15,12.26 14.5,11.5 13.74,11H17V9H13V8.07A5,5 0,0 0,17 13H15A3,3 0,0 1,12 16,3 3,0 0,1 9,13H7A5,5 0,0 0,11 8.07Z"/>
+</vector>
