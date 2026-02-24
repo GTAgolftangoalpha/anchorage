@@ -165,6 +165,7 @@ class AppGuardService : Service() {
         val isNewForeground = foregroundPkg != lastForegroundPkg
         lastForegroundPkg = foregroundPkg
         lastKnownForeground = foregroundPkg
+        lastKnownForegroundTime = now
 
         // ANCHORAGE itself came to foreground — fully reset the state machine so
         // the same guarded app can be caught again the next time it opens.
@@ -448,21 +449,34 @@ class AppGuardService : Service() {
          */
         @Volatile var lastKnownForeground = ""
 
+        /**
+         * Timestamp (SystemClock.uptimeMillis) when [lastKnownForeground] was last updated.
+         * Used by VPN to detect stale foreground data — if the guard hasn't updated
+         * in [AnchorageVpnService.FOREGROUND_STALE_MS], the value should not be trusted.
+         */
+        @Volatile var lastKnownForegroundTime = 0L
+
         private const val TAG = "AnchorageGuard"
         private const val NOTIFICATION_ID = 1001
         private const val NOTIFICATION_CHANNEL_ID = "anchorage_guard"
 
-        /** Poll interval reduced from 300ms to 150ms for faster detection. */
+        /** Poll interval — 150ms for fast detection. */
         private const val POLL_INTERVAL_MS = 150L
 
-        /** Query window for UsageEvents — reduced from 10s to 5s for snappier polls. */
-        private const val QUERY_WINDOW_MS = 5_000L
+        /**
+         * Query window for UsageEvents. Samsung fires ACTIVITY_RESUMED only once per
+         * app transition — no new events while the same app stays in foreground.
+         * The window must be large enough to always contain the most recent transition.
+         * 60 seconds covers all practical use cases (user rarely stays on an app for
+         * 60s without any other transition event being generated).
+         */
+        private const val QUERY_WINDOW_MS = 60_000L
 
-        /** Query window for UsageStats fallback. */
-        private const val STATS_WINDOW_MS = 5_000L
+        /** Query window for UsageStats fallback — 30s for Samsung INTERVAL_BEST. */
+        private const val STATS_WINDOW_MS = 30_000L
 
-        /** Max age of lastTimeUsed to trust stats result. Reduced from 5s to 2s. */
-        private const val STATS_RECENCY_THRESHOLD_MS = 2_000L
+        /** Max age of lastTimeUsed to trust stats result. */
+        private const val STATS_RECENCY_THRESHOLD_MS = 5_000L
 
         /**
          * Number of consecutive stats-based detections required before triggering

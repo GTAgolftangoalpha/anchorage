@@ -472,7 +472,10 @@ class AnchorageVpnService : VpnService() {
         // Don't show the blocked-domain overlay when ANCHORAGE itself is in the foreground.
         // Our own SDKs (Firebase logging, Braze) may query domains that are in the blocklist;
         // showing an overlay over our own UI would be confusing and incorrect.
-        if (AppGuardService.lastKnownForeground == packageName) {
+        // Only trust the foreground data if it was updated recently — stale data means the
+        // guard lost track of the foreground app and we should NOT suppress the overlay.
+        val foregroundFresh = now - AppGuardService.lastKnownForegroundTime < FOREGROUND_STALE_MS
+        if (foregroundFresh && AppGuardService.lastKnownForeground == packageName) {
             Log.d(TAG, "notifyDomainBlocked: ANCHORAGE in foreground — suppressing overlay for '$domain'")
             blockedDomainListener?.invoke(domain)
             return
@@ -652,6 +655,13 @@ class AnchorageVpnService : VpnService() {
         private const val TAG = "AnchorageVPN"
         private const val NOTIFICATION_ID = 1002
         private const val CHANNEL_ID = "anchorage_vpn"
+
+        /**
+         * Max age of [AppGuardService.lastKnownForegroundTime] before we consider
+         * the foreground data stale. When stale, do NOT suppress VPN overlays —
+         * the guard may have lost track of the foreground app (Samsung event expiry).
+         */
+        private const val FOREGROUND_STALE_MS = 30_000L
 
         // 10.111.222.2 — fake DNS server (DNS queries are routed here via addRoute)
         private val FAKE_DNS_IP = byteArrayOf(10, 111, 222.toByte(), 2)
