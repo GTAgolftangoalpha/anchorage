@@ -75,7 +75,7 @@ class OverlayService : Service() {
         val prefs = getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
         val name = prefs.getString("flutter.user_first_name", null) ?: ""
         val values = prefs.getStringSet("flutter.user_values", emptySet())?.toList() ?: emptyList()
-        val hasName = name.isNotEmpty
+        val hasName = name.isNotEmpty()
 
         // 4 categories: 0=defusion, 1=values, 2=urge_surfing, 3=present_moment
         val availableCategories = if (values.isEmpty()) {
