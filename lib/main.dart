@@ -100,8 +100,8 @@ Future<void> main() async {
   }
 
   VpnService.onDomainBlocked = (domain) async {
-    // OverlayService handles the visual block over Chrome.
-    // Only push the Flutter route if ANCHORAGE is currently in the foreground.
+    // OverlayService handles the visual block over Chrome/other apps.
+    // If ANCHORAGE is in the foreground, also push the Flutter blocked-domain screen.
     if (WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed) {
       await _waitForNavigator();
       final context = navigatorKey.currentContext;
@@ -109,6 +109,8 @@ Future<void> main() async {
         context.push('/blocked-domain', extra: domain);
       }
     }
+    // When app is backgrounded, the native overlay handles the UX —
+    // no need to store the domain for later since the overlay is the primary UI.
   };
 
   // Fallback: activity-based intercept shown when overlay permission not granted

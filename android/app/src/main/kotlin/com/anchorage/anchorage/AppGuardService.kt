@@ -31,6 +31,12 @@ class AppGuardService : Service() {
         POST_DISMISS_COOLDOWN
     }
 
+    /** How the foreground package was detected on a given poll. */
+    private enum class DetectionSource {
+        EVENTS,
+        USAGE_STATS
+    }
+
     private var guardState = GuardState.IDLE
     private var dismissedAt = 0L
 
@@ -42,6 +48,12 @@ class AppGuardService : Service() {
 
     // Track last seen foreground package (for change detection and ANCHORAGE reset)
     private var lastForegroundPkg = ""
+
+    // Confirmation counter for stats-based detection: only trigger a NEW intercept
+    // from queryUsageStats if the same guarded package is detected on 2+ consecutive polls.
+    // This eliminates false positives from stale lastTimeUsed data.
+    private var statsConfirmPkg = ""
+    private var statsConfirmCount = 0
 
     private val handler = Handler(Looper.getMainLooper())
     private var isRunning = false
@@ -79,8 +91,10 @@ class AppGuardService : Service() {
             guardState = GuardState.IDLE
             interceptedPkg = ""
             overlayDismissed = false
+            statsConfirmPkg = ""
+            statsConfirmCount = 0
             handler.post(pollRunnable)
-            Log.d(TAG, "Polling started")
+            Log.d(TAG, "Polling started (interval=${POLL_INTERVAL_MS}ms)")
         }
 
         return START_STICKY
@@ -104,9 +118,29 @@ class AppGuardService : Service() {
             lastForegroundPkg = ""
         }
 
-        var foregroundPkg = detectViaQueryEvents(usm, now)
-        if (foregroundPkg.isEmpty()) {
-            foregroundPkg = detectViaQueryUsageStats(usm, now)
+        var foregroundPkg = ""
+        var detectionSource = DetectionSource.EVENTS
+
+        val eventResult = detectViaQueryEvents(usm, now)
+        if (eventResult.isNotEmpty()) {
+            foregroundPkg = eventResult
+            detectionSource = DetectionSource.EVENTS
+            // Clear stats confirmation since events are authoritative
+            statsConfirmPkg = ""
+            statsConfirmCount = 0
+        } else {
+            val statsResult = detectViaQueryUsageStats(usm, now)
+            if (statsResult.isNotEmpty()) {
+                foregroundPkg = statsResult
+                detectionSource = DetectionSource.USAGE_STATS
+                // Update confirmation counter
+                if (statsResult == statsConfirmPkg) {
+                    statsConfirmCount++
+                } else {
+                    statsConfirmPkg = statsResult
+                    statsConfirmCount = 1
+                }
+            }
         }
 
         if (foregroundPkg.isEmpty()) {
@@ -154,8 +188,6 @@ class AppGuardService : Service() {
         // (which is time-based and must keep evaluating even without a foreground change).
         if (!isNewForeground && guardState != GuardState.POST_DISMISS_COOLDOWN) return
 
-        Log.d(TAG, "checkForeground: foreground=$foregroundPkg state=$guardState guarded=$guardedApps")
-
         if (guardedApps.isEmpty()) {
             Log.w(TAG, "checkForeground: guardedApps is EMPTY — service running but nothing to guard")
             return
@@ -165,8 +197,20 @@ class AppGuardService : Service() {
 
         when (guardState) {
             GuardState.IDLE -> {
-                if (!guardedApps.contains(foregroundPkg)) return
-                Log.d(TAG, "checkForeground: IDLE → OVERLAY_SHOWING for $foregroundPkg")
+                if (!guardedApps.contains(foregroundPkg)) {
+                    Log.v(TAG, "checkForeground: IDLE — '$foregroundPkg' not in guardedApps, skipping")
+                    return
+                }
+
+                // Stats-based detection requires confirmation: 2+ consecutive polls
+                // detecting the same guarded package to eliminate false positives
+                // from stale lastTimeUsed data.
+                if (detectionSource == DetectionSource.USAGE_STATS && statsConfirmCount < STATS_CONFIRM_THRESHOLD) {
+                    Log.d(TAG, "checkForeground: IDLE — '$foregroundPkg' detected via stats (confirm=$statsConfirmCount/$STATS_CONFIRM_THRESHOLD), waiting for confirmation")
+                    return
+                }
+
+                Log.w(TAG, "INTERCEPT: IDLE → OVERLAY_SHOWING for '$foregroundPkg' (source=$detectionSource, guarded=true)")
                 interceptedPkg = foregroundPkg
                 guardState = GuardState.OVERLAY_SHOWING
                 overlayShowingSince = now
@@ -176,13 +220,12 @@ class AppGuardService : Service() {
             GuardState.OVERLAY_SHOWING -> {
                 if (foregroundPkg == interceptedPkg) {
                     // Overlay is already up for this exact app — no-op
-                    Log.v(TAG, "checkForeground: OVERLAY_SHOWING — still on $interceptedPkg, no-op")
                     return
                 }
                 // Foreground switched to something other than the intercepted app
                 // (user pressed Home, Back, or Recents). Auto-dismiss the overlay
                 // and return to IDLE — no cooldown, so next open re-intercepts immediately.
-                Log.d(TAG, "checkForeground: OVERLAY_SHOWING — user left $interceptedPkg (now $foregroundPkg) — auto-dismiss overlay")
+                Log.d(TAG, "checkForeground: OVERLAY_SHOWING — user left '$interceptedPkg' (now '$foregroundPkg') — auto-dismiss overlay")
                 guardState = GuardState.IDLE
                 interceptedPkg = ""
                 overlayShowingSince = 0L
@@ -195,7 +238,7 @@ class AppGuardService : Service() {
                 if (!guardedApps.contains(foregroundPkg)) return
                 val elapsed = now - dismissedAt
                 if (elapsed >= POST_DISMISS_COOLDOWN_MS) {
-                    Log.d(TAG, "checkForeground: POST_DISMISS cooldown elapsed (${elapsed}ms) → re-intercepting $foregroundPkg")
+                    Log.w(TAG, "INTERCEPT: POST_DISMISS cooldown elapsed (${elapsed}ms) → re-intercepting '$foregroundPkg'")
                     interceptedPkg = foregroundPkg
                     guardState = GuardState.OVERLAY_SHOWING
                     overlayShowingSince = now
@@ -221,7 +264,9 @@ class AppGuardService : Service() {
             }
         }
 
-        Log.v(TAG, "detectViaQueryEvents: $eventCount events, foreground='$foregroundPkg'")
+        if (foregroundPkg.isNotEmpty()) {
+            Log.v(TAG, "detectViaQueryEvents: $eventCount events, foreground='$foregroundPkg'")
+        }
         return foregroundPkg
     }
 
@@ -242,7 +287,9 @@ class AppGuardService : Service() {
             .maxByOrNull { it.lastTimeUsed }
             ?: return ""
 
-        if (recent.lastTimeUsed < now - 5_000L) return ""
+        // Tighter threshold: only trust stats if the app was used very recently.
+        // Stale lastTimeUsed data (3-5 seconds old) causes false interceptions.
+        if (recent.lastTimeUsed < now - STATS_RECENCY_THRESHOLD_MS) return ""
 
         Log.v(TAG, "detectViaQueryUsageStats: recent='${recent.packageName}' lastUsed=${now - recent.lastTimeUsed}ms ago")
         return recent.packageName
@@ -262,7 +309,7 @@ class AppGuardService : Service() {
         // Hard safety gate: never intercept a package not explicitly in the guard list.
         // Protects against stale SharedPreferences, race conditions, or state machine bugs.
         if (!guardedApps.contains(pkg)) {
-            Log.w(TAG, "launchIntercept: SAFETY GATE — '$pkg' not in guardedApps $guardedApps — skipping")
+            Log.e(TAG, "launchIntercept: SAFETY GATE — '$pkg' not in guardedApps $guardedApps — skipping")
             guardState = GuardState.IDLE
             interceptedPkg = ""
             return
@@ -276,7 +323,7 @@ class AppGuardService : Service() {
             pkg
         }
 
-        Log.d(TAG, "launchIntercept: intercepting '$appName' ($pkg)")
+        Log.w(TAG, "INTERCEPT LAUNCHED: app='$appName' pkg='$pkg' guardedApps=$guardedApps")
 
         if (Settings.canDrawOverlays(this)) {
             Log.d(TAG, "launchIntercept: using OverlayService")
@@ -404,10 +451,28 @@ class AppGuardService : Service() {
         private const val TAG = "AnchorageGuard"
         private const val NOTIFICATION_ID = 1001
         private const val NOTIFICATION_CHANNEL_ID = "anchorage_guard"
-        private const val POLL_INTERVAL_MS = 300L
-        private const val QUERY_WINDOW_MS = 10_000L
-        private const val STATS_WINDOW_MS = 10_000L
+
+        /** Poll interval reduced from 300ms to 150ms for faster detection. */
+        private const val POLL_INTERVAL_MS = 150L
+
+        /** Query window for UsageEvents — reduced from 10s to 5s for snappier polls. */
+        private const val QUERY_WINDOW_MS = 5_000L
+
+        /** Query window for UsageStats fallback. */
+        private const val STATS_WINDOW_MS = 5_000L
+
+        /** Max age of lastTimeUsed to trust stats result. Reduced from 5s to 2s. */
+        private const val STATS_RECENCY_THRESHOLD_MS = 2_000L
+
+        /**
+         * Number of consecutive stats-based detections required before triggering
+         * a new intercept in IDLE state. Prevents false positives from stale
+         * lastTimeUsed data on Samsung.
+         */
+        private const val STATS_CONFIRM_THRESHOLD = 2
+
         private const val POST_DISMISS_COOLDOWN_MS = 2_000L
+
         /** Auto-dismiss overlay if we can't detect any foreground app for this long (Samsung doze). */
         private const val OVERLAY_TIMEOUT_MS = 15_000L
 

@@ -8,6 +8,8 @@ import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.net.VpnService
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.os.ParcelFileDescriptor
 import android.util.Log
 import androidx.core.app.NotificationCompat
@@ -41,6 +43,10 @@ class AnchorageVpnService : VpnService() {
     // While false, DNS responses return SERVFAIL — nothing resolves until VPN
     // protection is fully armed, closing the boot startup window.
     @Volatile private var blocklistReady = false
+
+    // Post overlay startService to main thread — calling from the VPN packet-loop
+    // background thread is silently dropped on Samsung Android 14.
+    private val mainHandler = Handler(Looper.getMainLooper())
 
     // Debounce: don't spam OverlayService for rapid DNS retries on same domain
     private var lastBlockedDomain = ""
@@ -481,17 +487,21 @@ class AnchorageVpnService : VpnService() {
             return
         }
 
-        if (AndroidSettings.canDrawOverlays(this)) {
-            try {
-                startService(Intent(this, OverlayService::class.java).apply {
-                    putExtra(OverlayService.EXTRA_DOMAIN, domain)
-                })
-                Log.i(TAG, "notifyDomainBlocked: started OverlayService for '$domain'")
-            } catch (e: Exception) {
-                Log.w(TAG, "notifyDomainBlocked: OverlayService start failed: ${e.message}")
+        // Post to main thread — startService from VPN packet-loop background thread
+        // is silently dropped on Samsung Android 14.
+        mainHandler.post {
+            if (AndroidSettings.canDrawOverlays(this)) {
+                try {
+                    startService(Intent(this, OverlayService::class.java).apply {
+                        putExtra(OverlayService.EXTRA_DOMAIN, domain)
+                    })
+                    Log.i(TAG, "notifyDomainBlocked: started OverlayService for '$domain'")
+                } catch (e: Exception) {
+                    Log.w(TAG, "notifyDomainBlocked: OverlayService start failed: ${e.message}")
+                }
+            } else {
+                Log.w(TAG, "notifyDomainBlocked: overlay permission not granted — skipping overlay")
             }
-        } else {
-            Log.w(TAG, "notifyDomainBlocked: overlay permission not granted — skipping overlay")
         }
 
         blockedDomainListener?.invoke(domain)
