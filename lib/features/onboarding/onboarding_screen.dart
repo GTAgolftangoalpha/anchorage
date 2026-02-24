@@ -547,10 +547,12 @@ class _NamePage extends StatelessWidget {
                 style: theme.textTheme.headlineSmall?.copyWith(
                   color: AppColors.white,
                 ),
+                cursorColor: AppColors.white,
                 maxLength: 20,
                 autofocus: true,
                 textCapitalization: TextCapitalization.words,
                 decoration: InputDecoration(
+                  filled: false,
                   hintText: 'First name',
                   hintStyle: theme.textTheme.headlineSmall?.copyWith(
                     color: AppColors.white.withAlpha(60),

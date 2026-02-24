@@ -9,7 +9,7 @@ const db = admin.firestore();
 //   firebase functions:secrets:set SENDGRID_API_KEY
 // Then deploy — Functions runtime injects it at startup.
 const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY ?? "";
-const FROM_EMAIL = "accountability@anchorage.app";
+const FROM_EMAIL = "gtagolftangoalpha@gmail.com";
 const FROM_NAME = "ANCHORAGE";
 const APP_URL = "https://anchorage.app";
 
@@ -85,8 +85,12 @@ export const onPartnerInvited = functions.firestore.onDocumentCreated(
       functions.logger.info(
         `[onPartnerInvited] Invitation sent to ${partnerEmail} for user ${userId}`
       );
-    } catch (err) {
-      functions.logger.error("[onPartnerInvited] SendGrid error:", err);
+    } catch (err: unknown) {
+      const sgErr = err as { response?: { body?: unknown } };
+      functions.logger.error(
+        "[onPartnerInvited] SendGrid error:",
+        sgErr.response?.body ?? err
+      );
     }
   }
 );
