@@ -55,6 +55,10 @@ class StreakService {
 
   final ValueNotifier<StreakData> data = ValueNotifier(const StreakData());
 
+  /// Set to true when a streak reset is detected during checkIn.
+  /// Consumers should read and clear this flag.
+  bool streakResetDetected = false;
+
   /// Load streak from local prefs, then sync with Firebase.
   Future<void> init() async {
     await _loadLocal();
@@ -92,6 +96,9 @@ class StreakService {
         ));
       } else {
         // Missed day(s) — reset streak
+        if (current.currentStreak > 1) {
+          streakResetDetected = true;
+        }
         _update(current.copyWith(
           currentStreak: 1,
           totalCleanDays: current.totalCleanDays + 1,

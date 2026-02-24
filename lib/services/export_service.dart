@@ -16,7 +16,7 @@ class ExportService {
     buf.writeln('Metric,Value');
     buf.writeln('Current Streak,${streak.currentStreak}');
     buf.writeln('Longest Streak,${streak.longestStreak}');
-    buf.writeln('Total Clean Days,${streak.totalCleanDays}');
+    buf.writeln('Total Anchored Days,${streak.totalCleanDays}');
     buf.writeln('Weekly Intercepts,${streak.weeklyIntercepts}');
     if (streak.lastActiveDate != null) {
       buf.writeln('Last Active,${_formatDate(streak.lastActiveDate!)}');

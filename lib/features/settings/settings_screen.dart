@@ -9,17 +9,144 @@ import '../../services/premium_service.dart';
 import '../../services/user_preferences_service.dart';
 import '../../shared/widgets/anchor_logo.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
 
   static const _privacyUrl = 'https://anchorageapp.com/privacy';
   static const _termsUrl = 'https://anchorageapp.com/terms';
+
+  static const _valueOptions = [
+    'Relationship integrity',
+    'Self-respect',
+    'Being present for family',
+    'Career focus',
+    'Mental clarity',
+    'Physical health',
+    'Spiritual growth',
+    'Emotional stability',
+    'Trust',
+    'Freedom',
+  ];
 
   Future<void> _launchUrl(String url) async {
     final uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
+  }
+
+  void _showEditNameDialog(BuildContext context) {
+    final controller = TextEditingController(
+      text: UserPreferencesService.instance.firstName,
+    );
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Edit your name'),
+        content: TextField(
+          controller: controller,
+          maxLength: 20,
+          autofocus: true,
+          textCapitalization: TextCapitalization.words,
+          decoration: const InputDecoration(
+            hintText: 'First name',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              final name = controller.text.trim();
+              if (name.isNotEmpty) {
+                await UserPreferencesService.instance.setFirstName(name);
+                if (ctx.mounted) Navigator.pop(ctx);
+                if (mounted) setState(() {});
+              }
+            },
+            child: const Text('SAVE'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showEditValuesSheet(BuildContext context) {
+    final current = Set<String>.from(UserPreferencesService.instance.values);
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSheetState) {
+          return SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Edit your values',
+                    style: Theme.of(ctx).textTheme.headlineSmall,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Select exactly 3 values.',
+                    style: Theme.of(ctx).textTheme.bodySmall,
+                  ),
+                  const SizedBox(height: 16),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: _valueOptions.map((v) {
+                      final selected = current.contains(v);
+                      return FilterChip(
+                        label: Text(v),
+                        selected: selected,
+                        selectedColor: AppColors.seafoam.withAlpha(40),
+                        checkmarkColor: AppColors.navy,
+                        onSelected: (sel) {
+                          setSheetState(() {
+                            if (sel && current.length < 3) {
+                              current.add(v);
+                            } else if (!sel) {
+                              current.remove(v);
+                            }
+                          });
+                        },
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: current.length == 3
+                          ? () async {
+                              await UserPreferencesService.instance
+                                  .setValues(current.toList());
+                              if (ctx.mounted) Navigator.pop(ctx);
+                              if (mounted) setState(() {});
+                            }
+                          : null,
+                      child: Text('SAVE (${current.length}/3)'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 
   Future<void> _signOut(BuildContext context) async {
@@ -136,6 +263,31 @@ class SettingsScreen extends StatelessWidget {
 
             const SizedBox(height: 32),
 
+            _SectionHeader(title: 'Personalisation'),
+            _SettingsTile(
+              icon: Icons.edit,
+              title: 'Edit my name',
+              subtitle: UserPreferencesService.instance.firstName.isNotEmpty
+                  ? UserPreferencesService.instance.firstName
+                  : 'Not set',
+              onTap: () => _showEditNameDialog(context),
+            ),
+            _SettingsTile(
+              icon: Icons.favorite_border,
+              title: 'Edit my values',
+              subtitle: UserPreferencesService.instance.values.isNotEmpty
+                  ? UserPreferencesService.instance.values.join(', ')
+                  : 'Not set',
+              onTap: () => _showEditValuesSheet(context),
+            ),
+            _SettingsTile(
+              icon: Icons.timeline,
+              title: 'My ANCHORAGE journey',
+              subtitle: 'Your progress and stats',
+              onTap: () => context.push('/journey'),
+            ),
+
+            const SizedBox(height: 8),
             _SectionHeader(title: 'Protection'),
             _SettingsTile(
               icon: Icons.security,

@@ -122,6 +122,61 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
                     const SizedBox(height: 16),
 
+                    // ── Daily values card ──────────────────────────
+                    Builder(builder: (context) {
+                      final values =
+                          UserPreferencesService.instance.values;
+                      if (values.isEmpty) return const SizedBox.shrink();
+                      final dayOfYear = DateTime.now()
+                          .difference(DateTime(DateTime.now().year))
+                          .inDays;
+                      final todayValue =
+                          values[dayOfYear % values.length];
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: GestureDetector(
+                          onTap: () => context.push('/reflect'),
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: AppColors.white,
+                              borderRadius: BorderRadius.circular(14),
+                              border: const Border(
+                                left: BorderSide(
+                                  color: AppColors.seafoam,
+                                  width: 4,
+                                ),
+                              ),
+                            ),
+                            child: Column(
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  todayValue,
+                                  style: theme.textTheme.titleSmall
+                                      ?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.navy,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  "What's one thing you can do today that honours this?",
+                                  style: theme.textTheme.bodySmall
+                                      ?.copyWith(
+                                    color: AppColors.textSecondary,
+                                    height: 1.4,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
+
                     // ── Stats row ────────────────────────────────────
                     Row(
                       children: [
@@ -156,7 +211,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         ),
                         const SizedBox(width: 12),
                         _StatCard(
-                          label: 'Clean Days',
+                          label: 'Anchored Days',
                           value: '${streak.totalCleanDays}',
                           unit: 'total',
                           icon: Icons.calendar_today,
@@ -402,9 +457,19 @@ class _StatusCard extends StatelessWidget {
 
           Builder(builder: (context) {
             final name = UserPreferencesService.instance.firstName;
-            final greeting = name.isNotEmpty
-                ? (isActive ? 'Stay anchored, $name.' : 'Not guarding any apps.')
-                : (isActive ? 'You are anchored.' : 'Not guarding any apps.');
+            final motivation = UserPreferencesService.instance.motivation;
+            final isExploring = motivation == "I'm just exploring my options" ||
+                motivation == 'Someone asked me to try this';
+            String greeting;
+            if (!isActive) {
+              greeting = 'Not guarding any apps.';
+            } else if (name.isNotEmpty) {
+              greeting = isExploring
+                  ? 'Welcome back, $name.'
+                  : 'Stay anchored, $name.';
+            } else {
+              greeting = 'You are anchored.';
+            }
             return Text(
               greeting,
               style: theme.textTheme.headlineSmall?.copyWith(

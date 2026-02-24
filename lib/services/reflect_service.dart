@@ -9,6 +9,7 @@ class ReflectEntry {
   final String mood;
   final String journal;
   final Map<String, String> valuesAlignment;
+  final String trigger;
 
   const ReflectEntry({
     required this.id,
@@ -16,6 +17,7 @@ class ReflectEntry {
     required this.mood,
     this.journal = '',
     this.valuesAlignment = const {},
+    this.trigger = '',
   });
 
   Map<String, dynamic> toJson() => {
@@ -24,6 +26,7 @@ class ReflectEntry {
         'mood': mood,
         'journal': journal,
         'valuesAlignment': valuesAlignment,
+        'trigger': trigger,
       };
 
   factory ReflectEntry.fromJson(Map<String, dynamic> json) => ReflectEntry(
@@ -36,6 +39,7 @@ class ReflectEntry {
             ? Map<String, String>.from(
                 json['valuesAlignment'] as Map<String, dynamic>)
             : const {},
+        trigger: json['trigger'] as String? ?? '',
       );
 }
 
@@ -55,6 +59,7 @@ class ReflectService {
     required String mood,
     String journal = '',
     Map<String, String> valuesAlignment = const {},
+    String trigger = '',
   }) async {
     final entry = ReflectEntry(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -62,6 +67,7 @@ class ReflectService {
       mood: mood,
       journal: journal,
       valuesAlignment: valuesAlignment,
+      trigger: trigger,
     );
     entries.value = [entry, ...entries.value];
     await _save();

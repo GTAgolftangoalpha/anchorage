@@ -9,6 +9,7 @@ import '../../features/guarded_apps/guarded_apps_screen.dart';
 import '../../features/help/help_screen.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/intercept/intercept_screen.dart';
+import '../../features/journey/journey_screen.dart';
 import '../../features/onboarding/onboarding_screen.dart';
 import '../../features/paywall/paywall_screen.dart';
 import '../../features/reflect/reflect_screen.dart';
@@ -136,6 +137,13 @@ class AppRouter {
         name: 'about',
         pageBuilder: (context, state) => const MaterialPage(
           child: AboutScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/journey',
+        name: 'journey',
+        pageBuilder: (context, state) => const MaterialPage(
+          child: JourneyScreen(),
         ),
       ),
 

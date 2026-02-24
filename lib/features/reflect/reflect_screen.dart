@@ -15,6 +15,7 @@ class ReflectScreen extends StatefulWidget {
 class _ReflectScreenState extends State<ReflectScreen> {
   final _controller = TextEditingController();
   String? _selectedMood;
+  String? _selectedTrigger;
 
   static const _moods = [
     ('\uD83D\uDCAA', 'Strong'),
@@ -22,6 +23,17 @@ class _ReflectScreenState extends State<ReflectScreen> {
     ('\uD83D\uDE24', 'Frustrated'),
     ('\uD83D\uDE30', 'Anxious'),
     ('\uD83D\uDE14', 'Down'),
+  ];
+
+  static const _triggers = [
+    'Boredom',
+    'Stress',
+    'Loneliness',
+    'Tiredness',
+    'Habit',
+    'Conflict',
+    'Celebration',
+    'Other',
   ];
 
   late final List<String> _userValues;
@@ -69,6 +81,7 @@ class _ReflectScreenState extends State<ReflectScreen> {
       mood: _selectedMood!,
       journal: _controller.text.trim(),
       valuesAlignment: alignment,
+      trigger: _selectedTrigger ?? '',
     );
     if (!mounted) return;
     setState(() => _saving = false);
@@ -103,6 +116,53 @@ class _ReflectScreenState extends State<ReflectScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // ── Trigger selector ────────────────────────────
+              Text(
+                'What triggered this reflection?',
+                style: theme.textTheme.headlineMedium,
+              ),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: _triggers.map((trigger) {
+                  final isSelected = _selectedTrigger == trigger;
+                  return GestureDetector(
+                    onTap: () => setState(() => _selectedTrigger =
+                        isSelected ? null : trigger),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? AppColors.navy
+                            : AppColors.lightGray,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: isSelected
+                              ? AppColors.navy
+                              : AppColors.midGray,
+                        ),
+                      ),
+                      child: Text(
+                        trigger,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: isSelected
+                              ? AppColors.white
+                              : AppColors.textPrimary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+
+              const SizedBox(height: 32),
+
               Text(
                 'How are you feeling?',
                 style: theme.textTheme.headlineMedium,

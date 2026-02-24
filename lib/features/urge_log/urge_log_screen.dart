@@ -5,6 +5,7 @@ import '../../core/constants/app_colors.dart';
 import '../../services/export_service.dart';
 import '../../services/premium_service.dart';
 import '../../services/urge_log_service.dart';
+import '../../services/user_preferences_service.dart';
 
 class UrgeLogScreen extends StatefulWidget {
   const UrgeLogScreen({super.key});
@@ -18,6 +19,7 @@ class _UrgeLogScreenState extends State<UrgeLogScreen> {
   final _notesController = TextEditingController();
   bool _saving = false;
   int _formResetKey = 0;
+  int _reinforcementIndex = 0;
 
   @override
   void dispose() {
@@ -42,15 +44,29 @@ class _UrgeLogScreenState extends State<UrgeLogScreen> {
     );
     if (!mounted) return;
     _notesController.clear();
+    final name = UserPreferencesService.instance.firstName;
+    final messages = [
+      name.isNotEmpty
+          ? "You noticed the urge and chose to log it. That's defusion in action, $name."
+          : "You noticed the urge and chose to log it. That's defusion in action.",
+      'Naming it takes away its power. Well done.',
+      'Every urge you log is a moment you chose awareness over autopilot.',
+      name.isNotEmpty
+          ? "$name, logging this urge is an act of self-awareness. That's ACT in practice."
+          : "Logging this urge is an act of self-awareness. That's ACT in practice.",
+    ];
+    final message = messages[_reinforcementIndex % messages.length];
     setState(() {
       _selectedTrigger = null;
       _saving = false;
       _formResetKey++;
+      _reinforcementIndex++;
     });
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Entry logged. You\'re doing the right thing.'),
+      SnackBar(
+        content: Text(message),
         backgroundColor: AppColors.success,
+        duration: const Duration(seconds: 4),
       ),
     );
   }

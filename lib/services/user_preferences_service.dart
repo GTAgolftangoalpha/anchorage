@@ -10,18 +10,21 @@ class UserPreferencesService {
   static const _keyMotivation = 'user_motivation';
   static const _keyImpact = 'user_impact';
   static const _keyOnboardingComplete = 'onboarding_complete';
+  static const _keyInstallDate = 'install_date';
 
   String _firstName = '';
   List<String> _values = [];
   String _motivation = '';
   String _impact = '';
   bool _onboardingComplete = false;
+  int _installDate = 0;
 
   String get firstName => _firstName;
   List<String> get values => List.unmodifiable(_values);
   String get motivation => _motivation;
   String get impact => _impact;
   bool get onboardingComplete => _onboardingComplete;
+  int get installDate => _installDate;
 
   Future<void> init() async {
     try {
@@ -31,6 +34,7 @@ class UserPreferencesService {
       _motivation = prefs.getString(_keyMotivation) ?? '';
       _impact = prefs.getString(_keyImpact) ?? '';
       _onboardingComplete = prefs.getBool(_keyOnboardingComplete) ?? false;
+      _installDate = prefs.getInt(_keyInstallDate) ?? 0;
     } catch (e) {
       debugPrint('[UserPreferencesService] init error: $e');
     }
@@ -64,5 +68,11 @@ class UserPreferencesService {
     _onboardingComplete = complete;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_keyOnboardingComplete, complete);
+  }
+
+  Future<void> setInstallDate(int millisSinceEpoch) async {
+    _installDate = millisSinceEpoch;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_keyInstallDate, millisSinceEpoch);
   }
 }

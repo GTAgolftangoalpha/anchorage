@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/constants/app_colors.dart';
+import '../../models/guardable_app.dart';
 import '../../services/guard_service.dart';
+import '../../services/premium_service.dart';
 import '../../services/user_preferences_service.dart';
 import '../../services/vpn_service.dart';
 import '../../shared/widgets/anchor_logo.dart';
@@ -32,6 +34,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   final Set<String> _selectedValues = {};
   String? _selectedMotivation;
   String? _selectedImpact;
+  final Set<String> _selectedGuardedApps = {};
 
   // Page indices
   static const _welcomeIdx = 0;
@@ -44,8 +47,10 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   static const _overlayIdx = 7;
   static const _batteryIdx = 8;
   static const _vpnIdx = 9;
-  static const _completionIdx = 10;
-  static const _totalPages = 11;
+  static const _guardedAppsIdx = 10;
+  static const _whatToExpectIdx = 11;
+  static const _completionIdx = 12;
+  static const _totalPages = 13;
 
   static const _valueOptions = [
     'Relationship integrity',
@@ -122,7 +127,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     } else if (_waitingForVpn) {
       _waitingForVpn = false;
       await VpnService.startVpn();
-      if (mounted) _goTo(_completionIdx);
+      if (mounted) _goTo(_guardedAppsIdx);
     }
   }
 
@@ -215,12 +220,29 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       if (!mounted) return;
       if (granted) {
         await VpnService.startVpn();
-        if (mounted) _goTo(_completionIdx);
+        if (mounted) _goTo(_guardedAppsIdx);
       } else {
         _waitingForVpn = true;
       }
+    } else if (_currentPage == _guardedAppsIdx) {
+      if (_selectedGuardedApps.isEmpty) {
+        _showSnack('Select at least 1 app to guard.');
+        return;
+      }
+      final packages = _selectedGuardedApps.toList();
+      await GuardService.saveGuardedPackages(packages);
+      final hasUsage = await GuardService.hasUsagePermission();
+      if (hasUsage) {
+        await GuardService.start(packages);
+      }
+      _goTo(_whatToExpectIdx);
+    } else if (_currentPage == _whatToExpectIdx) {
+      _goTo(_completionIdx);
     } else if (_currentPage == _completionIdx) {
       await prefs.setOnboardingComplete(true);
+      if (prefs.installDate == 0) {
+        await prefs.setInstallDate(DateTime.now().millisecondsSinceEpoch);
+      }
       if (mounted) context.go('/home');
     }
   }
@@ -243,6 +265,10 @@ class _OnboardingScreenState extends State<OnboardingScreen>
         return _batteryExempt ? 'CONTINUE' : 'DISABLE OPTIMIZATION';
       case _vpnIdx:
         return 'ACTIVATE VPN SHIELD';
+      case _guardedAppsIdx:
+        return 'CONTINUE';
+      case _whatToExpectIdx:
+        return 'CONTINUE';
       case _completionIdx:
         return 'GET STARTED';
       default:
@@ -346,6 +372,28 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       'ANCHORAGE will begin protecting you immediately',
                     ],
                   );
+                case _guardedAppsIdx:
+                  return _GuardedAppsPage(
+                    firstName: _firstName,
+                    selected: _selectedGuardedApps,
+                    onToggle: (pkg) => setState(() {
+                      final isPremium =
+                          PremiumService.instance.isPremium.value;
+                      final atLimit = !isPremium &&
+                          _selectedGuardedApps.length >=
+                              GuardableApp.freeTierLimit;
+                      if (_selectedGuardedApps.contains(pkg)) {
+                        _selectedGuardedApps.remove(pkg);
+                      } else if (!atLimit) {
+                        _selectedGuardedApps.add(pkg);
+                      } else {
+                        _showSnack(
+                            'Free plan: up to ${GuardableApp.freeTierLimit} apps.');
+                      }
+                    }),
+                  );
+                case _whatToExpectIdx:
+                  return const _WhatToExpectPage();
                 case _completionIdx:
                   return _CompletionPage(firstName: _firstName);
                 default:
@@ -960,6 +1008,303 @@ class _TransitionPage extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _GuardedAppsPage extends StatelessWidget {
+  final String firstName;
+  final Set<String> selected;
+  final ValueChanged<String> onToggle;
+
+  const _GuardedAppsPage({
+    required this.firstName,
+    required this.selected,
+    required this.onToggle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final name = firstName.isNotEmpty ? firstName : null;
+
+    return Container(
+      color: AppColors.navy,
+      child: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(24, 48, 24, 200),
+          child: Column(
+            children: [
+              Text(
+                name != null
+                    ? '$name, which apps should ANCHORAGE watch?'
+                    : 'Which apps should ANCHORAGE watch?',
+                textAlign: TextAlign.center,
+                style: theme.textTheme.headlineMedium?.copyWith(
+                  color: AppColors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Text(
+                  'When you open these apps, ANCHORAGE will pause you with a moment to reflect before you continue. You can change these anytime in Settings.',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: AppColors.white.withAlpha(160),
+                    height: 1.5,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                decoration: BoxDecoration(
+                  color: AppColors.white.withAlpha(10),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  '${selected.length}/${GuardableApp.freeTierLimit} selected (free plan)',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: selected.isNotEmpty
+                        ? AppColors.seafoam
+                        : AppColors.white.withAlpha(140),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              ...GuardableApp.predefined.map((app) {
+                final isSelected = selected.contains(app.packageName);
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: GestureDetector(
+                    onTap: () => onToggle(app.packageName),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? AppColors.seafoam.withAlpha(20)
+                            : AppColors.white.withAlpha(8),
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: isSelected
+                              ? AppColors.seafoam
+                              : AppColors.white.withAlpha(30),
+                          width: isSelected ? 2 : 1,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Text(app.emoji,
+                              style: const TextStyle(fontSize: 24)),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Text(
+                              app.displayName,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: isSelected
+                                    ? AppColors.seafoam
+                                    : AppColors.white.withAlpha(200),
+                                fontWeight: isSelected
+                                    ? FontWeight.w600
+                                    : FontWeight.w400,
+                              ),
+                            ),
+                          ),
+                          Icon(
+                            isSelected
+                                ? Icons.check_circle
+                                : Icons.circle_outlined,
+                            color: isSelected
+                                ? AppColors.seafoam
+                                : AppColors.white.withAlpha(60),
+                            size: 22,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _WhatToExpectPage extends StatelessWidget {
+  const _WhatToExpectPage();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Container(
+      color: AppColors.navy,
+      child: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(24, 48, 24, 200),
+          child: Column(
+            children: [
+              Text(
+                "Here's what happens next",
+                textAlign: TextAlign.center,
+                style: theme.textTheme.headlineMedium?.copyWith(
+                  color: AppColors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // Intercept preview card
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: AppColors.white.withAlpha(10),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: AppColors.white.withAlpha(30)),
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      width: 64,
+                      height: 64,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: AppColors.white.withAlpha(10),
+                        border: Border.all(
+                          color: AppColors.white.withAlpha(40),
+                        ),
+                      ),
+                      child: const Center(
+                        child: Text('\u2693', style: TextStyle(fontSize: 32)),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'HOLD ON.',
+                      style: theme.textTheme.headlineSmall?.copyWith(
+                        color: AppColors.white,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: AppColors.white.withAlpha(8),
+                        borderRadius: BorderRadius.circular(12),
+                        border:
+                            Border.all(color: AppColors.white.withAlpha(20)),
+                      ),
+                      child: Column(
+                        children: [
+                          Text(
+                            'Notice the urge',
+                            style: theme.textTheme.titleSmall?.copyWith(
+                              color: AppColors.seafoam,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            "You don't have to obey it.\nThis is a moment to choose with intention.",
+                            textAlign: TextAlign.center,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: AppColors.white.withAlpha(200),
+                              height: 1.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    // Mock buttons
+                    _MockButton(
+                      label: 'REFLECT ON THIS MOMENT',
+                      color: AppColors.seafoam,
+                      textColor: AppColors.navy,
+                    ),
+                    const SizedBox(height: 8),
+                    _MockButton(
+                      label: "I'M STAYING ANCHORED",
+                      color: Colors.transparent,
+                      textColor: AppColors.white,
+                      border: true,
+                    ),
+                    const SizedBox(height: 8),
+                    _MockButton(
+                      label: 'EMERGENCY SOS',
+                      color: Colors.transparent,
+                      textColor: AppColors.danger,
+                      border: true,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Text(
+                  "This will appear when you open a guarded app. It's not a punishment \u2014 it's a pause. A moment to choose with intention.",
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: AppColors.white.withAlpha(180),
+                    height: 1.6,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _MockButton extends StatelessWidget {
+  final String label;
+  final Color color;
+  final Color textColor;
+  final bool border;
+
+  const _MockButton({
+    required this.label,
+    required this.color,
+    required this.textColor,
+    this.border = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 14),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(12),
+        border: border
+            ? Border.all(color: textColor.withAlpha(80))
+            : null,
+      ),
+      child: Center(
+        child: Text(
+          label,
+          style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                color: textColor,
+                letterSpacing: 1.5,
+                fontWeight: FontWeight.w700,
+              ),
         ),
       ),
     );
