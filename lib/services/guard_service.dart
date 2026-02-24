@@ -56,6 +56,21 @@ class GuardService {
     return _channel.invokeMethod('requestOverlayPermission');
   }
 
+  // ── Battery optimization ─────────────────────────────────────────────────
+
+  static Future<bool> isBatteryOptimizationExempt() async {
+    final result =
+        await _channel.invokeMethod<bool>('isBatteryOptimizationExempt') ??
+            false;
+    debugPrint('[GuardService] isBatteryOptimizationExempt: $result');
+    return result;
+  }
+
+  static Future<void> requestBatteryOptimizationExempt() {
+    debugPrint('[GuardService] requestBatteryOptimizationExempt');
+    return _channel.invokeMethod('requestBatteryOptimizationExempt');
+  }
+
   // ── Usage stats permission ────────────────────────────────────────────────
 
   static Future<bool> hasUsagePermission() async {

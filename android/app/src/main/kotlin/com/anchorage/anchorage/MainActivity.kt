@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.net.VpnService
 import android.os.Build
+import android.os.PowerManager
 import android.os.Process
 import android.provider.Settings
 import android.util.Log
@@ -68,6 +69,25 @@ class MainActivity : FlutterActivity() {
                         Uri.parse("package:$packageName")
                     )
                     startActivity(intent)
+                    result.success(null)
+                }
+                "isBatteryOptimizationExempt" -> {
+                    val pm = getSystemService(POWER_SERVICE) as PowerManager
+                    val exempt = pm.isIgnoringBatteryOptimizations(packageName)
+                    Log.d(TAG, "isBatteryOptimizationExempt → $exempt")
+                    result.success(exempt)
+                }
+                "requestBatteryOptimizationExempt" -> {
+                    Log.d(TAG, "requestBatteryOptimizationExempt: opening dialog")
+                    try {
+                        val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+                            data = Uri.parse("package:$packageName")
+                        }
+                        startActivity(intent)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "requestBatteryOptimizationExempt: failed", e)
+                        startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+                    }
                     result.success(null)
                 }
                 else -> {
