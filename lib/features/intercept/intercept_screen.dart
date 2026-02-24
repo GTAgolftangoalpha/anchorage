@@ -1,11 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/constants/app_colors.dart';
+import '../../services/intercept_prompt_service.dart';
 import '../../shared/widgets/anchor_logo.dart';
 
 /// Full-screen overlay shown when a blocked site/app is intercepted.
-class InterceptScreen extends StatelessWidget {
+class InterceptScreen extends StatefulWidget {
   const InterceptScreen({super.key});
+
+  @override
+  State<InterceptScreen> createState() => _InterceptScreenState();
+}
+
+class _InterceptScreenState extends State<InterceptScreen> {
+  late final InterceptPrompt _prompt;
+
+  @override
+  void initState() {
+    super.initState();
+    _prompt = InterceptPromptService.instance.getPrompt();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,9 +68,9 @@ class InterceptScreen extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 48),
+              const SizedBox(height: 40),
 
-              // Pause prompt
+              // ACT prompt card
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
@@ -70,14 +84,14 @@ class InterceptScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     Text(
-                      'Take a breath.',
+                      _prompt.title,
                       style: theme.textTheme.titleMedium?.copyWith(
                         color: AppColors.seafoam,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'You don\'t need this. You are stronger than this urge. Let it pass.',
+                      _prompt.body,
                       textAlign: TextAlign.center,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: AppColors.white.withAlpha(180),

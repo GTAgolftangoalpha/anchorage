@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/about/about_screen.dart';
 import '../../features/accountability/accountability_screen.dart';
 import '../../features/blocked_domain/blocked_domain_screen.dart';
 import '../../features/custom_blocklist/custom_blocklist_screen.dart';
@@ -16,6 +17,7 @@ import '../../features/settings/settings_screen.dart';
 import '../../features/sos/emergency_sos_screen.dart';
 import '../../features/streak/streak_dashboard_screen.dart';
 import '../../features/urge_log/urge_log_screen.dart';
+import '../../services/user_preferences_service.dart';
 import '../../shared/widgets/bottom_nav_scaffold.dart';
 import '../app_globals.dart';
 
@@ -26,6 +28,15 @@ class AppRouter {
     navigatorKey: navigatorKey,
     initialLocation: '/home',
     debugLogDiagnostics: false,
+    redirect: (context, state) {
+      final onboardingDone =
+          UserPreferencesService.instance.onboardingComplete;
+      final isOnboarding = state.matchedLocation == '/onboarding';
+
+      if (!onboardingDone && !isOnboarding) return '/onboarding';
+      if (onboardingDone && isOnboarding) return '/home';
+      return null;
+    },
     routes: [
       // ── Full-screen flows (no bottom nav) ────────────────────────────────
       GoRoute(
@@ -118,6 +129,13 @@ class AppRouter {
         name: 'help',
         pageBuilder: (context, state) => const MaterialPage(
           child: HelpScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/about',
+        name: 'about',
+        pageBuilder: (context, state) => const MaterialPage(
+          child: AboutScreen(),
         ),
       ),
 

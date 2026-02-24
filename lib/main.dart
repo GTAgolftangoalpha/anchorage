@@ -17,6 +17,7 @@ import 'services/reflect_service.dart';
 import 'services/relapse_service.dart';
 import 'services/streak_service.dart';
 import 'services/urge_log_service.dart';
+import 'services/user_preferences_service.dart';
 import 'services/vpn_service.dart';
 import 'shared/widgets/intercept_bottom_sheet.dart';
 
@@ -34,6 +35,10 @@ Future<void> main() async {
       statusBarIconBrightness: Brightness.light,
     ),
   );
+
+  // User preferences (first name, values, onboarding state) — must load
+  // before router is created so the redirect can check onboarding status.
+  await UserPreferencesService.instance.init();
 
   // Firebase
   try {

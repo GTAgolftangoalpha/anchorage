@@ -5,6 +5,7 @@ import '../../core/constants/app_colors.dart';
 import '../../services/export_service.dart';
 import '../../services/premium_service.dart';
 import '../../services/streak_service.dart';
+import '../../services/user_preferences_service.dart';
 
 class StreakDashboardScreen extends StatelessWidget {
   const StreakDashboardScreen({super.key});
@@ -191,11 +192,20 @@ class StreakDashboardScreen extends StatelessWidget {
       builder: (ctx) => AlertDialog(
         title: Text('${milestone.emoji} ${milestone.label}'),
         content: Text(
-          unlocked
-              ? 'Congratulations! You\'ve reached ${milestone.label}. Stay anchored.'
-              : isPremium
-                  ? 'Keep going — ${milestone.days - currentStreak} more days to unlock this milestone.'
-                  : 'Upgrade to ANCHORAGE+ to unlock milestone badges and detailed progress.',
+          () {
+            final name = UserPreferencesService.instance.firstName;
+            if (unlocked) {
+              return name.isNotEmpty
+                  ? '$name, congratulations! You\'ve reached ${milestone.label}. Stay anchored.'
+                  : 'Congratulations! You\'ve reached ${milestone.label}. Stay anchored.';
+            }
+            if (isPremium) {
+              return name.isNotEmpty
+                  ? '$name, keep going — ${milestone.days - currentStreak} more days to unlock this milestone.'
+                  : 'Keep going — ${milestone.days - currentStreak} more days to unlock this milestone.';
+            }
+            return 'Upgrade to ANCHORAGE+ to unlock milestone badges and detailed progress.';
+          }(),
         ),
         actions: [
           TextButton(

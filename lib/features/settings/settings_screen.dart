@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../services/premium_service.dart';
+import '../../services/user_preferences_service.dart';
 import '../../shared/widgets/anchor_logo.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -95,12 +96,19 @@ class SettingsScreen extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              'Welcome, Sailor',
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                color: AppColors.white,
-                              ),
-                            ),
+                            Builder(builder: (context) {
+                              final name =
+                                  UserPreferencesService.instance.firstName;
+                              return Text(
+                                name.isNotEmpty
+                                    ? 'Welcome, $name'
+                                    : 'Welcome, Sailor',
+                                style:
+                                    theme.textTheme.titleMedium?.copyWith(
+                                  color: AppColors.white,
+                                ),
+                              );
+                            }),
                             Text(
                               isPremium ? 'ANCHORAGE+' : 'Free plan',
                               style: theme.textTheme.bodySmall?.copyWith(
@@ -184,6 +192,12 @@ class SettingsScreen extends StatelessWidget {
 
             const SizedBox(height: 8),
             _SectionHeader(title: 'Support'),
+            _SettingsTile(
+              icon: Icons.info_outline,
+              title: 'About ANCHORAGE',
+              subtitle: 'Our approach, beliefs, and privacy',
+              onTap: () => context.push('/about'),
+            ),
             _SettingsTile(
               icon: Icons.help_outline,
               title: 'Help & FAQ',

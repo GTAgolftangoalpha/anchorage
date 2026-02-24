@@ -1,6 +1,7 @@
 package com.anchorage.anchorage
 
 import android.app.Service
+import android.content.Context
 import android.content.Intent
 import android.graphics.PixelFormat
 import android.os.Handler
@@ -13,6 +14,7 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.TextView
+import kotlin.random.Random
 
 class OverlayService : Service() {
 
@@ -39,6 +41,7 @@ class OverlayService : Service() {
             if (overlayView != null && isVpnBlockedMode) {
                 overlayView?.findViewById<TextView>(R.id.tv_domain_msg)?.text =
                     "$domain is blocked.\nANCHORAGE is protecting you."
+                applyVpnPrompt()
                 resetAutoDismiss()
                 Log.d(TAG, "onStartCommand: updated VPN overlay for '$domain'")
             } else if (overlayView == null) {
@@ -52,6 +55,7 @@ class OverlayService : Service() {
             if (overlayView != null && !isVpnBlockedMode) {
                 overlayView?.findViewById<TextView>(R.id.tv_subtitle)?.text =
                     "You opened $appName.\nANCHORAGE intercepted it."
+                applyAppGuardPrompt()
                 resetAutoDismiss()
                 Log.d(TAG, "onStartCommand: updated app-guard overlay for '$appName'")
             } else if (overlayView == null) {
@@ -63,6 +67,123 @@ class OverlayService : Service() {
         return START_NOT_STICKY
     }
 
+    // ── ACT prompt generation ───────────────────────────────────────────────────
+
+    private data class ActPrompt(val title: String, val body: String)
+
+    private fun getActPrompt(): ActPrompt {
+        val prefs = getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
+        val name = prefs.getString("flutter.user_first_name", null) ?: ""
+        val values = prefs.getStringSet("flutter.user_values", emptySet())?.toList() ?: emptyList()
+        val hasName = name.isNotEmpty
+
+        // 4 categories: 0=defusion, 1=values, 2=urge_surfing, 3=present_moment
+        val availableCategories = if (values.isEmpty()) {
+            listOf(0, 2, 3) // Skip values category
+        } else {
+            listOf(0, 1, 2, 3)
+        }.filter { it != lastCategoryIndex }
+
+        val category = if (availableCategories.isNotEmpty()) {
+            availableCategories[Random.nextInt(availableCategories.size)]
+        } else {
+            Random.nextInt(4)
+        }
+        lastCategoryIndex = category
+
+        return when (category) {
+            0 -> { // Defusion
+                val prompts = listOf(
+                    ActPrompt(
+                        "Notice the thought.",
+                        if (hasName) "$name, you're having the thought that you need this right now. That's just a thought \u2014 not a command."
+                        else "You're having the thought that you need this right now. That's just a thought \u2014 not a command."
+                    ),
+                    ActPrompt(
+                        "Observe the urge.",
+                        if (hasName) "Notice the urge, $name. You don't have to obey it."
+                        else "Notice the urge. You don't have to obey it."
+                    ),
+                    ActPrompt(
+                        "It's just a story.",
+                        "Your mind is telling you a story right now. You get to choose whether to follow it."
+                    )
+                )
+                prompts[Random.nextInt(prompts.size)]
+            }
+            1 -> { // Values
+                val v1 = if (values.isNotEmpty()) values[0].lowercase() else "what matters"
+                val v2 = if (values.size > 1) values[1].lowercase() else "your goals"
+                val v3 = if (values.size > 2) values[2].lowercase() else "your future"
+                val prompts = listOf(
+                    ActPrompt(
+                        "Remember your values.",
+                        if (hasName) "$name, you said $v1 matters to you. Does this move you closer to or further from that?"
+                        else "You said $v1 matters to you. Does this move you closer to or further from that?"
+                    ),
+                    ActPrompt(
+                        "Who do you want to be?",
+                        "Think about $v2 for a moment. What would that version of you do right now?"
+                    ),
+                    ActPrompt(
+                        "Live your values.",
+                        if (hasName) "Your values are $v1, $v2, and $v3. This is a moment to live them, $name."
+                        else "Your values are $v1, $v2, and $v3. This is a moment to live them."
+                    )
+                )
+                prompts[Random.nextInt(prompts.size)]
+            }
+            2 -> { // Urge surfing
+                val prompts = listOf(
+                    ActPrompt(
+                        "Ride the wave.",
+                        "This urge will peak and pass \u2014 like a wave. You don't have to act on it."
+                    ),
+                    ActPrompt(
+                        "Breathe through it.",
+                        if (hasName) "Take three slow breaths, $name. The urge is already losing power."
+                        else "Take three slow breaths. The urge is already losing power."
+                    ),
+                    ActPrompt(
+                        "You've survived every one.",
+                        "Urges last 15\u201320 minutes. You've survived every one so far."
+                    )
+                )
+                prompts[Random.nextInt(prompts.size)]
+            }
+            else -> { // Present moment
+                val prompts = listOf(
+                    ActPrompt(
+                        "Name the feeling.",
+                        "What are you actually feeling right now \u2014 bored, stressed, lonely, tired? Name it."
+                    ),
+                    ActPrompt(
+                        "Pause and reflect.",
+                        if (hasName) "$name, pause. What just happened in the last 10 minutes that brought you here?"
+                        else "Pause. What just happened in the last 10 minutes that brought you here?"
+                    ),
+                    ActPrompt(
+                        "Find the trigger.",
+                        "You're here because something triggered you. Can you identify what it was?"
+                    )
+                )
+                prompts[Random.nextInt(prompts.size)]
+            }
+        }
+    }
+
+    private fun applyAppGuardPrompt() {
+        val prompt = getActPrompt()
+        overlayView?.findViewById<TextView>(R.id.tv_prompt_title)?.text = prompt.title
+        overlayView?.findViewById<TextView>(R.id.tv_prompt_body)?.text = prompt.body
+    }
+
+    private fun applyVpnPrompt() {
+        val prompt = getActPrompt()
+        overlayView?.findViewById<TextView>(R.id.tv_vpn_prompt_title)?.text = prompt.title
+        overlayView?.findViewById<TextView>(R.id.tv_vpn_prompt_body)?.text = prompt.body
+    }
+
     // ── App-guard overlay ─────────────────────────────────────────────────────
 
     private fun showAppGuardOverlay(appName: String) {
@@ -72,6 +193,8 @@ class OverlayService : Service() {
 
         overlayView?.findViewById<TextView>(R.id.tv_subtitle)?.text =
             "You opened $appName.\nANCHORAGE intercepted it."
+
+        applyAppGuardPrompt()
 
         overlayView?.findViewById<Button>(R.id.btn_reflect)?.setOnClickListener {
             Log.d(TAG, "btn_reflect tapped")
@@ -103,6 +226,8 @@ class OverlayService : Service() {
 
         overlayView?.findViewById<TextView>(R.id.tv_domain_msg)?.text =
             "$domain is blocked.\nANCHORAGE is protecting you."
+
+        applyVpnPrompt()
 
         overlayView?.findViewById<Button>(R.id.btn_vpn_reflect)?.setOnClickListener {
             Log.d(TAG, "btn_vpn_reflect tapped")
@@ -262,6 +387,9 @@ class OverlayService : Service() {
          * auto-dismiss (Home / Back pressed during app-guard overlay).
          */
         @Volatile var isBeingAutoDismissed = false
+
+        /** Track last prompt category to avoid repeats (survives across overlay instances). */
+        @Volatile var lastCategoryIndex = -1
 
         private const val TAG = "AnchorageOverlay"
     }

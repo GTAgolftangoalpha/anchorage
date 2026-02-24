@@ -1,24 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/constants/app_colors.dart';
+import '../../services/intercept_prompt_service.dart';
 
 /// Shown as a full-height modal bottom sheet when a guarded app is
 /// detected in the foreground. The user must actively choose to reflect
 /// or navigate away — there is no passive dismiss.
 class InterceptBottomSheet extends StatelessWidget {
   final String appName;
+  final InterceptPrompt prompt;
 
-  const InterceptBottomSheet({super.key, required this.appName});
+  const InterceptBottomSheet({
+    super.key,
+    required this.appName,
+    required this.prompt,
+  });
 
   /// Show this sheet from anywhere using the provided [context].
   static Future<void> show(BuildContext context, String appName) {
+    final prompt = InterceptPromptService.instance.getPrompt();
     return showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       isDismissible: false,
       enableDrag: false,
       backgroundColor: Colors.transparent,
-      builder: (_) => InterceptBottomSheet(appName: appName),
+      builder: (_) => InterceptBottomSheet(appName: appName, prompt: prompt),
     );
   }
 
@@ -64,7 +71,7 @@ class InterceptBottomSheet extends StatelessWidget {
                       color: AppColors.white.withAlpha(12),
                     ),
                     child: const Center(
-                      child: Text('⚓', style: TextStyle(fontSize: 44)),
+                      child: Text('\u2693', style: TextStyle(fontSize: 44)),
                     ),
                   ),
 
@@ -103,28 +110,29 @@ class InterceptBottomSheet extends StatelessWidget {
                     ),
                   ),
 
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 32),
 
-                  // Pause card
+                  // ACT prompt card
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
                       color: AppColors.white.withAlpha(10),
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: AppColors.white.withAlpha(25)),
+                      border:
+                          Border.all(color: AppColors.white.withAlpha(25)),
                     ),
                     child: Column(
                       children: [
                         Text(
-                          'Take a breath.',
+                          prompt.title,
                           style: theme.textTheme.titleMedium?.copyWith(
                             color: AppColors.seafoam,
                           ),
                         ),
                         const SizedBox(height: 10),
                         Text(
-                          'The urge is temporary. You are stronger than this moment. Let it pass.',
+                          prompt.body,
                           textAlign: TextAlign.center,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: AppColors.white.withAlpha(180),
@@ -166,11 +174,12 @@ class InterceptBottomSheet extends StatelessWidget {
                       onPressed: () => Navigator.of(context).pop(),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.white,
-                        side: BorderSide(color: AppColors.white.withAlpha(60)),
+                        side:
+                            BorderSide(color: AppColors.white.withAlpha(60)),
                         padding: const EdgeInsets.symmetric(vertical: 18),
                       ),
                       child: Text(
-                        'I\'M STAYING ANCHORED',
+                        "I'M STAYING ANCHORED",
                         style: theme.textTheme.labelLarge?.copyWith(
                           color: AppColors.white,
                           letterSpacing: 1.5,

@@ -8,12 +8,14 @@ class ReflectEntry {
   final DateTime timestamp;
   final String mood;
   final String journal;
+  final Map<String, String> valuesAlignment;
 
   const ReflectEntry({
     required this.id,
     required this.timestamp,
     required this.mood,
     this.journal = '',
+    this.valuesAlignment = const {},
   });
 
   Map<String, dynamic> toJson() => {
@@ -21,6 +23,7 @@ class ReflectEntry {
         'timestamp': timestamp.millisecondsSinceEpoch,
         'mood': mood,
         'journal': journal,
+        'valuesAlignment': valuesAlignment,
       };
 
   factory ReflectEntry.fromJson(Map<String, dynamic> json) => ReflectEntry(
@@ -29,6 +32,10 @@ class ReflectEntry {
             DateTime.fromMillisecondsSinceEpoch(json['timestamp'] as int),
         mood: json['mood'] as String? ?? '',
         journal: json['journal'] as String? ?? '',
+        valuesAlignment: json['valuesAlignment'] != null
+            ? Map<String, String>.from(
+                json['valuesAlignment'] as Map<String, dynamic>)
+            : const {},
       );
 }
 
@@ -47,12 +54,14 @@ class ReflectService {
   Future<void> addEntry({
     required String mood,
     String journal = '',
+    Map<String, String> valuesAlignment = const {},
   }) async {
     final entry = ReflectEntry(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       timestamp: DateTime.now(),
       mood: mood,
       journal: journal,
+      valuesAlignment: valuesAlignment,
     );
     entries.value = [entry, ...entries.value];
     await _save();

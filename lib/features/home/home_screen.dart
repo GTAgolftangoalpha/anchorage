@@ -4,6 +4,7 @@ import '../../core/constants/app_colors.dart';
 import '../../models/guardable_app.dart';
 import '../../services/guard_service.dart';
 import '../../services/streak_service.dart';
+import '../../services/user_preferences_service.dart';
 import '../../shared/widgets/anchor_logo.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -399,12 +400,18 @@ class _StatusCard extends StatelessWidget {
           const AnchorLogo(size: 40, color: AppColors.white),
           const SizedBox(height: 10),
 
-          Text(
-            isActive ? 'You are anchored.' : 'Not guarding any apps.',
-            style: theme.textTheme.headlineSmall?.copyWith(
-              color: AppColors.white,
-            ),
-          ),
+          Builder(builder: (context) {
+            final name = UserPreferencesService.instance.firstName;
+            final greeting = name.isNotEmpty
+                ? (isActive ? 'Stay anchored, $name.' : 'Not guarding any apps.')
+                : (isActive ? 'You are anchored.' : 'Not guarding any apps.');
+            return Text(
+              greeting,
+              style: theme.textTheme.headlineSmall?.copyWith(
+                color: AppColors.white,
+              ),
+            );
+          }),
 
           const SizedBox(height: 8),
 

@@ -1,12 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/constants/app_colors.dart';
+import '../../services/intercept_prompt_service.dart';
 import '../../shared/widgets/anchor_logo.dart';
 
-class BlockedDomainScreen extends StatelessWidget {
+class BlockedDomainScreen extends StatefulWidget {
   final String domain;
 
   const BlockedDomainScreen({super.key, required this.domain});
+
+  @override
+  State<BlockedDomainScreen> createState() => _BlockedDomainScreenState();
+}
+
+class _BlockedDomainScreenState extends State<BlockedDomainScreen> {
+  late final InterceptPrompt _prompt;
+
+  @override
+  void initState() {
+    super.initState();
+    _prompt = InterceptPromptService.instance.getPrompt();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +51,7 @@ class BlockedDomainScreen extends StatelessWidget {
               ),
               const SizedBox(height: 32),
               Text(
-                'YOU\'VE GOT THIS.',
+                'This site is blocked.',
                 style: theme.textTheme.headlineMedium?.copyWith(
                   color: AppColors.white,
                   fontWeight: FontWeight.bold,
@@ -45,10 +59,10 @@ class BlockedDomainScreen extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
-              if (domain.isNotEmpty) ...[
+              if (widget.domain.isNotEmpty) ...[
                 const SizedBox(height: 12),
                 Text(
-                  '$domain is blocked.',
+                  '${widget.domain} is blocked by ANCHORAGE.',
                   style: theme.textTheme.bodyLarge?.copyWith(
                     color: AppColors.white.withAlpha(200),
                   ),
@@ -56,6 +70,8 @@ class BlockedDomainScreen extends StatelessWidget {
                 ),
               ],
               const SizedBox(height: 32),
+
+              // ACT prompt card
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
@@ -67,7 +83,7 @@ class BlockedDomainScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     Text(
-                      'Stay the course.',
+                      _prompt.title,
                       style: theme.textTheme.titleSmall?.copyWith(
                         color: AppColors.seafoam,
                         fontWeight: FontWeight.bold,
@@ -75,7 +91,7 @@ class BlockedDomainScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'ANCHORAGE has your back.\nEvery redirect is a victory.',
+                      _prompt.body,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: AppColors.white.withAlpha(180),
                         height: 1.6,
