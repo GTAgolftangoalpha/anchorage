@@ -200,8 +200,14 @@ class _GuardedAppsScreenState extends State<GuardedAppsScreen>
                 // Permission banner
                 if (!_hasUsagePermission) _PermissionBanner(),
 
-                // Free tier indicator
-                _FreeTierBar(selectedCount: _selected.length),
+                // Free tier indicator (hidden for premium)
+                ValueListenableBuilder<bool>(
+                  valueListenable: PremiumService.instance.isPremium,
+                  builder: (context, isPremium, _) {
+                    if (isPremium) return const SizedBox.shrink();
+                    return _FreeTierBar(selectedCount: _selected.length);
+                  },
+                ),
 
                 // App list
                 Expanded(

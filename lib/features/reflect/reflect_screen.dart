@@ -108,7 +108,6 @@ class _ReflectScreenState extends State<ReflectScreen> {
           icon: const Icon(Icons.close),
           onPressed: () => context.pop(),
         ),
-        actions: const [],
       ),
       body: SafeArea(
         child: SingleChildScrollView(

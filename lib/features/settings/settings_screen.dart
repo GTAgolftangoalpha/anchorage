@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../core/constants/app_colors.dart';
 import '../../services/premium_service.dart';
 import '../../services/user_preferences_service.dart';
+import '../../services/vpn_service.dart';
 import '../../shared/widgets/anchor_logo.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -16,7 +17,31 @@ class SettingsScreen extends StatefulWidget {
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen> {
+class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObserver {
+  bool _vpnActive = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _refreshVpnState();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _refreshVpnState();
+  }
+
+  Future<void> _refreshVpnState() async {
+    final active = await VpnService.isVpnActive();
+    if (mounted) setState(() => _vpnActive = active);
+  }
 
   static const _privacyUrl = 'https://anchorageapp.com/privacy';
   static const _termsUrl = 'https://anchorageapp.com/terms';
@@ -298,20 +323,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
             _SettingsTile(
               icon: Icons.vpn_lock,
               title: 'VPN Protection',
-              subtitle: 'Active — explicit content blocked',
+              subtitle: _vpnActive
+                  ? 'Active — explicit content blocked'
+                  : 'Inactive — tap to manage',
               trailing: Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppColors.seafoam.withAlpha(40),
+                  color: _vpnActive
+                      ? AppColors.seafoam.withAlpha(40)
+                      : AppColors.slate.withAlpha(30),
                   borderRadius: BorderRadius.circular(12),
-                  border:
-                      Border.all(color: AppColors.seafoam.withAlpha(120)),
+                  border: Border.all(
+                    color: _vpnActive
+                        ? AppColors.seafoam.withAlpha(120)
+                        : AppColors.slate.withAlpha(80),
+                  ),
                 ),
                 child: Text(
-                  'ON',
+                  _vpnActive ? 'ON' : 'OFF',
                   style: theme.textTheme.labelSmall?.copyWith(
-                    color: AppColors.seafoam,
+                    color: _vpnActive ? AppColors.seafoam : AppColors.slate,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1,
                   ),

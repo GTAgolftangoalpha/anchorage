@@ -335,7 +335,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
 
                     const SizedBox(height: 4),
                     Text(
-                      'Prices in AUD. Cancel anytime.',
+                      'Cancel anytime.',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: AppColors.white.withAlpha(100),
                         fontSize: 11,
@@ -427,7 +427,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
     ('🧭', 'Accountability partner reports'),
     ('🔒', 'Anti-tamper PIN protection'),
     ('📊', 'Full urge log history & analytics'),
-    ('🆘', 'SOS mode & crisis support links'),
+    ('📓', 'Relapse log & guided reflection'),
   ];
 }
 
