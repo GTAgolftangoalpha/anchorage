@@ -645,6 +645,7 @@ class AnchorageVpnService : VpnService() {
             "firebase.com", "firebaseapp.com", "firebaseio.com", "firebasestorage.googleapis.com",
             "goog", // Google's own TLD
             "braze.com",
+            "revenuecat.com",
             "apple.com", "icloud.com", "mzstatic.com",
         )
 
