@@ -144,22 +144,29 @@ class AppGuardService : Service() {
         }
 
         if (foregroundPkg.isEmpty()) {
-            // Samsung doze/screen-off causes queryEvents to return 0 results, leaving
-            // the guard stuck in OVERLAY_SHOWING indefinitely. After OVERLAY_TIMEOUT_MS
-            // without being able to confirm the guarded app is still in foreground,
-            // auto-dismiss so the overlay doesn't linger over unrelated apps (e.g. Netflix).
-            if (guardState == GuardState.OVERLAY_SHOWING && overlayShowingSince > 0L &&
-                now - overlayShowingSince > OVERLAY_TIMEOUT_MS
-            ) {
-                Log.w(TAG, "checkForeground: OVERLAY_SHOWING timed out (${now - overlayShowingSince}ms) — auto-dismissing")
-                guardState = GuardState.IDLE
-                interceptedPkg = ""
-                overlayShowingSince = 0L
-                OverlayService.isBeingAutoDismissed = true
-                stopService(Intent(this, OverlayService::class.java))
+            // Samsung purges UsageStats events from its internal buffer within seconds,
+            // regardless of the requested query window. When both queryEvents() and
+            // queryUsageStats() return empty, fall back to the last successfully detected
+            // foreground package. The 150ms poll interval ensures we catch the brief
+            // ~3-5 second window when events ARE available during app transitions.
+            if (lastKnownForeground.isNotEmpty()) {
+                foregroundPkg = lastKnownForeground
+                Log.v(TAG, "checkForeground: events empty — using persistent '$foregroundPkg'")
+            } else {
+                // Very first poll or no foreground ever detected — nothing to fall back to.
+                if (guardState == GuardState.OVERLAY_SHOWING && overlayShowingSince > 0L &&
+                    now - overlayShowingSince > OVERLAY_TIMEOUT_MS
+                ) {
+                    Log.w(TAG, "checkForeground: OVERLAY_SHOWING timed out (${now - overlayShowingSince}ms) — auto-dismissing")
+                    guardState = GuardState.IDLE
+                    interceptedPkg = ""
+                    overlayShowingSince = 0L
+                    OverlayService.isBeingAutoDismissed = true
+                    stopService(Intent(this, OverlayService::class.java))
+                }
+                Log.v(TAG, "checkForeground: no foreground app detected (state=$guardState)")
+                return
             }
-            Log.v(TAG, "checkForeground: no foreground app detected (state=$guardState)")
-            return
         }
 
         val isNewForeground = foregroundPkg != lastForegroundPkg
