@@ -48,6 +48,9 @@ class PremiumService {
         debugPrint('[PremiumService] purchase error: $e');
       }
       return false;
+    } catch (e) {
+      debugPrint('[PremiumService] purchase unexpected error: $e');
+      return false;
     }
   }
 

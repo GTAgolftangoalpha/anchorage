@@ -47,6 +47,28 @@ class _PaywallScreenState extends State<PaywallScreen> {
     if (mounted) setState(() => _offerings = offerings);
   }
 
+  /// Find a package from the offering by searching availablePackages.
+  /// Typed accessors (offering.monthly / offering.annual) only match
+  /// packages with RC standard identifiers ($rc_monthly, $rc_annual).
+  /// Dashboard packages named "monthly" / "yearly" are custom — search by id.
+  Package? _findPackage(Offering offering, {required bool monthly}) {
+    final packages = offering.availablePackages;
+    if (monthly) {
+      return offering.monthly ??
+          packages.cast<Package?>().firstWhere(
+            (p) => p!.identifier.toLowerCase().contains('month'),
+            orElse: () => null,
+          );
+    }
+    return offering.annual ??
+        packages.cast<Package?>().firstWhere(
+          (p) =>
+              p!.identifier.toLowerCase().contains('annual') ||
+              p.identifier.toLowerCase().contains('year'),
+          orElse: () => null,
+        );
+  }
+
   Future<void> _purchase() async {
     final offering = _offerings?.current;
     if (offering == null) {
@@ -61,7 +83,10 @@ class _PaywallScreenState extends State<PaywallScreen> {
       return;
     }
 
-    final package = _selectedPlan == 0 ? offering.monthly : offering.annual;
+    debugPrint('[Paywall] Available packages: '
+        '${offering.availablePackages.map((p) => '${p.identifier}(${p.packageType})').join(', ')}');
+
+    final package = _findPackage(offering, monthly: _selectedPlan == 0);
     if (package == null) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -74,6 +99,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
       return;
     }
 
+    debugPrint('[Paywall] Purchasing: ${package.identifier} (${package.packageType})');
     setState(() => _loading = true);
     final success = await PremiumService.instance.purchasePackage(package);
     if (!mounted) return;
