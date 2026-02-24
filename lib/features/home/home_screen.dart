@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/constants/app_colors.dart';
 import '../../models/guardable_app.dart';
 import '../../services/guard_service.dart';
+import '../../services/streak_service.dart';
 import '../../shared/widgets/anchor_logo.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -78,86 +79,139 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // ── Status hero card ──────────────────────────────────────
-                _StatusCard(
-                  isActive: _guardActive,
-                  guardedApps: _guardedApps,
-                  onSetupTap: () async {
-                    await context.push('/guarded-apps');
-                    _refresh();
-                  },
-                ),
+            child: ValueListenableBuilder<StreakData>(
+              valueListenable: StreakService.instance.data,
+              builder: (context, streak, _) {
+                final message = StreakService.instance.motivationalMessage;
+                final bars = StreakService.instance.getWeeklyBarData();
 
-                const SizedBox(height: 16),
-
-                // ── Permission warning ────────────────────────────────────
-                if (!_hasPermission) ...[
-                  _PermissionCard(
-                    onTap: () async {
-                      await GuardService.requestUsagePermission();
-                      await Future.delayed(const Duration(milliseconds: 600));
-                      _refresh();
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                ],
-
-                // ── Stats row ─────────────────────────────────────────────
-                Row(
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _StatCard(
-                      label: 'Current Streak',
-                      value: '0',
-                      unit: 'days',
-                      icon: Icons.local_fire_department,
-                      color: AppColors.gold,
+                    // ── Status hero card ──────────────────────────────
+                    _StatusCard(
+                      isActive: _guardActive,
+                      guardedApps: _guardedApps,
+                      onSetupTap: () async {
+                        await context.push('/guarded-apps');
+                        _refresh();
+                      },
                     ),
-                    const SizedBox(width: 12),
-                    _StatCard(
-                      label: 'Blocked Today',
-                      value: '0',
-                      unit: 'attempts',
-                      icon: Icons.shield,
-                      color: AppColors.seafoam,
+
+                    const SizedBox(height: 16),
+
+                    // ── Permission warning ────────────────────────────
+                    if (!_hasPermission) ...[
+                      _PermissionCard(
+                        onTap: () async {
+                          await GuardService.requestUsagePermission();
+                          await Future.delayed(
+                              const Duration(milliseconds: 600));
+                          _refresh();
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+
+                    // ── Streak hero ──────────────────────────────────
+                    _StreakHero(
+                      currentStreak: streak.currentStreak,
+                      message: message,
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // ── Stats row ────────────────────────────────────
+                    Row(
+                      children: [
+                        _StatCard(
+                          label: 'Current Streak',
+                          value: '${streak.currentStreak}',
+                          unit: 'days',
+                          icon: Icons.local_fire_department,
+                          color: AppColors.gold,
+                        ),
+                        const SizedBox(width: 12),
+                        _StatCard(
+                          label: 'Longest Streak',
+                          value: '${streak.longestStreak}',
+                          unit: 'days',
+                          icon: Icons.emoji_events,
+                          color: AppColors.seafoam,
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    Row(
+                      children: [
+                        _StatCard(
+                          label: 'Weekly Intercepts',
+                          value: '${streak.weeklyIntercepts}',
+                          unit: 'blocked',
+                          icon: Icons.shield,
+                          color: AppColors.navy,
+                        ),
+                        const SizedBox(width: 12),
+                        _StatCard(
+                          label: 'Clean Days',
+                          value: '${streak.totalCleanDays}',
+                          unit: 'total',
+                          icon: Icons.calendar_today,
+                          color: AppColors.success,
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // ── Weekly bar chart ──────────────────────────────
+                    Text('This Week', style: theme.textTheme.titleMedium),
+                    const SizedBox(height: 12),
+                    _WeeklyBarChart(bars: bars),
+
+                    const SizedBox(height: 20),
+
+                    // ── Quick actions ────────────────────────────────
+                    Text('Quick Actions', style: theme.textTheme.titleMedium),
+                    const SizedBox(height: 10),
+
+                    _ActionTile(
+                      icon: Icons.security,
+                      title: 'Manage Guarded Apps',
+                      subtitle: _guardedPackages.isEmpty
+                          ? 'No apps guarded yet'
+                          : '${_guardedPackages.length} app${_guardedPackages.length == 1 ? '' : 's'} protected',
+                      onTap: () async {
+                        await context.push('/guarded-apps');
+                        _refresh();
+                      },
+                    ),
+                    const SizedBox(height: 8),
+                    _ActionTile(
+                      icon: Icons.edit_note,
+                      title: 'Urge Log',
+                      subtitle: 'Track triggers privately',
+                      onTap: () => context.push('/urge-log'),
+                    ),
+                    const SizedBox(height: 8),
+                    _ActionTile(
+                      icon: Icons.self_improvement,
+                      title: 'Reflect',
+                      subtitle: 'Journal a moment of clarity',
+                      onTap: () => context.push('/reflect'),
+                    ),
+                    const SizedBox(height: 8),
+                    _ActionTile(
+                      icon: Icons.star_outline,
+                      title: 'Go Premium',
+                      subtitle: 'Guard unlimited apps + advanced features',
+                      onTap: () => context.push('/paywall'),
                     ),
                   ],
-                ),
-
-                const SizedBox(height: 20),
-
-                // ── Quick actions ─────────────────────────────────────────
-                Text('Quick Actions', style: theme.textTheme.titleMedium),
-                const SizedBox(height: 10),
-
-                _ActionTile(
-                  icon: Icons.security,
-                  title: 'Manage Guarded Apps',
-                  subtitle: _guardedPackages.isEmpty
-                      ? 'No apps guarded yet'
-                      : '${_guardedPackages.length} app${_guardedPackages.length == 1 ? '' : 's'} protected',
-                  onTap: () async {
-                    await context.push('/guarded-apps');
-                    _refresh();
-                  },
-                ),
-                const SizedBox(height: 8),
-                _ActionTile(
-                  icon: Icons.self_improvement,
-                  title: 'Reflect',
-                  subtitle: 'Journal a moment of clarity',
-                  onTap: () => context.push('/reflect'),
-                ),
-                const SizedBox(height: 8),
-                _ActionTile(
-                  icon: Icons.star_outline,
-                  title: 'Go Premium',
-                  subtitle: 'Guard unlimited apps + advanced features',
-                  onTap: () => context.push('/paywall'),
-                ),
-              ],
+                );
+              },
             ),
           ),
         ),
@@ -167,6 +221,126 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+
+class _StreakHero extends StatelessWidget {
+  final int currentStreak;
+  final String message;
+
+  const _StreakHero({required this.currentStreak, required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 24),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [AppColors.navy, AppColors.navyLight],
+        ),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        children: [
+          Text(
+            '$currentStreak',
+            style: theme.textTheme.displayLarge?.copyWith(
+              color: AppColors.white,
+              fontSize: 56,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          Text(
+            'DAY STREAK',
+            style: theme.textTheme.titleSmall?.copyWith(
+              color: AppColors.seafoam,
+              letterSpacing: 4,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: AppColors.white.withAlpha(180),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _WeeklyBarChart extends StatelessWidget {
+  final List<int> bars;
+  static const _days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+  const _WeeklyBarChart({required this.bars});
+
+  @override
+  Widget build(BuildContext context) {
+    final now = DateTime.now();
+    final todayIndex = now.weekday - 1;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.lightGray,
+        borderRadius: BorderRadius.circular(16),
+        border: const Border.fromBorderSide(
+          BorderSide(color: AppColors.midGray),
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: List.generate(7, (i) {
+          final active = bars[i] == 1;
+          final isToday = i == todayIndex;
+          final isFuture = i > todayIndex;
+
+          return Expanded(
+            child: Padding(
+              padding: EdgeInsets.only(
+                left: i == 0 ? 0 : 4,
+                right: i == 6 ? 0 : 4,
+              ),
+              child: Column(
+                children: [
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    height: active ? 48 : 20,
+                    decoration: BoxDecoration(
+                      color: isFuture
+                          ? AppColors.midGray.withAlpha(80)
+                          : (active ? AppColors.seafoam : AppColors.midGray),
+                      borderRadius: BorderRadius.circular(6),
+                      border: isToday
+                          ? Border.all(color: AppColors.navy, width: 2)
+                          : null,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    _days[i],
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color:
+                              isToday ? AppColors.navy : AppColors.textMuted,
+                          fontWeight:
+                              isToday ? FontWeight.w700 : FontWeight.w500,
+                        ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }),
+      ),
+    );
+  }
+}
 
 class _StatusCard extends StatelessWidget {
   final bool isActive;
@@ -185,14 +359,13 @@ class _StatusCard extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppColors.navy,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
         children: [
-          // Status indicator dot + label
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -215,13 +388,13 @@ class _StatusCard extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 20),
-          const AnchorLogo(size: 52, color: AppColors.white),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
+          const AnchorLogo(size: 40, color: AppColors.white),
+          const SizedBox(height: 10),
 
           Text(
             isActive ? 'You are anchored.' : 'Not guarding any apps.',
-            style: theme.textTheme.headlineMedium?.copyWith(
+            style: theme.textTheme.headlineSmall?.copyWith(
               color: AppColors.white,
             ),
           ),

@@ -248,6 +248,14 @@ class AnchorageVpnService : VpnService() {
         if (qTypeOffset + 3 >= dns.size) return
         val qType = ((dns[qTypeOffset].toInt() and 0xFF) shl 8) or (dns[qTypeOffset + 1].toInt() and 0xFF)
 
+        // Whitelist always wins — forward even while blocklist is still loading,
+        // so Firebase/Google services are never disrupted during startup.
+        if (isWhitelisted(domain)) {
+            Log.v(TAG, "DNS ALLOWED (whitelist): $domain → forwarding")
+            forwardDns(dns, originalPacket, output)
+            return
+        }
+
         // Blocklist still loading — return SERVFAIL so nothing resolves until
         // VPN protection is fully armed. Closes the boot startup window.
         if (!blocklistReady) {
@@ -256,11 +264,7 @@ class AnchorageVpnService : VpnService() {
             return
         }
 
-        // Whitelist always wins — these domains must resolve normally regardless of blocklist.
-        if (isWhitelisted(domain)) {
-            Log.v(TAG, "DNS ALLOWED (whitelist): $domain → forwarding")
-            forwardDns(dns, originalPacket, output)
-        } else if (isBlocked(domain)) {
+        if (isBlocked(domain)) {
             Log.i(TAG, "DNS BLOCKED: $domain (qType=$qType) → ${ipStr(BLOCKED_DOMAIN_IP)}")
             val response = buildBlockedDnsResponse(txId, dns, BLOCKED_DOMAIN_IP)
             writeUdpResponse(originalPacket, response, output)

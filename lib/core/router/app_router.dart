@@ -12,6 +12,7 @@ import '../../features/reflect/reflect_screen.dart';
 import '../../features/settings/settings_screen.dart';
 import '../../features/sos/emergency_sos_screen.dart';
 import '../../features/streak/streak_dashboard_screen.dart';
+import '../../features/urge_log/urge_log_screen.dart';
 import '../../shared/widgets/bottom_nav_scaffold.dart';
 import '../app_globals.dart';
 
@@ -85,6 +86,13 @@ class AppRouter {
         name: 'accountability',
         pageBuilder: (context, state) => const MaterialPage(
           child: AccountabilityScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/urge-log',
+        name: 'urge-log',
+        pageBuilder: (context, state) => const MaterialPage(
+          child: UrgeLogScreen(),
         ),
       ),
 

@@ -10,6 +10,8 @@ import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 import 'models/guardable_app.dart';
 import 'services/guard_service.dart';
+import 'services/streak_service.dart';
+import 'services/urge_log_service.dart';
 import 'services/vpn_service.dart';
 import 'shared/widgets/intercept_bottom_sheet.dart';
 
@@ -50,6 +52,10 @@ Future<void> main() async {
   await Purchases.configure(
     PurchasesConfiguration('test_tcrYhxTeUMvQTkeJHipqSHzQqAI'),
   );
+
+  // Streak + urge log — local prefs + Firebase sync
+  await StreakService.instance.init();
+  await UrgeLogService.instance.init();
 
   // Guard service — wire native → Flutter callbacks
   GuardService.init();
