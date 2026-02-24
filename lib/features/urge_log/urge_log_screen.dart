@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
+import '../../services/premium_service.dart';
 import '../../services/urge_log_service.dart';
 
 class UrgeLogScreen extends StatefulWidget {
@@ -54,18 +55,19 @@ class _UrgeLogScreenState extends State<UrgeLogScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // TODO: Check RevenueCat for paid status; for now treat as free tier
-    const isPaid = false;
 
     return Scaffold(
       appBar: AppBar(title: const Text('URGE LOG')),
       body: SafeArea(
-        child: ValueListenableBuilder<List<UrgeEntry>>(
-          valueListenable: UrgeLogService.instance.entries,
-          builder: (context, allEntries, _) {
-            final visible =
-                UrgeLogService.instance.visibleEntries(isPaid: isPaid);
-            final hasMore = !isPaid && allEntries.length > 7;
+        child: ValueListenableBuilder<bool>(
+          valueListenable: PremiumService.instance.isPremium,
+          builder: (context, isPaid, _) {
+            return ValueListenableBuilder<List<UrgeEntry>>(
+              valueListenable: UrgeLogService.instance.entries,
+              builder: (context, allEntries, _) {
+                final visible =
+                    UrgeLogService.instance.visibleEntries(isPaid: isPaid);
+                final hasMore = !isPaid && allEntries.length > 7;
 
             return ListView(
               padding: const EdgeInsets.all(24),
@@ -246,6 +248,8 @@ class _UrgeLogScreenState extends State<UrgeLogScreen> {
                     ),
                 ],
               ],
+              );
+              },
             );
           },
         ),

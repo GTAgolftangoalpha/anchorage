@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/constants/app_colors.dart';
+import '../../services/reflect_service.dart';
 
 /// Reflection / journaling screen shown after an intercept or on demand.
 class ReflectScreen extends StatefulWidget {
@@ -28,15 +29,34 @@ class _ReflectScreenState extends State<ReflectScreen> {
     super.dispose();
   }
 
-  void _save() {
-    // TODO: persist to Firestore
+  bool _saving = false;
+
+  Future<void> _save() async {
+    if (_selectedMood == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Select how you\'re feeling first.'),
+          backgroundColor: AppColors.warning,
+        ),
+      );
+      return;
+    }
+
+    setState(() => _saving = true);
+    await ReflectService.instance.addEntry(
+      mood: _selectedMood!,
+      journal: _controller.text.trim(),
+    );
+    if (!mounted) return;
+    setState(() => _saving = false);
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('placeholder text'),
-        backgroundColor: AppColors.navy,
+        content: Text('Reflection saved. Stay anchored.'),
+        backgroundColor: AppColors.success,
       ),
     );
-    Future.delayed(const Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 1), () {
       if (mounted) context.go('/home');
     });
   }
@@ -137,8 +157,17 @@ class _ReflectScreenState extends State<ReflectScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: _save,
-                  child: const Text('SAVE REFLECTION'),
+                  onPressed: _saving ? null : _save,
+                  child: _saving
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColors.white,
+                          ),
+                        )
+                      : const Text('SAVE REFLECTION'),
                 ),
               ),
             ],

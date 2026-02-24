@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import '../../core/constants/app_colors.dart';
+import '../../services/premium_service.dart';
 import '../../shared/widgets/anchor_logo.dart';
 
 class PaywallScreen extends StatefulWidget {
@@ -12,18 +14,105 @@ class PaywallScreen extends StatefulWidget {
 
 class _PaywallScreenState extends State<PaywallScreen> {
   int _selectedPlan = 1; // default: annual
+  bool _loading = false;
+  Offerings? _offerings;
 
   static const _plans = [
-    _Plan(id: 0, label: 'Monthly', price: r'$9.99', period: '/month', badge: null),
+    _Plan(
+      id: 0,
+      label: 'Monthly',
+      price: r'$19.99',
+      period: '/month',
+      badge: null,
+      subtitle: null,
+    ),
     _Plan(
       id: 1,
       label: 'Annual',
-      price: r'$59.99',
+      price: r'$199',
       period: '/year',
-      badge: 'BEST VALUE',
+      badge: 'SAVE 17%',
+      subtitle: r'$16.58/month — save $40 vs monthly',
     ),
-    _Plan(id: 2, label: 'Lifetime', price: r'$149.99', period: 'once', badge: null),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadOfferings();
+  }
+
+  Future<void> _loadOfferings() async {
+    final offerings = await PremiumService.instance.getOfferings();
+    if (mounted) setState(() => _offerings = offerings);
+  }
+
+  Future<void> _purchase() async {
+    final offering = _offerings?.current;
+    if (offering == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Products not available yet. Please try again later.'),
+            backgroundColor: AppColors.danger,
+          ),
+        );
+      }
+      return;
+    }
+
+    final package = _selectedPlan == 0 ? offering.monthly : offering.annual;
+    if (package == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('This plan is not available yet. Please try again later.'),
+            backgroundColor: AppColors.danger,
+          ),
+        );
+      }
+      return;
+    }
+
+    setState(() => _loading = true);
+    final success = await PremiumService.instance.purchasePackage(package);
+    if (!mounted) return;
+    setState(() => _loading = false);
+
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Welcome to ANCHORAGE+! You\'re fully anchored.'),
+          backgroundColor: AppColors.success,
+        ),
+      );
+      context.pop();
+    }
+  }
+
+  Future<void> _restore() async {
+    setState(() => _loading = true);
+    final success = await PremiumService.instance.restorePurchases();
+    if (!mounted) return;
+    setState(() => _loading = false);
+
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Purchases restored. Welcome back!'),
+          backgroundColor: AppColors.success,
+        ),
+      );
+      context.pop();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No previous purchases found.'),
+          backgroundColor: AppColors.navy,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +141,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
                     const SizedBox(height: 16),
 
                     Text(
-                      'ANCHORAGE\nPREMIUM',
+                      'ANCHORAGE+',
                       textAlign: TextAlign.center,
                       style: theme.textTheme.displayMedium?.copyWith(
                         color: AppColors.white,
@@ -128,7 +217,8 @@ class _PaywallScreenState extends State<PaywallScreen> {
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Row(
                                         children: [
@@ -167,6 +257,19 @@ class _PaywallScreenState extends State<PaywallScreen> {
                                           ],
                                         ],
                                       ),
+                                      if (plan.subtitle != null) ...[
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          plan.subtitle!,
+                                          style: theme.textTheme.bodySmall
+                                              ?.copyWith(
+                                            color: selected
+                                                ? AppColors.textMuted
+                                                : AppColors.white.withAlpha(120),
+                                            fontSize: 11,
+                                          ),
+                                        ),
+                                      ],
                                     ],
                                   ),
                                 ),
@@ -201,6 +304,15 @@ class _PaywallScreenState extends State<PaywallScreen> {
                         ),
                       );
                     }),
+
+                    const SizedBox(height: 4),
+                    Text(
+                      'Prices in AUD. Cancel anytime.',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: AppColors.white.withAlpha(100),
+                        fontSize: 11,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -214,21 +326,29 @@ class _PaywallScreenState extends State<PaywallScreen> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () {
-                        // TODO: RevenueCat purchase
-                      },
+                      onPressed: _loading ? null : _purchase,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.gold,
                         foregroundColor: AppColors.navy,
                         padding: const EdgeInsets.symmetric(vertical: 18),
                       ),
-                      child: Text(
-                        'START FREE TRIAL',
-                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                              color: AppColors.navy,
-                              letterSpacing: 2,
+                      child: _loading
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: AppColors.navy,
+                              ),
+                            )
+                          : Text(
+                              'Get ANCHORAGE+',
+                              style:
+                                  Theme.of(context).textTheme.labelLarge?.copyWith(
+                                        color: AppColors.navy,
+                                        letterSpacing: 2,
+                                      ),
                             ),
-                      ),
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -236,9 +356,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       TextButton(
-                        onPressed: () {
-                          // TODO: RevenueCat restore
-                        },
+                        onPressed: _loading ? null : _restore,
                         child: Text(
                           'Restore Purchases',
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -247,7 +365,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
                         ),
                       ),
                       Text(
-                        '·',
+                        '\u00b7',
                         style: TextStyle(color: AppColors.white.withAlpha(100)),
                       ),
                       TextButton(
@@ -272,10 +390,10 @@ class _PaywallScreenState extends State<PaywallScreen> {
 
   static const _features = [
     ('🛡️', 'Advanced VPN Content Filter'),
-    ('📱', 'App-level blocking & monitoring'),
+    ('📱', 'Unlimited app blocking & monitoring'),
     ('🧭', 'Accountability partner reports'),
     ('🔒', 'Anti-tamper PIN protection'),
-    ('📊', 'Detailed usage analytics'),
+    ('📊', 'Full urge log history & analytics'),
     ('🆘', 'SOS mode & crisis support links'),
   ];
 }
@@ -311,6 +429,7 @@ class _Plan {
   final String price;
   final String period;
   final String? badge;
+  final String? subtitle;
 
   const _Plan({
     required this.id,
@@ -318,5 +437,6 @@ class _Plan {
     required this.price,
     required this.period,
     required this.badge,
+    required this.subtitle,
   });
 }

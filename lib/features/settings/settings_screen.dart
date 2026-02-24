@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/constants/app_colors.dart';
+import '../../services/premium_service.dart';
 import '../../shared/widgets/anchor_logo.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -17,57 +18,65 @@ class SettingsScreen extends StatelessWidget {
           padding: const EdgeInsets.all(24),
           children: [
             // Profile card
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: AppColors.navy,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 56,
-                    height: 56,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: AppColors.white.withAlpha(15),
-                      border: Border.all(
-                        color: AppColors.white.withAlpha(60),
+            ValueListenableBuilder<bool>(
+              valueListenable: PremiumService.instance.isPremium,
+              builder: (context, isPremium, _) {
+                return Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: AppColors.navy,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 56,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AppColors.white.withAlpha(15),
+                          border: Border.all(
+                            color: AppColors.white.withAlpha(60),
+                          ),
+                        ),
+                        child: const Center(
+                          child: AnchorLogo(size: 24, color: AppColors.white),
+                        ),
                       ),
-                    ),
-                    child: const Center(
-                      child: AnchorLogo(size: 24, color: AppColors.white),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Welcome, Sailor',
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            color: AppColors.white,
-                          ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Welcome, Sailor',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                color: AppColors.white,
+                              ),
+                            ),
+                            Text(
+                              isPremium ? 'ANCHORAGE+' : 'Free plan',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: isPremium
+                                    ? AppColors.gold
+                                    : AppColors.seafoam,
+                              ),
+                            ),
+                          ],
                         ),
-                        Text(
-                          'Free plan',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: AppColors.seafoam,
+                      ),
+                      if (!isPremium)
+                        TextButton(
+                          onPressed: () => context.push('/paywall'),
+                          style: TextButton.styleFrom(
+                            foregroundColor: AppColors.gold,
                           ),
+                          child: const Text('UPGRADE'),
                         ),
-                      ],
-                    ),
+                    ],
                   ),
-                  TextButton(
-                    onPressed: () => context.push('/paywall'),
-                    style: TextButton.styleFrom(
-                      foregroundColor: AppColors.gold,
-                    ),
-                    child: const Text('UPGRADE'),
-                  ),
-                ],
-              ),
+                );
+              },
             ),
 
             const SizedBox(height: 32),

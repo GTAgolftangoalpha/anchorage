@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/constants/app_colors.dart';
 import '../../models/guardable_app.dart';
 import '../../services/guard_service.dart';
+import '../../services/premium_service.dart';
 
 class GuardedAppsScreen extends StatefulWidget {
   const GuardedAppsScreen({super.key});
@@ -78,7 +79,9 @@ class _GuardedAppsScreenState extends State<GuardedAppsScreen>
   }
 
   void _toggle(String pkg) {
-    final atLimit = _selected.length >= GuardableApp.freeTierLimit;
+    final isPremium = PremiumService.instance.isPremium.value;
+    final atLimit =
+        !isPremium && _selected.length >= GuardableApp.freeTierLimit;
     final isSelected = _selected.contains(pkg);
 
     if (!isSelected && atLimit) {
@@ -209,7 +212,10 @@ class _GuardedAppsScreenState extends State<GuardedAppsScreen>
                     itemBuilder: (context, index) {
                       final app = GuardableApp.predefined[index];
                       final isSelected = _selected.contains(app.packageName);
-                      final atLimit = _selected.length >= GuardableApp.freeTierLimit;
+                      final isPremium =
+                          PremiumService.instance.isPremium.value;
+                      final atLimit = !isPremium &&
+                          _selected.length >= GuardableApp.freeTierLimit;
                       final isLocked = !isSelected && atLimit;
 
                       return _AppCard(
