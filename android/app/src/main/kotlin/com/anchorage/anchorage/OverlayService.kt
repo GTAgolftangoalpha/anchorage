@@ -74,7 +74,23 @@ class OverlayService : Service() {
     private fun getActPrompt(): ActPrompt {
         val prefs = getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
         val name = prefs.getString("flutter.user_first_name", null) ?: ""
-        val values = prefs.getStringSet("flutter.user_values", emptySet())?.toList() ?: emptyList()
+        // Flutter's shared_preferences plugin stores StringList with a prefix:
+        // "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBhIGxpc3Qu!" followed by the JSON array.
+        // We must strip the prefix before parsing.
+        val values: List<String> = try {
+            val raw = prefs.getString("flutter.user_values", null)
+            if (raw != null) {
+                val listPrefix = "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBhIGxpc3Qu!"
+                val json = if (raw.startsWith(listPrefix)) raw.substring(listPrefix.length) else raw
+                val arr = org.json.JSONArray(json)
+                (0 until arr.length()).map { arr.getString(it) }
+            } else {
+                emptyList()
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "getActPrompt: failed to parse user_values: ${e.message}")
+            emptyList()
+        }
         val hasName = name.isNotEmpty()
 
         // 4 categories: 0=defusion, 1=values, 2=urge_surfing, 3=present_moment
