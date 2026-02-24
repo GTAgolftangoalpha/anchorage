@@ -1,11 +1,58 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 import '../../core/constants/app_colors.dart';
 import '../../services/premium_service.dart';
 import '../../shared/widgets/anchor_logo.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
+
+  static const _privacyUrl = 'https://anchorageapp.com/privacy';
+  static const _termsUrl = 'https://anchorageapp.com/terms';
+
+  Future<void> _launchUrl(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  Future<void> _signOut(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Sign out?'),
+        content: const Text(
+          'This will clear all local data (logs, reflections, settings) '
+          'and sign you out. Your streak is backed up to the cloud and '
+          'will restore on sign-in.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: TextButton.styleFrom(foregroundColor: AppColors.danger),
+            child: const Text('Sign Out'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !context.mounted) return;
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    await FirebaseAuth.instance.signOut();
+    if (context.mounted) {
+      context.go('/onboarding');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -93,11 +140,13 @@ class SettingsScreen extends StatelessWidget {
               title: 'VPN Protection',
               subtitle: 'Active — explicit content blocked',
               trailing: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: AppColors.seafoam.withAlpha(40),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.seafoam.withAlpha(120)),
+                  border:
+                      Border.all(color: AppColors.seafoam.withAlpha(120)),
                 ),
                 child: Text(
                   'ON',
@@ -110,10 +159,10 @@ class SettingsScreen extends StatelessWidget {
               ),
             ),
             _SettingsTile(
-              icon: Icons.timer,
-              title: 'Screen Time Limits',
-              subtitle: 'Set daily usage limits',
-              onTap: () {},
+              icon: Icons.dns_outlined,
+              title: 'Custom Blocklist',
+              subtitle: 'Add your own blocked domains',
+              onTap: () => context.push('/custom-blocklist'),
             ),
 
             const SizedBox(height: 8),
@@ -124,25 +173,9 @@ class SettingsScreen extends StatelessWidget {
               subtitle: 'Share your progress with someone',
               onTap: () => context.push('/accountability'),
             ),
-            _SettingsTile(
-              icon: Icons.notifications,
-              title: 'Daily Check-in Reminder',
-              subtitle: 'Not set',
-              onTap: () {},
-            ),
 
             const SizedBox(height: 8),
             _SectionHeader(title: 'Account'),
-            _SettingsTile(
-              icon: Icons.person,
-              title: 'Profile',
-              onTap: () {},
-            ),
-            _SettingsTile(
-              icon: Icons.lock,
-              title: 'Change PIN / Password',
-              onTap: () {},
-            ),
             _SettingsTile(
               icon: Icons.star,
               title: 'Subscription',
@@ -154,17 +187,17 @@ class SettingsScreen extends StatelessWidget {
             _SettingsTile(
               icon: Icons.help_outline,
               title: 'Help & FAQ',
-              onTap: () {},
+              onTap: () => context.push('/help'),
             ),
             _SettingsTile(
               icon: Icons.privacy_tip_outlined,
               title: 'Privacy Policy',
-              onTap: () {},
+              onTap: () => _launchUrl(_privacyUrl),
             ),
             _SettingsTile(
               icon: Icons.description_outlined,
               title: 'Terms of Service',
-              onTap: () {},
+              onTap: () => _launchUrl(_termsUrl),
             ),
 
             const SizedBox(height: 8),
@@ -172,9 +205,7 @@ class SettingsScreen extends StatelessWidget {
               icon: Icons.logout,
               title: 'Sign Out',
               titleColor: AppColors.danger,
-              onTap: () {
-                // TODO: Firebase sign out
-              },
+              onTap: () => _signOut(context),
             ),
 
             const SizedBox(height: 16),

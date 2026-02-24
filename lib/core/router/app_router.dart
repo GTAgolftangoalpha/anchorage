@@ -3,12 +3,15 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/accountability/accountability_screen.dart';
 import '../../features/blocked_domain/blocked_domain_screen.dart';
+import '../../features/custom_blocklist/custom_blocklist_screen.dart';
 import '../../features/guarded_apps/guarded_apps_screen.dart';
+import '../../features/help/help_screen.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/intercept/intercept_screen.dart';
 import '../../features/onboarding/onboarding_screen.dart';
 import '../../features/paywall/paywall_screen.dart';
 import '../../features/reflect/reflect_screen.dart';
+import '../../features/relapse_log/relapse_log_screen.dart';
 import '../../features/settings/settings_screen.dart';
 import '../../features/sos/emergency_sos_screen.dart';
 import '../../features/streak/streak_dashboard_screen.dart';
@@ -93,6 +96,28 @@ class AppRouter {
         name: 'urge-log',
         pageBuilder: (context, state) => const MaterialPage(
           child: UrgeLogScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/custom-blocklist',
+        name: 'custom-blocklist',
+        pageBuilder: (context, state) => const MaterialPage(
+          child: CustomBlocklistScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/relapse-log',
+        name: 'relapse-log',
+        pageBuilder: (context, state) => const MaterialPage(
+          fullscreenDialog: true,
+          child: RelapseLogScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/help',
+        name: 'help',
+        pageBuilder: (context, state) => const MaterialPage(
+          child: HelpScreen(),
         ),
       ),
 

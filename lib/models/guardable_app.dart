@@ -34,5 +34,40 @@ class GuardableApp {
       displayName: 'Telegram',
       emoji: '✈️',
     ),
+    GuardableApp(
+      packageName: 'com.instagram.android',
+      displayName: 'Instagram',
+      emoji: '📸',
+    ),
+    GuardableApp(
+      packageName: 'com.zhiliaoapp.musically',
+      displayName: 'TikTok',
+      emoji: '🎵',
+    ),
+    GuardableApp(
+      packageName: 'com.snapchat.android',
+      displayName: 'Snapchat',
+      emoji: '👻',
+    ),
+    GuardableApp(
+      packageName: 'com.discord',
+      displayName: 'Discord',
+      emoji: '💬',
+    ),
+    GuardableApp(
+      packageName: 'com.google.android.youtube',
+      displayName: 'YouTube',
+      emoji: '▶️',
+    ),
+    GuardableApp(
+      packageName: 'com.tumblr',
+      displayName: 'Tumblr',
+      emoji: '📝',
+    ),
+    GuardableApp(
+      packageName: 'com.pinterest',
+      displayName: 'Pinterest',
+      emoji: '📌',
+    ),
   ];
 }

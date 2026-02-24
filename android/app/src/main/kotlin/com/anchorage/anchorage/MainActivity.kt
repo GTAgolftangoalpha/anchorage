@@ -11,6 +11,7 @@ import android.util.Log
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
+import java.io.File
 
 class MainActivity : FlutterActivity() {
 
@@ -106,6 +107,17 @@ class MainActivity : FlutterActivity() {
                     result.success(null)
                 }
                 "isVpnActive" -> result.success(AnchorageVpnService.isRunning)
+                "reloadCustomBlocklist" -> {
+                    @Suppress("UNCHECKED_CAST")
+                    val domains = call.arguments as? List<String> ?: emptyList()
+                    Log.d(TAG, "reloadCustomBlocklist: ${domains.size} domains")
+                    // Write domains to file for VPN service to load
+                    val file = File(filesDir, "custom_blocklist.txt")
+                    file.writeText(domains.joinToString("\n"))
+                    // Hot-reload if VPN is running
+                    AnchorageVpnService.reloadCustomDomains()
+                    result.success(null)
+                }
                 else -> result.notImplemented()
             }
         }

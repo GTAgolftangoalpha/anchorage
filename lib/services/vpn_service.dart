@@ -41,4 +41,9 @@ class VpnService {
   static Future<bool> isVpnActive() async {
     return await _channel.invokeMethod<bool>('isVpnActive') ?? false;
   }
+
+  /// Hot-reload custom blocklist domains into the running VPN without restart.
+  static Future<void> reloadCustomBlocklist(List<String> domains) async {
+    await _channel.invokeMethod('reloadCustomBlocklist', domains);
+  }
 }

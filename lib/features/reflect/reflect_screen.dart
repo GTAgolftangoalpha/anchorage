@@ -170,6 +170,21 @@ class _ReflectScreenState extends State<ReflectScreen> {
                       : const Text('SAVE REFLECTION'),
                 ),
               ),
+
+              const SizedBox(height: 24),
+
+              Center(
+                child: TextButton(
+                  onPressed: () => context.push('/relapse-log'),
+                  child: Text(
+                    'Had a setback? Log it here →',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: AppColors.textMuted,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),

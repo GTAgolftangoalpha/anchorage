@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
 import '../../core/constants/app_colors.dart';
+import '../../services/export_service.dart';
 import '../../services/premium_service.dart';
 import '../../services/urge_log_service.dart';
 
@@ -57,7 +60,47 @@ class _UrgeLogScreenState extends State<UrgeLogScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('URGE LOG')),
+      appBar: AppBar(
+        title: const Text('URGE LOG'),
+        actions: [
+          ValueListenableBuilder<bool>(
+            valueListenable: PremiumService.instance.isPremium,
+            builder: (context, isPremium, _) {
+              return IconButton(
+                icon: const Icon(Icons.ios_share, color: AppColors.white),
+                tooltip: 'Export urge log',
+                onPressed: () {
+                  if (!isPremium) {
+                    showDialog(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text('ANCHORAGE+ Feature'),
+                        content: const Text(
+                            'Export your data with ANCHORAGE+.'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            child: const Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(ctx);
+                              context.push('/paywall');
+                            },
+                            child: const Text('UPGRADE'),
+                          ),
+                        ],
+                      ),
+                    );
+                    return;
+                  }
+                  ExportService.exportUrgeLog();
+                },
+              );
+            },
+          ),
+        ],
+      ),
       body: SafeArea(
         child: ValueListenableBuilder<bool>(
           valueListenable: PremiumService.instance.isPremium,

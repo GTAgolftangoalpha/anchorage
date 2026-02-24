@@ -34,6 +34,9 @@ class AnchorageVpnService : VpnService() {
     // the packet-loop thread always sees a consistent snapshot.
     @Volatile private var blocklist: HashSet<String> = HashSet()
 
+    // Custom user-added domains — separate from the main blocklist for hot-reload.
+    @Volatile private var customBlocklist: HashSet<String> = HashSet()
+
     // Set to true once the blocklist is fully loaded and ready to query.
     // While false, DNS responses return SERVFAIL — nothing resolves until VPN
     // protection is fully armed, closing the boot startup window.
@@ -62,6 +65,7 @@ class AnchorageVpnService : VpnService() {
         Log.d(TAG, "onDestroy: cleaning up")
         isRunning = false
         blocklistReady = false
+        activeInstance = null
         vpnThread?.interrupt()
         try { vpnInterface?.close() } catch (_: Exception) {}
         vpnInterface = null
@@ -85,6 +89,8 @@ class AnchorageVpnService : VpnService() {
 
         postForegroundNotification()
 
+        activeInstance = this
+
         // Load blocklist in a background thread in parallel with tunnel setup.
         // Until loadBlocklist() completes and sets blocklistReady=true, all DNS
         // queries return SERVFAIL — the network is inaccessible but protected.
@@ -92,6 +98,7 @@ class AnchorageVpnService : VpnService() {
         Thread({
             try {
                 loadBlocklist()
+                loadCustomBlocklist()
             } catch (e: Exception) {
                 Log.e(TAG, "startVpn: blocklist load failed", e)
             }
@@ -296,7 +303,7 @@ class AnchorageVpnService : VpnService() {
     private fun isBlocked(domain: String): Boolean {
         var d = domain.lowercase().trimEnd('.')
         while (d.contains('.')) {
-            if (blocklist.contains(d)) return true
+            if (blocklist.contains(d) || customBlocklist.contains(d)) return true
             d = d.substringAfter('.')
         }
         return false
@@ -574,6 +581,23 @@ class AnchorageVpnService : VpnService() {
         Log.d(TAG, "loadBlocklist: loaded ${blocklist.size} domains in ${elapsed}ms — VPN fully armed")
     }
 
+    private fun loadCustomBlocklist() {
+        val file = File(filesDir, "custom_blocklist.txt")
+        if (!file.exists()) {
+            Log.d(TAG, "loadCustomBlocklist: no custom blocklist file")
+            return
+        }
+        val newList = HashSet<String>()
+        file.bufferedReader().use { reader ->
+            reader.lineSequence()
+                .map { it.trim().lowercase() }
+                .filter { it.isNotEmpty() }
+                .forEach { newList.add(it) }
+        }
+        customBlocklist = newList
+        Log.d(TAG, "loadCustomBlocklist: loaded ${newList.size} custom domains")
+    }
+
     private fun scheduleBlocklistUpdate() {
         val req = PeriodicWorkRequestBuilder<BlocklistUpdateWorker>(14, TimeUnit.DAYS).build()
         WorkManager.getInstance(this).enqueueUniquePeriodicWork(
@@ -633,6 +657,13 @@ class AnchorageVpnService : VpnService() {
         @Volatile var blockedDomainListener: ((String) -> Unit)? = null
 
         @Volatile var isRunning = false
+
+        /** Reference to the running service instance for hot-reload of custom blocklist. */
+        @Volatile var activeInstance: AnchorageVpnService? = null
+
+        fun reloadCustomDomains() {
+            activeInstance?.loadCustomBlocklist()
+        }
 
         /**
          * Permanent DNS whitelist — these domains always resolve normally, regardless of whether

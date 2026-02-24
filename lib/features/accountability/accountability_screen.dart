@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../services/accountability_service.dart';
+import '../../services/premium_service.dart';
 
 class AccountabilityScreen extends StatefulWidget {
   const AccountabilityScreen({super.key});
@@ -25,6 +27,18 @@ class _AccountabilityScreenState extends State<AccountabilityScreen> {
 
   Future<void> _sendInvitation() async {
     if (!_formKey.currentState!.validate()) return;
+
+    // Free tier: max 1 partner
+    if (!PremiumService.instance.isPremium.value) {
+      final partners = await AccountabilityService.instance
+          .watchPartners()
+          .first;
+      if (partners.isNotEmpty && mounted) {
+        _showUpgradeDialog();
+        return;
+      }
+    }
+
     setState(() => _sending = true);
     try {
       await AccountabilityService.instance.invitePartner(
@@ -76,6 +90,32 @@ class _AccountabilityScreenState extends State<AccountabilityScreen> {
     if (confirmed == true) {
       await AccountabilityService.instance.removePartner(partner.id);
     }
+  }
+
+  void _showUpgradeDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Partner limit reached'),
+        content: const Text(
+          'Free tier supports 1 accountability partner. '
+          'Upgrade to ANCHORAGE+ for unlimited partners.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              context.push('/paywall');
+            },
+            child: const Text('UPGRADE'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override

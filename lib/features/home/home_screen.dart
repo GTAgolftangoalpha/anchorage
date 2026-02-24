@@ -204,6 +204,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     ),
                     const SizedBox(height: 8),
                     _ActionTile(
+                      icon: Icons.replay,
+                      title: 'Relapse Log',
+                      subtitle: 'Track setbacks, build awareness',
+                      onTap: () => context.push('/relapse-log'),
+                    ),
+                    const SizedBox(height: 8),
+                    _ActionTile(
                       icon: Icons.star_outline,
                       title: 'Go Premium',
                       subtitle: 'Guard unlimited apps + advanced features',

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 import '../../core/constants/app_colors.dart';
 import '../../services/premium_service.dart';
 import '../../shared/widgets/anchor_logo.dart';
@@ -395,7 +397,12 @@ class _PaywallScreenState extends State<PaywallScreen> {
                         style: TextStyle(color: AppColors.white.withAlpha(100)),
                       ),
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          launchUrl(
+                            Uri.parse('https://anchorageapp.com/terms'),
+                            mode: LaunchMode.externalApplication,
+                          );
+                        },
                         child: Text(
                           'Terms',
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
