@@ -5,6 +5,7 @@ import '../../models/guardable_app.dart';
 import '../../services/accountability_service.dart';
 import '../../services/guard_service.dart';
 import '../../services/premium_service.dart';
+import '../../services/tamper_service.dart';
 import '../../services/user_preferences_service.dart';
 import '../../services/vpn_service.dart';
 import '../../shared/widgets/anchor_logo.dart';
@@ -34,6 +35,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   bool _waitingForOverlay = false;
   bool _waitingForBattery = false;
   bool _waitingForVpn = false;
+  bool _waitingForDeviceAdmin = false;
+  bool _deviceAdminActive = false;
 
   // Screen 3: Guarded apps
   final Set<String> _selectedApps = {};
@@ -70,12 +73,14 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     final overlay = await GuardService.hasOverlayPermission();
     final battery = await GuardService.isBatteryOptimizationExempt();
     final vpn = await VpnService.isVpnActive();
+    final deviceAdmin = await TamperService.isDeviceAdminActive();
     if (!mounted) return;
     setState(() {
       _usageGranted = usage;
       _overlayGranted = overlay;
       _batteryExempt = battery;
       _vpnReady = vpn;
+      _deviceAdminActive = deviceAdmin;
     });
   }
 
@@ -102,6 +107,11 @@ class _OnboardingScreenState extends State<OnboardingScreen>
         await VpnService.startVpn();
         if (mounted) setState(() => _vpnReady = true);
       }
+    }
+    if (_waitingForDeviceAdmin) {
+      _waitingForDeviceAdmin = false;
+      final active = await TamperService.isDeviceAdminActive();
+      if (mounted) setState(() => _deviceAdminActive = active);
     }
   }
 
@@ -416,6 +426,41 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                     }
                   },
                 ),
+
+                // Optional hardening (shown after core permissions)
+                if (_vpnReady) ...[
+                  const SizedBox(height: 20),
+                  Text(
+                    'OPTIONAL HARDENING',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: AppColors.white.withAlpha(100),
+                      letterSpacing: 1.5,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'These make ANCHORAGE harder to bypass.',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: AppColors.white.withAlpha(80),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  _PermissionRow(
+                    icon: Icons.admin_panel_settings,
+                    title: 'Device Admin',
+                    subtitle: 'Prevents impulsive uninstall',
+                    granted: _deviceAdminActive,
+                    onGrant: () async {
+                      _waitingForDeviceAdmin = true;
+                      await TamperService.requestDeviceAdmin();
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  _AlwaysOnVpnRow(
+                    onTap: () => TamperService.openAlwaysOnVpnSettings(),
+                  ),
+                ],
                 const SizedBox(height: 24),
               ],
             ),
@@ -977,6 +1022,75 @@ class _AppTile extends StatelessWidget {
                   ),
                 ),
               ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── Always-on VPN Guide Row ─────────────────────────────────────────
+
+class _AlwaysOnVpnRow extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const _AlwaysOnVpnRow({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.white.withAlpha(10),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppColors.white.withAlpha(30)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.white.withAlpha(15),
+              ),
+              child: Icon(
+                Icons.vpn_lock,
+                color: AppColors.white.withAlpha(180),
+                size: 22,
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Always-on VPN',
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      color: AppColors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Tap to open VPN settings, then toggle "Always-on VPN" for ANCHORAGE',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: AppColors.white.withAlpha(140),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.open_in_new,
+              color: AppColors.seafoam.withAlpha(180),
+              size: 20,
+            ),
           ],
         ),
       ),

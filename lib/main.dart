@@ -18,6 +18,7 @@ import 'services/relapse_service.dart';
 import 'services/streak_service.dart';
 import 'services/urge_log_service.dart';
 import 'services/user_preferences_service.dart';
+import 'services/tamper_service.dart';
 import 'services/vpn_service.dart';
 import 'shared/widgets/intercept_bottom_sheet.dart';
 
@@ -87,6 +88,15 @@ Future<void> main() async {
   StreakService.instance.data.addListener(syncStats);
   ReflectService.instance.entries.addListener(syncStats);
 
+  // Heartbeat — schedule 4-hour periodic heartbeat + send one now.
+  // Fire-and-forget with timeout so a slow channel never blocks startup.
+  TamperService.scheduleHeartbeat()
+      .timeout(const Duration(seconds: 3), onTimeout: () {})
+      .catchError((_) {});
+  TamperService.sendHeartbeatNow()
+      .timeout(const Duration(seconds: 3), onTimeout: () {})
+      .catchError((_) {});
+
   // Guard service — wire native → Flutter callbacks
   GuardService.init();
 
@@ -104,10 +114,18 @@ Future<void> main() async {
     debugPrint('[ANCHORAGE] VPN auto-start failed: $e');
   }
 
+  // Debounce: avoid re-pushing blocked-domain screen for repeated DNS queries.
+  DateTime? lastBlockedPush;
   VpnService.onDomainBlocked = (domain) async {
     // OverlayService handles the visual block over Chrome/other apps.
     // If ANCHORAGE is in the foreground, also push the Flutter blocked-domain screen.
     if (WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed) {
+      final now = DateTime.now();
+      if (lastBlockedPush != null &&
+          now.difference(lastBlockedPush!).inSeconds < 10) {
+        return; // suppress duplicate pushes within 10 s
+      }
+      lastBlockedPush = now;
       await _waitForNavigator();
       final context = navigatorKey.currentContext;
       if (context != null && context.mounted) {

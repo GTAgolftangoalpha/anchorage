@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../services/premium_service.dart';
@@ -43,9 +42,6 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
     if (mounted) setState(() => _vpnActive = active);
   }
 
-  static const _privacyUrl = 'https://anchorage.com.au/privacy';
-  static const _termsUrl = 'https://anchorage.com.au/terms';
-
   static const _valueOptions = [
     'Relationship integrity',
     'Self-respect',
@@ -58,20 +54,6 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
     'Trust',
     'Freedom',
   ];
-
-  Future<void> _openLegal(String url, String fallbackRoute) async {
-    final uri = Uri.parse(url);
-    try {
-      if (await canLaunchUrl(uri)) {
-        final launched =
-            await launchUrl(uri, mode: LaunchMode.externalApplication);
-        if (launched) return;
-      }
-    } catch (_) {
-      // URL launch failed — fall through to in-app viewer
-    }
-    if (mounted) context.push(fallbackRoute);
-  }
 
   void _showEditNameDialog(BuildContext context) {
     final controller = TextEditingController(
@@ -406,12 +388,12 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
             _SettingsTile(
               icon: Icons.privacy_tip_outlined,
               title: 'Privacy Policy',
-              onTap: () => _openLegal(_privacyUrl, '/privacy'),
+              onTap: () => context.push('/privacy'),
             ),
             _SettingsTile(
               icon: Icons.description_outlined,
               title: 'Terms of Service',
-              onTap: () => _openLegal(_termsUrl, '/terms'),
+              onTap: () => context.push('/terms'),
             ),
 
             const SizedBox(height: 8),

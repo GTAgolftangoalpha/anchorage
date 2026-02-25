@@ -105,16 +105,16 @@ class LegalHtml {
 
 <div class="content">
 
-<p>ANCHORAGE ("we", "us", "our") is committed to protecting your privacy. This Privacy Policy explains what data we collect, how we use it, and your rights regarding that data.</p>
+<p>ANCHORAGE is published by <strong>Temporal Psychology</strong>. We ("we", "us", "our") are committed to protecting your privacy. This Privacy Policy explains what data we collect, how we use it, and your rights regarding that data.</p>
 
 <h2>1. Data We Collect</h2>
 
 <h3>1.1 Data Stored Locally on Your Device</h3>
-<p>The following data is stored exclusively on your device using local storage and is never transmitted to our servers:</p>
+<p>The following data is stored exclusively on your device using local storage and is <strong>never</strong> transmitted to our servers:</p>
 <ul>
-  <li><strong>Urge logs</strong> &mdash; timestamps and intensity ratings</li>
-  <li><strong>Relapse logs</strong> &mdash; timestamps and optional notes</li>
-  <li><strong>Reflection entries</strong> &mdash; free-text journal entries</li>
+  <li><strong>Urge logs</strong> &mdash; trigger categories, timestamps, and optional notes</li>
+  <li><strong>Relapse logs</strong> &mdash; guided reflection responses (what happened, what triggered it, what you learned, what to do next time)</li>
+  <li><strong>Reflection entries</strong> &mdash; mood ratings and free-text journal entries</li>
   <li><strong>Personal values</strong> &mdash; your selected core values (up to 3)</li>
   <li><strong>First name</strong> &mdash; used only for personalising the app locally</li>
   <li><strong>App preferences</strong> &mdash; guarded app selections and settings</li>
@@ -130,9 +130,19 @@ class LegalHtml {
 </ul>
 <p>We do not collect your real name, phone number, physical address, or any other personally identifiable information through Firebase.</p>
 
-<h3>1.3 Third-Party Services</h3>
+<h3>1.3 Heartbeat Data</h3>
+<p>ANCHORAGE sends a periodic heartbeat signal to Firebase approximately every 4 hours. This heartbeat contains:</p>
 <ul>
-  <li><strong>SendGrid</strong> &mdash; sends weekly accountability reports to your partner's email. Processes the recipient email and report content (streak data only, never urge/relapse details).</li>
+  <li><strong>Anonymous user ID (UUID)</strong></li>
+  <li><strong>Timestamp</strong></li>
+  <li><strong>VPN active status</strong> (boolean &mdash; whether the content filter is running)</li>
+  <li><strong>Guard service active status</strong> (boolean &mdash; whether the app guard is running)</li>
+</ul>
+<p>The heartbeat does <strong>not</strong> contain browsing data, blocked domains, app usage details, or any personal content. It is used solely to detect if ANCHORAGE has been uninstalled or become inactive, so your accountability partner can be notified to check in with you.</p>
+
+<h3>1.4 Third-Party Services</h3>
+<ul>
+  <li><strong>SendGrid</strong> &mdash; sends accountability emails (weekly reports, partner invitations, and protection alerts). Processes the recipient email and report content (streak data only, never urge/relapse details).</li>
   <li><strong>RevenueCat</strong> &mdash; processes subscriptions through Google Play. We receive subscription status but never payment card details.</li>
 </ul>
 
@@ -141,6 +151,7 @@ class LegalHtml {
   <li>Provide and personalise the ANCHORAGE app experience</li>
   <li>Track and display your streak progress</li>
   <li>Send accountability reports to your chosen partner</li>
+  <li>Send accountability alerts when protection is interrupted (warm, non-shaming check-in prompts &mdash; never details about what was accessed)</li>
   <li>Process subscription payments</li>
   <li>Improve app stability (anonymous crash data only)</li>
 </ul>
@@ -149,23 +160,25 @@ class LegalHtml {
 <ul>
   <li>We do <strong>not</strong> collect browsing history or domains you visit</li>
   <li>We do <strong>not</strong> collect content of blocked pages</li>
+  <li>We do <strong>not</strong> log which domains are blocked by the VPN filter</li>
   <li>We do <strong>not</strong> use advertising SDKs or fingerprinting</li>
   <li>We do <strong>not</strong> sell, rent, or share your data with third parties for marketing</li>
 </ul>
 
 <h2>4. VPN and Content Filtering</h2>
-<p>ANCHORAGE uses a local VPN service to filter DNS requests entirely on your device. No browsing data, DNS queries, or network traffic is transmitted to our servers. Your actual internet traffic is not intercepted or proxied.</p>
+<p>ANCHORAGE uses a local VPN service to filter DNS requests entirely on your device. No browsing data, DNS queries, or network traffic is transmitted to our servers. Your actual internet traffic is not intercepted or proxied. The VPN only routes DNS queries through a local resolver &mdash; all other traffic bypasses the VPN entirely.</p>
 
 <h2>5. Data Retention</h2>
 <ul>
   <li><strong>Local data</strong> &mdash; retained until you clear app data, uninstall, or sign out</li>
   <li><strong>Firebase data</strong> &mdash; retained while your anonymous account exists; deleted within 30 days upon request</li>
+  <li><strong>Heartbeat data</strong> &mdash; only the most recent heartbeat is stored; older heartbeats are overwritten</li>
   <li><strong>SendGrid</strong> &mdash; email delivery logs retained per SendGrid policy (typically 30 days)</li>
   <li><strong>RevenueCat</strong> &mdash; subscription records retained per RevenueCat policy and Google Play requirements</li>
 </ul>
 
-<h2>6. Your Rights (GDPR & Australian Privacy Act)</h2>
-<p>You have the right to:</p>
+<h2>6. Your Rights (GDPR &amp; Australian Privacy Act)</h2>
+<p>Under both the EU General Data Protection Regulation (GDPR) and the Australian Privacy Act 1988, you have the right to:</p>
 <ul>
   <li><strong>Access</strong> &mdash; request a copy of all data we hold about you</li>
   <li><strong>Deletion</strong> &mdash; request deletion of all your data</li>
@@ -173,13 +186,14 @@ class LegalHtml {
   <li><strong>Rectification</strong> &mdash; correct any inaccurate data</li>
   <li><strong>Withdraw consent</strong> &mdash; stop data processing at any time</li>
 </ul>
+<p>To exercise any of these rights, email us at the address below. We will respond within 30 days.</p>
 
 <h2>7. Data Security</h2>
 <ul>
   <li>Firebase Security Rules restrict data access to authenticated users</li>
   <li>HTTPS encryption for all network communication</li>
   <li>Minimal data collection &mdash; only what is strictly necessary</li>
-  <li>No server-side storage of sensitive personal data</li>
+  <li>No server-side storage of sensitive personal data (urge logs, relapse logs, reflections)</li>
 </ul>
 
 <h2>8. Children's Privacy</h2>
@@ -191,12 +205,13 @@ class LegalHtml {
 <h2>10. Contact Us</h2>
 <div class="contact-box">
   <p><strong>Privacy requests and questions:</strong></p>
-  <p>Email: privacy@anchorage.com.au</p>
+  <p>Email: <a href="mailto:hello@anchorage.com.au">hello@anchorage.com.au</a></p>
+  <p>Published by Temporal Psychology</p>
 </div>
 
 </div>
 
-<div class="footer">&copy; 2026 ANCHORAGE. All rights reserved.</div>
+<div class="footer">&copy; 2026 Temporal Psychology. All rights reserved.</div>
 
 </body>
 </html>
@@ -252,7 +267,7 @@ class LegalHtml {
 
 <div class="content">
 
-<p>By downloading, installing, or using ANCHORAGE ("the App"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree, do not use the App.</p>
+<p>ANCHORAGE is published by <strong>Temporal Psychology</strong>. By downloading, installing, or using ANCHORAGE ("the App"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree, do not use the App.</p>
 
 <h2>1. Age Requirement</h2>
 <p>You must be at least <strong>18 years of age</strong> to use ANCHORAGE. By using the App, you confirm that you are 18 or older.</p>
@@ -292,28 +307,33 @@ class LegalHtml {
   <li>We are not responsible for consequences arising from the accountability relationship</li>
 </ul>
 
-<h2>6. Subscriptions and Payments</h2>
+<h2>6. Prohibited Use: Monitoring Others Without Consent</h2>
+<div class="warning-box">
+  <p>You must <strong>not</strong> use ANCHORAGE to monitor, track, or restrict another person's device usage without their full knowledge and informed consent. ANCHORAGE is designed as a <strong>voluntary self-help tool</strong>. Using it to covertly monitor a partner, family member, or any other person is a violation of these Terms and may violate applicable laws.</p>
+</div>
 
-<h3>6.1 Free Tier</h3>
+<h2>7. Subscriptions and Payments</h2>
+
+<h3>7.1 Free Tier</h3>
 <p>ANCHORAGE offers a free tier with up to 3 guarded apps, usable indefinitely.</p>
 
-<h3>6.2 ANCHORAGE+ (Premium)</h3>
-<p>Available as monthly, annual, or lifetime subscriptions, processed through Google Play and managed by RevenueCat.</p>
+<h3>7.2 ANCHORAGE+ (Premium)</h3>
+<p>Available as monthly and annual subscriptions, processed through Google Play and managed by RevenueCat.</p>
 
-<h3>6.3 Billing</h3>
+<h3>7.3 Billing</h3>
 <ul>
   <li>Payment is charged to your Google Play account at purchase</li>
   <li>Subscriptions auto-renew unless cancelled at least 24 hours before the billing period ends</li>
   <li>Manage or cancel via the Google Play Store</li>
 </ul>
 
-<h3>6.4 Refunds</h3>
+<h3>7.4 Refunds</h3>
 <p>Refund requests are handled by Google Play per their refund policy.</p>
 
-<h2>7. Intellectual Property</h2>
-<p>All content, design, code, and branding of ANCHORAGE are our property and protected by applicable intellectual property laws.</p>
+<h2>8. Intellectual Property</h2>
+<p>All content, design, code, and branding of ANCHORAGE are the property of Temporal Psychology and protected by applicable intellectual property laws.</p>
 
-<h2>8. Limitation of Liability</h2>
+<h2>9. Limitation of Liability</h2>
 <p>To the maximum extent permitted by law:</p>
 <ul>
   <li>ANCHORAGE is provided <strong>"as is"</strong> and <strong>"as available"</strong> without warranties of any kind</li>
@@ -322,27 +342,28 @@ class LegalHtml {
   <li>Our total liability shall not exceed the amount paid in the 12 months preceding the claim, or AUD \$50, whichever is greater</li>
 </ul>
 
-<h2>9. Indemnification</h2>
-<p>You agree to indemnify and hold harmless ANCHORAGE from any claims, damages, losses, or expenses arising from your use of the App or violation of these Terms.</p>
+<h2>10. Indemnification</h2>
+<p>You agree to indemnify and hold harmless Temporal Psychology and ANCHORAGE from any claims, damages, losses, or expenses arising from your use of the App or violation of these Terms.</p>
 
-<h2>10. Termination</h2>
+<h2>11. Termination</h2>
 <p>We may suspend or terminate your access at any time. You may stop using the App by uninstalling it.</p>
 
-<h2>11. Governing Law</h2>
+<h2>12. Governing Law</h2>
 <p>These Terms are governed by the laws of Victoria, Australia. Disputes are subject to the exclusive jurisdiction of Victorian courts.</p>
 
-<h2>12. Changes to These Terms</h2>
+<h2>13. Changes to These Terms</h2>
 <p>We may update these Terms from time to time. Continued use constitutes acceptance. Material changes will be communicated via in-app notice.</p>
 
-<h2>13. Contact Us</h2>
+<h2>14. Contact Us</h2>
 <div class="contact-box">
   <p><strong>Questions about these Terms:</strong></p>
-  <p>Email: legal@anchorage.com.au</p>
+  <p>Email: <a href="mailto:hello@anchorage.com.au">hello@anchorage.com.au</a></p>
+  <p>Published by Temporal Psychology</p>
 </div>
 
 </div>
 
-<div class="footer">&copy; 2026 ANCHORAGE. All rights reserved.</div>
+<div class="footer">&copy; 2026 Temporal Psychology. All rights reserved.</div>
 
 </body>
 </html>

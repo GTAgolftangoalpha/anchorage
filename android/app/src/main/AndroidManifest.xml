@@ -113,6 +113,20 @@
             </intent-filter>
         </service>
 
+        <!-- Device Admin receiver — adds uninstall friction (user must deactivate
+             device admin before uninstalling). No policies enforced. -->
+        <receiver
+            android:name=".AnchorageDeviceAdminReceiver"
+            android:exported="true"
+            android:permission="android.permission.BIND_DEVICE_ADMIN">
+            <meta-data
+                android:name="android.app.device_admin"
+                android:resource="@xml/device_admin_policies" />
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+            </intent-filter>
+        </receiver>
+
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />

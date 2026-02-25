@@ -81,6 +81,27 @@ class AnchorageVpnService : VpnService() {
     override fun onRevoke() {
         Log.w(TAG, "onRevoke: VPN permission revoked by system")
         isRunning = false
+        vpnRevokedExternally = true
+        // Write tamper event to Firestore
+        Thread({
+            try {
+                val auth = com.google.firebase.auth.FirebaseAuth.getInstance()
+                val uid = auth.currentUser?.uid
+                if (uid != null) {
+                    val data = hashMapOf(
+                        "type" to "vpn_revoked",
+                        "timestamp" to com.google.firebase.firestore.FieldValue.serverTimestamp(),
+                        "client_time" to System.currentTimeMillis(),
+                    )
+                    com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                        .collection("users").document(uid)
+                        .collection("tamper_events").add(data)
+                    Log.d(TAG, "onRevoke: tamper event written to Firestore")
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "onRevoke: failed to write tamper event", e)
+            }
+        }, "anchorage-vpn-revoke").start()
         stopSelf()
     }
 
@@ -677,6 +698,12 @@ class AnchorageVpnService : VpnService() {
         @Volatile var blockedDomainListener: ((String) -> Unit)? = null
 
         @Volatile var isRunning = false
+
+        /**
+         * Set to true when the VPN is revoked by the system (not the user's in-app toggle).
+         * Consumed by Flutter to trigger an accountability alert.
+         */
+        @Volatile var vpnRevokedExternally = false
 
         /** Reference to the running service instance for hot-reload of custom blocklist. */
         @Volatile var activeInstance: AnchorageVpnService? = null

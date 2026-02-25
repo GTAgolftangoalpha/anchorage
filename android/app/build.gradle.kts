@@ -50,4 +50,10 @@ flutter {
 
 dependencies {
     implementation("androidx.work:work-runtime-ktx:2.9.1")
+    // Firebase for HeartbeatWorker (native Kotlin → Firestore)
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-firestore-ktx")
+    // Coroutines for HeartbeatWorker
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.9.0")
 }

@@ -505,6 +505,335 @@ function alreadyRespondedHtml(
   </body></html>`;
 }
 
+// ── Part 4: Missing heartbeat check ─────────────────────────────────────────
+
+/**
+ * Runs every 6 hours. For each user with an accepted accountability partner,
+ * checks if the last heartbeat is older than 12 hours. If so, sends a warm
+ * non-shaming email to the partner. Only sends once per 24 hours.
+ */
+export const checkMissingHeartbeats = functions.scheduler.onSchedule(
+  {
+    schedule: "every 6 hours",
+    timeZone: "UTC",
+  },
+  async () => {
+    functions.logger.info("[checkMissingHeartbeats] Starting check");
+
+    // Find all accepted partnerships
+    const partnersSnap = await db
+      .collectionGroup("partners")
+      .where("status", "==", "accepted")
+      .get();
+
+    functions.logger.info(
+      `[checkMissingHeartbeats] Found ${partnersSnap.docs.length} accepted partners`
+    );
+
+    const now = Date.now();
+    const TWELVE_HOURS = 12 * 60 * 60 * 1000;
+    const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
+    const sends: Promise<void>[] = [];
+
+    for (const partnerDoc of partnersSnap.docs) {
+      const partner = partnerDoc.data() as PartnerDoc;
+      const userId = partner.userId;
+
+      sends.push(
+        checkHeartbeatForUser(userId, partner, now, TWELVE_HOURS, TWENTY_FOUR_HOURS)
+          .catch((err) => {
+            functions.logger.error(
+              `[checkMissingHeartbeats] Failed for user ${userId}:`, err
+            );
+          })
+      );
+    }
+
+    await Promise.all(sends);
+    functions.logger.info("[checkMissingHeartbeats] Check complete");
+  }
+);
+
+async function checkHeartbeatForUser(
+  userId: string,
+  partner: PartnerDoc,
+  now: number,
+  twelveHours: number,
+  twentyFourHours: number
+): Promise<void> {
+  // Get latest heartbeat
+  const heartbeatSnap = await db
+    .collection("users")
+    .doc(userId)
+    .collection("heartbeats")
+    .doc("latest")
+    .get();
+
+  if (!heartbeatSnap.exists) {
+    functions.logger.info(
+      `[checkHeartbeatForUser] No heartbeat for user ${userId} — skipping (may be new user)`
+    );
+    return;
+  }
+
+  const heartbeat = heartbeatSnap.data();
+  const timestamp = heartbeat?.timestamp as admin.firestore.Timestamp | undefined;
+  if (!timestamp) return;
+
+  const heartbeatAge = now - timestamp.toMillis();
+  if (heartbeatAge < twelveHours) return; // heartbeat is recent — all good
+
+  // Check if we already sent an alert in the last 24 hours
+  const alertsSnap = await db
+    .collection("users")
+    .doc(userId)
+    .collection("heartbeat_alerts")
+    .orderBy("sentAt", "desc")
+    .limit(1)
+    .get();
+
+  if (!alertsSnap.empty) {
+    const lastAlert = alertsSnap.docs[0].data();
+    const lastSentAt = lastAlert.sentAt as admin.firestore.Timestamp;
+    if (now - lastSentAt.toMillis() < twentyFourHours) {
+      functions.logger.info(
+        `[checkHeartbeatForUser] Already alerted for user ${userId} within 24h — skipping`
+      );
+      return;
+    }
+  }
+
+  // Send alert email
+  const userName = partner.userName || "Your partner";
+  const subject = `Check in with ${userName}`;
+  const html = missingHeartbeatHtml(partner.partnerName, userName);
+
+  try {
+    await getSgMail().send({
+      to: {email: partner.partnerEmail, name: partner.partnerName},
+      from: {email: FROM_EMAIL, name: FROM_NAME},
+      subject,
+      html,
+    });
+
+    // Record that we sent this alert
+    await db
+      .collection("users")
+      .doc(userId)
+      .collection("heartbeat_alerts")
+      .add({sentAt: admin.firestore.FieldValue.serverTimestamp()});
+
+    functions.logger.info(
+      `[checkHeartbeatForUser] Missing heartbeat alert sent to ${partner.partnerEmail} for user ${userId}`
+    );
+  } catch (err: unknown) {
+    const sgErr = err as { response?: { body?: unknown } };
+    functions.logger.error(
+      "[checkHeartbeatForUser] SendGrid error:", sgErr.response?.body ?? err
+    );
+  }
+}
+
+// ── Part 5: Protection alert (VPN/guard tamper events) ─────────────────────
+
+/**
+ * Triggered when a tamper event document is created.
+ * Sends a warm non-shaming alert to all accepted accountability partners.
+ */
+export const onTamperEvent = functions.firestore.onDocumentCreated(
+  "users/{userId}/tamper_events/{eventId}",
+  async (event) => {
+    const data = event.data?.data();
+    if (!data) return;
+
+    const userId = event.params.userId;
+    const eventType = data.type as string;
+
+    functions.logger.info(
+      `[onTamperEvent] Event '${eventType}' for user ${userId}`
+    );
+
+    // Get all accepted partners for this user
+    const partnersSnap = await db
+      .collection("users")
+      .doc(userId)
+      .collection("partners")
+      .where("status", "==", "accepted")
+      .get();
+
+    if (partnersSnap.empty) return;
+
+    const sends: Promise<void>[] = [];
+
+    for (const partnerDoc of partnersSnap.docs) {
+      const partner = partnerDoc.data() as PartnerDoc;
+      const userName = partner.userName || "Your partner";
+
+      let subject: string;
+      let html: string;
+
+      if (eventType === "vpn_revoked") {
+        subject = `${userName}'s content protection was interrupted`;
+        html = protectionAlertHtml(
+          partner.partnerName,
+          userName,
+          "content protection (VPN) was interrupted",
+          "This could mean the VPN was disabled by another app or a system update. " +
+          "It doesn't necessarily mean anything concerning happened."
+        );
+      } else {
+        subject = `${userName}'s ANCHORAGE protection status changed`;
+        html = protectionAlertHtml(
+          partner.partnerName,
+          userName,
+          "protection status changed",
+          "A protection feature was modified or disabled."
+        );
+      }
+
+      sends.push(
+        getSgMail().send({
+          to: {email: partner.partnerEmail, name: partner.partnerName},
+          from: {email: FROM_EMAIL, name: FROM_NAME},
+          subject,
+          html,
+        }).then(() => {
+          functions.logger.info(
+            `[onTamperEvent] Alert sent to ${partner.partnerEmail}`
+          );
+        }).catch((err: unknown) => {
+          const sgErr = err as { response?: { body?: unknown } };
+          functions.logger.error(
+            "[onTamperEvent] SendGrid error:", sgErr.response?.body ?? err
+          );
+        })
+      );
+    }
+
+    await Promise.all(sends);
+  }
+);
+
+// ── Email templates (continued) ───────────────────────────────────────────
+
+function missingHeartbeatHtml(partnerName: string, userName: string): string {
+  return `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>ANCHORAGE Check-In</title>
+</head>
+<body style="margin:0;padding:0;background:#F5F7FA;font-family:Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#F5F7FA;padding:40px 20px;">
+    <tr><td align="center">
+      <table width="560" cellpadding="0" cellspacing="0"
+             style="background:#ffffff;border-radius:16px;overflow:hidden;max-width:560px;width:100%;">
+        <tr>
+          <td style="background:#0A1628;padding:32px 40px;text-align:center;">
+            <p style="margin:0;font-size:28px;color:#ffffff;letter-spacing:4px;font-weight:700;">
+              &#9875; ANCHORAGE
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:40px;">
+            <p style="margin:0 0 16px;font-size:20px;font-weight:700;color:#0A1628;">
+              Hi ${escapeHtml(partnerName)},
+            </p>
+            <p style="margin:0 0 24px;font-size:16px;color:#4A6080;line-height:1.6;">
+              <strong>${escapeHtml(userName)}</strong>'s ANCHORAGE app appears to be
+              inactive or may have been uninstalled. This could simply be a phone
+              restart, battery optimization, or a technical issue.
+            </p>
+            <div style="background:#FFF8F0;border-left:4px solid #D4AF37;padding:16px 20px;
+                        border-radius:0 8px 8px 0;margin:0 0 24px;">
+              <p style="margin:0;font-size:15px;color:#4A6080;line-height:1.6;">
+                You may want to <strong>check in with them</strong> &mdash;
+                not with judgment, but with care. Everyone's journey has ups and downs.
+              </p>
+            </div>
+            <p style="margin:0;font-size:14px;color:#8FA3B1;line-height:1.6;">
+              This is an automated check-in. No browsing data or personal details
+              are ever shared. ANCHORAGE only monitors whether the app is running.
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td style="background:#F5F7FA;padding:24px 40px;text-align:center;
+                     border-top:1px solid #D1D9E0;">
+            <p style="margin:0;font-size:12px;color:#8FA3B1;">
+              Sent by ANCHORAGE accountability system
+            </p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
+function protectionAlertHtml(
+  partnerName: string,
+  userName: string,
+  eventDescription: string,
+  explanation: string
+): string {
+  return `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>ANCHORAGE Protection Alert</title>
+</head>
+<body style="margin:0;padding:0;background:#F5F7FA;font-family:Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#F5F7FA;padding:40px 20px;">
+    <tr><td align="center">
+      <table width="560" cellpadding="0" cellspacing="0"
+             style="background:#ffffff;border-radius:16px;overflow:hidden;max-width:560px;width:100%;">
+        <tr>
+          <td style="background:#0A1628;padding:32px 40px;text-align:center;">
+            <p style="margin:0;font-size:28px;color:#ffffff;letter-spacing:4px;font-weight:700;">
+              &#9875; ANCHORAGE
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:40px;">
+            <p style="margin:0 0 16px;font-size:20px;font-weight:700;color:#0A1628;">
+              Hi ${escapeHtml(partnerName)},
+            </p>
+            <p style="margin:0 0 24px;font-size:16px;color:#4A6080;line-height:1.6;">
+              <strong>${escapeHtml(userName)}</strong>'s ${escapeHtml(eventDescription)}.
+            </p>
+            <div style="background:#FFF8F0;border-left:4px solid #D4AF37;padding:16px 20px;
+                        border-radius:0 8px 8px 0;margin:0 0 24px;">
+              <p style="margin:0;font-size:15px;color:#4A6080;line-height:1.6;">
+                ${escapeHtml(explanation)}
+                A gentle check-in might be appreciated.
+              </p>
+            </div>
+            <p style="margin:0;font-size:14px;color:#8FA3B1;line-height:1.6;">
+              No browsing data or personal details are ever shared in these alerts.
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td style="background:#F5F7FA;padding:24px 40px;text-align:center;
+                     border-top:1px solid #D1D9E0;">
+            <p style="margin:0;font-size:12px;color:#8FA3B1;">
+              Sent by ANCHORAGE accountability system
+            </p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
 function escapeHtml(str: string): string {
   return str
     .replace(/&/g, "&amp;")

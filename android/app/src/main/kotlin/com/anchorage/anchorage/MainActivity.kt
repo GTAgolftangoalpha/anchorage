@@ -1,6 +1,8 @@
 package com.anchorage.anchorage
 
 import android.app.AppOpsManager
+import android.app.admin.DevicePolicyManager
+import android.content.ComponentName
 import android.content.Intent
 import android.net.Uri
 import android.net.VpnService
@@ -9,17 +11,23 @@ import android.os.PowerManager
 import android.os.Process
 import android.provider.Settings
 import android.util.Log
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import java.io.File
+import java.util.concurrent.TimeUnit
 
 class MainActivity : FlutterActivity() {
 
     private val channelName = "com.anchorage.app/guard"
     private val vpnChannelName = "com.anchorage.app/vpn"
+    private val tamperChannelName = "com.anchorage.app/tamper"
     private var channel: MethodChannel? = null
     private var vpnChannel: MethodChannel? = null
+    private var tamperChannel: MethodChannel? = null
 
     // Guard intent that arrived before Flutter was ready
     private var pendingGuardedApp: String? = null
@@ -136,6 +144,60 @@ class MainActivity : FlutterActivity() {
                     file.writeText(domains.joinToString("\n"))
                     // Hot-reload if VPN is running
                     AnchorageVpnService.reloadCustomDomains()
+                    result.success(null)
+                }
+                else -> result.notImplemented()
+            }
+        }
+
+        // Tamper detection / heartbeat / device admin channel
+        tamperChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, tamperChannelName)
+        tamperChannel?.setMethodCallHandler { call, result ->
+            when (call.method) {
+                "scheduleHeartbeat" -> {
+                    val req = PeriodicWorkRequestBuilder<HeartbeatWorker>(4, TimeUnit.HOURS)
+                        .build()
+                    WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+                        HeartbeatWorker.WORK_NAME,
+                        ExistingPeriodicWorkPolicy.KEEP,
+                        req
+                    )
+                    Log.d(TAG, "scheduleHeartbeat: enqueued 4-hour periodic work")
+                    result.success(null)
+                }
+                "sendHeartbeatNow" -> {
+                    val req = androidx.work.OneTimeWorkRequestBuilder<HeartbeatWorker>().build()
+                    WorkManager.getInstance(this).enqueue(req)
+                    result.success(null)
+                }
+                "isDeviceAdminActive" -> {
+                    val dpm = getSystemService(DEVICE_POLICY_SERVICE) as DevicePolicyManager
+                    val admin = ComponentName(this, AnchorageDeviceAdminReceiver::class.java)
+                    result.success(dpm.isAdminActive(admin))
+                }
+                "requestDeviceAdmin" -> {
+                    val admin = ComponentName(this, AnchorageDeviceAdminReceiver::class.java)
+                    val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN).apply {
+                        putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, admin)
+                        putExtra(
+                            DevicePolicyManager.EXTRA_ADD_EXPLANATION,
+                            "This makes it harder to remove ANCHORAGE in a moment of weakness. " +
+                            "You'll need to deactivate device admin before uninstalling."
+                        )
+                    }
+                    startActivity(intent)
+                    result.success(null)
+                }
+                "openAlwaysOnVpnSettings" -> {
+                    try {
+                        val intent = Intent("android.net.vpn.SETTINGS")
+                        startActivity(intent)
+                    } catch (e: Exception) {
+                        Log.w(TAG, "openAlwaysOnVpnSettings: failed, trying fallback", e)
+                        try {
+                            startActivity(Intent(Settings.ACTION_WIRELESS_SETTINGS))
+                        } catch (_: Exception) {}
+                    }
                     result.success(null)
                 }
                 else -> result.notImplemented()
