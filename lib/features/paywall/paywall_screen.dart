@@ -232,7 +232,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
                                     ),
                                     color: selected
                                         ? AppColors.navy
-                                        : Colors.transparent,
+                                        : AppColors.transparent,
                                   ),
                                   child: selected
                                       ? const Icon(
@@ -399,12 +399,30 @@ class _PaywallScreenState extends State<PaywallScreen> {
                       TextButton(
                         onPressed: () {
                           launchUrl(
-                            Uri.parse('https://anchorageapp.com/terms'),
+                            Uri.parse('https://anchorage.com.au/terms'),
                             mode: LaunchMode.externalApplication,
                           );
                         },
                         child: Text(
                           'Terms',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: AppColors.white.withAlpha(140),
+                              ),
+                        ),
+                      ),
+                      Text(
+                        '\u00b7',
+                        style: TextStyle(color: AppColors.white.withAlpha(100)),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          launchUrl(
+                            Uri.parse('https://anchorage.com.au/privacy'),
+                            mode: LaunchMode.externalApplication,
+                          );
+                        },
+                        child: Text(
+                          'Privacy',
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                 color: AppColors.white.withAlpha(140),
                               ),
@@ -422,12 +440,12 @@ class _PaywallScreenState extends State<PaywallScreen> {
   }
 
   static const _features = [
-    ('🛡️', 'Advanced VPN Content Filter'),
     ('📱', 'Unlimited app blocking & monitoring'),
     ('🧭', 'Accountability partner reports'),
-    ('🔒', 'Anti-tamper PIN protection'),
-    ('📊', 'Full urge log history & analytics'),
+    ('🔒', 'Custom domain blocklist'),
+    ('📊', 'Full urge log history & export'),
     ('📓', 'Relapse log & guided reflection'),
+    ('🏆', 'Milestone badges & progress'),
   ];
 }
 

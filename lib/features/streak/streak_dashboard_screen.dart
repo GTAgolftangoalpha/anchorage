@@ -511,8 +511,8 @@ class _MilestoneRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final unlocked = currentStreak >= milestone.days;
-    // Free users see badges as locked even if streak qualifies
-    final showUnlocked = unlocked && isPremium;
+    // Earned milestones always show as unlocked — premium gates the dialog detail
+    final showUnlocked = unlocked;
 
     return GestureDetector(
       onTap: onTap,
@@ -540,14 +540,11 @@ class _MilestoneRow extends StatelessWidget {
                 ),
               ),
             ),
-            if (!isPremium && unlocked)
-              const Icon(Icons.lock_outline, color: AppColors.gold, size: 20)
-            else
-              Icon(
-                unlocked ? Icons.check_circle : Icons.lock_outline,
-                color: unlocked ? AppColors.seafoam : AppColors.slate,
-                size: 20,
-              ),
+            Icon(
+              unlocked ? Icons.check_circle : Icons.lock_outline,
+              color: unlocked ? AppColors.seafoam : AppColors.slate,
+              size: 20,
+            ),
           ],
         ),
       ),

@@ -328,6 +328,23 @@ class _EntryCard extends StatelessWidget {
               ),
             ),
           ],
+          if (entry.whatTriggered.isNotEmpty) ...[
+            const SizedBox(height: 6),
+            Text(
+              'What triggered it:',
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: AppColors.navy,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            Text(
+              entry.whatTriggered,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: AppColors.textSecondary,
+                height: 1.4,
+              ),
+            ),
+          ],
           if (entry.whatLearned.isNotEmpty) ...[
             const SizedBox(height: 6),
             Text(
@@ -339,6 +356,23 @@ class _EntryCard extends StatelessWidget {
             ),
             Text(
               entry.whatLearned,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: AppColors.textSecondary,
+                height: 1.4,
+              ),
+            ),
+          ],
+          if (entry.nextTime.isNotEmpty) ...[
+            const SizedBox(height: 6),
+            Text(
+              'Next time I will:',
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: AppColors.navy,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            Text(
+              entry.nextTime,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: AppColors.textSecondary,
                 height: 1.4,

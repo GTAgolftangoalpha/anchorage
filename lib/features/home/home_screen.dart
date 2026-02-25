@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/constants/app_colors.dart';
 import '../../models/guardable_app.dart';
 import '../../services/guard_service.dart';
+import '../../services/premium_service.dart';
 import '../../services/streak_service.dart';
 import '../../services/user_preferences_service.dart';
 import '../../shared/widgets/anchor_logo.dart';
@@ -265,12 +266,20 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       subtitle: 'Track setbacks, build awareness',
                       onTap: () => context.push('/relapse-log'),
                     ),
-                    const SizedBox(height: 8),
-                    _ActionTile(
-                      icon: Icons.star_outline,
-                      title: 'Go Premium',
-                      subtitle: 'Guard unlimited apps + advanced features',
-                      onTap: () => context.push('/paywall'),
+                    ValueListenableBuilder<bool>(
+                      valueListenable: PremiumService.instance.isPremium,
+                      builder: (context, isPremium, _) {
+                        if (isPremium) return const SizedBox.shrink();
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: _ActionTile(
+                            icon: Icons.star_outline,
+                            title: 'Go Premium',
+                            subtitle: 'Guard unlimited apps + advanced features',
+                            onTap: () => context.push('/paywall'),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 );

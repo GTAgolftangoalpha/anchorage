@@ -332,7 +332,16 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
               title: 'VPN Protection',
               subtitle: _vpnActive
                   ? 'Active — explicit content blocked'
-                  : 'Inactive — tap to manage',
+                  : 'Inactive — tap to enable',
+              onTap: () async {
+                if (_vpnActive) {
+                  await VpnService.stopVpn();
+                } else {
+                  final prepared = await VpnService.prepareVpn();
+                  if (prepared) await VpnService.startVpn();
+                }
+                await _refreshVpnState();
+              },
               trailing: Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 4),

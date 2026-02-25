@@ -27,6 +27,9 @@ class AppColors {
   static const Color warning = Color(0xFFF39C12);
   static const Color danger = Color(0xFFE74C3C);
 
+  // Utility
+  static const Color transparent = Color(0x00000000);
+
   // Text
   static const Color textPrimary = navy;
   static const Color textSecondary = Color(0xFF4A6080);
