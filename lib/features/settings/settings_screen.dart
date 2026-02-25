@@ -43,8 +43,8 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
     if (mounted) setState(() => _vpnActive = active);
   }
 
-  static const _privacyUrl = 'https://anchorageapp.com/privacy';
-  static const _termsUrl = 'https://anchorageapp.com/terms';
+  static const _privacyUrl = 'https://anchorage.com.au/privacy';
+  static const _termsUrl = 'https://anchorage.com.au/terms';
 
   static const _valueOptions = [
     'Relationship integrity',
@@ -59,11 +59,18 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
     'Freedom',
   ];
 
-  Future<void> _launchUrl(String url) async {
+  Future<void> _openLegal(String url, String fallbackRoute) async {
     final uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    try {
+      if (await canLaunchUrl(uri)) {
+        final launched =
+            await launchUrl(uri, mode: LaunchMode.externalApplication);
+        if (launched) return;
+      }
+    } catch (_) {
+      // URL launch failed — fall through to in-app viewer
     }
+    if (mounted) context.push(fallbackRoute);
   }
 
   void _showEditNameDialog(BuildContext context) {
@@ -390,12 +397,12 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
             _SettingsTile(
               icon: Icons.privacy_tip_outlined,
               title: 'Privacy Policy',
-              onTap: () => _launchUrl(_privacyUrl),
+              onTap: () => _openLegal(_privacyUrl, '/privacy'),
             ),
             _SettingsTile(
               icon: Icons.description_outlined,
               title: 'Terms of Service',
-              onTap: () => _launchUrl(_termsUrl),
+              onTap: () => _openLegal(_termsUrl, '/terms'),
             ),
 
             const SizedBox(height: 8),

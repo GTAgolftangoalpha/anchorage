@@ -34,6 +34,9 @@ dependencies:
   # URL launching (tel: calls, web links)
   url_launcher: ^6.3.0
 
+  # WebView (in-app legal pages fallback)
+  webview_flutter: ^4.10.0
+
   # Export / sharing
   share_plus: ^10.1.4
   path_provider: ^2.1.5

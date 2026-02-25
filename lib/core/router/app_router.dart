@@ -7,6 +7,7 @@ import '../../features/blocked_domain/blocked_domain_screen.dart';
 import '../../features/custom_blocklist/custom_blocklist_screen.dart';
 import '../../features/guarded_apps/guarded_apps_screen.dart';
 import '../../features/help/help_screen.dart';
+import '../../features/legal/legal_viewer_screen.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/intercept/intercept_screen.dart';
 import '../../features/journey/journey_screen.dart';
@@ -144,6 +145,26 @@ class AppRouter {
         name: 'journey',
         pageBuilder: (context, state) => const MaterialPage(
           child: JourneyScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/privacy',
+        name: 'privacy',
+        pageBuilder: (context, state) => const MaterialPage(
+          child: LegalViewerScreen(
+            title: 'PRIVACY POLICY',
+            htmlContent: LegalHtml.privacy,
+          ),
+        ),
+      ),
+      GoRoute(
+        path: '/terms',
+        name: 'terms',
+        pageBuilder: (context, state) => const MaterialPage(
+          child: LegalViewerScreen(
+            title: 'TERMS OF SERVICE',
+            htmlContent: LegalHtml.terms,
+          ),
         ),
       ),
 
