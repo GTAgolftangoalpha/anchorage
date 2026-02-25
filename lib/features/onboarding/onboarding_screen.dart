@@ -172,11 +172,13 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.navy,
-      resizeToAvoidBottomInset: true,
-      body: SafeArea(
-        child: Column(
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        backgroundColor: AppColors.navy,
+        resizeToAvoidBottomInset: true,
+        body: SafeArea(
+          child: Column(
           children: [
             // Page indicator dots
             Padding(
@@ -218,6 +220,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
           ],
         ),
       ),
+      ),
     );
   }
 
@@ -227,93 +230,125 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     final theme = Theme.of(context);
     final keyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
 
-    return Column(
-      children: [
-        Expanded(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 32),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 32),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                SizedBox(height: keyboardVisible ? 16 : 48),
-                if (!keyboardVisible) ...[
-                  const AnchorLogo(size: 64, color: AppColors.white),
-                  const SizedBox(height: 16),
-                  Text(
-                    'ANCHORAGE',
-                    style: theme.textTheme.displayMedium?.copyWith(
-                      color: AppColors.white,
-                      letterSpacing: 4,
+                // Top content
+                Column(
+                  children: [
+                    SizedBox(height: keyboardVisible ? 16 : 48),
+                    if (!keyboardVisible) ...[
+                      const AnchorLogo(size: 64, color: AppColors.white),
+                      const SizedBox(height: 16),
+                      Text(
+                        'ANCHORAGE',
+                        style: theme.textTheme.displayMedium?.copyWith(
+                          color: AppColors.white,
+                          letterSpacing: 4,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Stay Grounded',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          color: AppColors.white.withAlpha(180),
+                          letterSpacing: 2,
+                        ),
+                      ),
+                      const SizedBox(height: 56),
+                    ],
+                    Text(
+                      'What should we call you?',
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        color: AppColors.white,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Stay Grounded',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: AppColors.white.withAlpha(180),
-                      letterSpacing: 2,
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: _nameController,
+                      autofocus: false,
+                      cursorColor: AppColors.white,
+                      style: const TextStyle(
+                          color: AppColors.white, fontSize: 18),
+                      textCapitalization: TextCapitalization.words,
+                      maxLength: 20,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: AppColors.white.withAlpha(15),
+                        hintText: 'Your first name',
+                        hintStyle:
+                            TextStyle(color: AppColors.white.withAlpha(100)),
+                        counterStyle:
+                            TextStyle(color: AppColors.white.withAlpha(80)),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                              color: AppColors.white.withAlpha(60)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                              color: AppColors.seafoam, width: 2),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 16,
+                        ),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 56),
-                ],
-                Text(
-                  'What should we call you?',
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    color: AppColors.white,
+                  ],
+                ),
+
+                // Continue button — scrolls into view with content
+                Padding(
+                  padding: const EdgeInsets.only(top: 24, bottom: 16),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: FilledButton(
+                      onPressed: () {
+                        final name = _nameController.text.trim();
+                        if (name.isEmpty) {
+                          _showSnack('Please enter your first name.');
+                          return;
+                        }
+                        if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(name)) {
+                          _showSnack('Letters only, please.');
+                          return;
+                        }
+                        UserPreferencesService.instance.setFirstName(name);
+                        FocusScope.of(context).unfocus();
+                        _nextPage();
+                      },
+                      style: FilledButton.styleFrom(
+                        backgroundColor: AppColors.white,
+                        foregroundColor: AppColors.navy,
+                        padding: const EdgeInsets.symmetric(vertical: 18),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      child: Text(
+                        'CONTINUE',
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          color: AppColors.navy,
+                          letterSpacing: 2,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: _nameController,
-                  style:
-                      const TextStyle(color: AppColors.white, fontSize: 18),
-                  textCapitalization: TextCapitalization.words,
-                  maxLength: 20,
-                  decoration: InputDecoration(
-                    hintText: 'Your first name',
-                    hintStyle:
-                        TextStyle(color: AppColors.white.withAlpha(100)),
-                    counterStyle:
-                        TextStyle(color: AppColors.white.withAlpha(80)),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide:
-                          BorderSide(color: AppColors.white.withAlpha(60)),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide:
-                          const BorderSide(color: AppColors.seafoam, width: 2),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 16,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
               ],
             ),
           ),
-        ),
-        // Continue button — pinned at bottom, always above keyboard
-        _BottomButton(
-          label: 'CONTINUE',
-          onPressed: () {
-            final name = _nameController.text.trim();
-            if (name.isEmpty) {
-              _showSnack('Please enter your first name.');
-              return;
-            }
-            if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(name)) {
-              _showSnack('Letters only, please.');
-              return;
-            }
-            UserPreferencesService.instance.setFirstName(name);
-            FocusScope.of(context).unfocus();
-            _nextPage();
-          },
-        ),
-      ],
+        );
+      },
     );
   }
 
@@ -541,184 +576,211 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     final theme = Theme.of(context);
     final keyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
 
-    return Column(
-      children: [
-        Expanded(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 32),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 32),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: keyboardVisible ? 16 : 32),
-                if (!keyboardVisible) ...[
-                  const Center(
-                    child: AnchorLogo(size: 40, color: AppColors.seafoam),
-                  ),
-                  const SizedBox(height: 24),
-                ],
-                Text(
-                  'Add someone you trust',
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    color: AppColors.white,
+                // Top content
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: keyboardVisible ? 16 : 32),
+                    if (!keyboardVisible) ...[
+                      const Center(
+                        child:
+                            AnchorLogo(size: 40, color: AppColors.seafoam),
+                      ),
+                      const SizedBox(height: 24),
+                    ],
+                    Text(
+                      'Add someone you trust',
+                      style: theme.textTheme.headlineMedium?.copyWith(
+                        color: AppColors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      "They'll receive a weekly report \u2014 no sensitive "
+                      'details, just your progress.',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: AppColors.white.withAlpha(160),
+                        height: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    TextField(
+                      controller: _partnerNameController,
+                      autofocus: false,
+                      cursorColor: AppColors.white,
+                      style: const TextStyle(
+                          color: AppColors.white, fontSize: 16),
+                      textCapitalization: TextCapitalization.words,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: AppColors.white.withAlpha(15),
+                        labelText: 'Their name',
+                        labelStyle:
+                            TextStyle(color: AppColors.white.withAlpha(140)),
+                        floatingLabelStyle:
+                            const TextStyle(color: AppColors.seafoam),
+                        prefixIcon: Icon(Icons.person_outline,
+                            color: AppColors.white.withAlpha(140)),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                              color: AppColors.white.withAlpha(60)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                              color: AppColors.seafoam, width: 2),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 16,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: _partnerEmailController,
+                      autofocus: false,
+                      cursorColor: AppColors.white,
+                      style: const TextStyle(
+                          color: AppColors.white, fontSize: 16),
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: AppColors.white.withAlpha(15),
+                        labelText: 'Their email',
+                        labelStyle:
+                            TextStyle(color: AppColors.white.withAlpha(140)),
+                        floatingLabelStyle:
+                            const TextStyle(color: AppColors.seafoam),
+                        prefixIcon: Icon(Icons.email_outlined,
+                            color: AppColors.white.withAlpha(140)),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                              color: AppColors.white.withAlpha(60)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                              color: AppColors.seafoam, width: 2),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 16,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                // Bottom buttons — scroll into view with content
+                Padding(
+                  padding: const EdgeInsets.only(top: 24, bottom: 16),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        width: double.infinity,
+                        child: FilledButton(
+                          onPressed: _saving
+                              ? null
+                              : () {
+                                  final pName =
+                                      _partnerNameController.text.trim();
+                                  final pEmail =
+                                      _partnerEmailController.text.trim();
+                                  if (pName.isNotEmpty && pEmail.isEmpty) {
+                                    _showSnack(
+                                        'Please enter their email address.');
+                                    return;
+                                  }
+                                  if (pEmail.isNotEmpty &&
+                                      !pEmail.contains('@')) {
+                                    _showSnack('Please enter a valid email.');
+                                    return;
+                                  }
+                                  FocusScope.of(context).unfocus();
+                                  _completeOnboarding();
+                                },
+                          style: FilledButton.styleFrom(
+                            backgroundColor: AppColors.white,
+                            foregroundColor: AppColors.navy,
+                            disabledBackgroundColor:
+                                AppColors.white.withAlpha(60),
+                            padding:
+                                const EdgeInsets.symmetric(vertical: 18),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                          child: _saving
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: AppColors.navy,
+                                  ),
+                                )
+                              : Text(
+                                  'GET STARTED',
+                                  style: theme.textTheme.labelLarge?.copyWith(
+                                    color: AppColors.navy,
+                                    letterSpacing: 2,
+                                  ),
+                                ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton(
+                          onPressed: _saving
+                              ? null
+                              : () {
+                                  _partnerNameController.clear();
+                                  _partnerEmailController.clear();
+                                  FocusScope.of(context).unfocus();
+                                  _completeOnboarding();
+                                },
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: AppColors.white,
+                            side: BorderSide(
+                                color: AppColors.white.withAlpha(100)),
+                            padding:
+                                const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                          child: Text(
+                            'Skip for now',
+                            style: theme.textTheme.labelLarge?.copyWith(
+                              color: AppColors.white.withAlpha(180),
+                              letterSpacing: 1,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  "They'll receive a weekly report \u2014 no sensitive "
-                  'details, just your progress.',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: AppColors.white.withAlpha(160),
-                    height: 1.5,
-                  ),
-                ),
-                const SizedBox(height: 32),
-                TextField(
-                  controller: _partnerNameController,
-                  style:
-                      const TextStyle(color: AppColors.white, fontSize: 16),
-                  textCapitalization: TextCapitalization.words,
-                  decoration: InputDecoration(
-                    labelText: 'Their name',
-                    labelStyle:
-                        TextStyle(color: AppColors.white.withAlpha(140)),
-                    prefixIcon: Icon(Icons.person_outline,
-                        color: AppColors.white.withAlpha(140)),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide:
-                          BorderSide(color: AppColors.white.withAlpha(60)),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide:
-                          const BorderSide(color: AppColors.seafoam, width: 2),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 16,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: _partnerEmailController,
-                  style:
-                      const TextStyle(color: AppColors.white, fontSize: 16),
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    labelText: 'Their email',
-                    labelStyle:
-                        TextStyle(color: AppColors.white.withAlpha(140)),
-                    prefixIcon: Icon(Icons.email_outlined,
-                        color: AppColors.white.withAlpha(140)),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide:
-                          BorderSide(color: AppColors.white.withAlpha(60)),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide:
-                          const BorderSide(color: AppColors.seafoam, width: 2),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 16,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
               ],
             ),
           ),
-        ),
-        // Buttons — pinned at bottom, always above keyboard
-        Padding(
-          padding: const EdgeInsets.fromLTRB(32, 8, 32, 16),
-          child: Column(
-            children: [
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  onPressed: _saving
-                      ? null
-                      : () {
-                          final pName =
-                              _partnerNameController.text.trim();
-                          final pEmail =
-                              _partnerEmailController.text.trim();
-                          if (pName.isNotEmpty && pEmail.isEmpty) {
-                            _showSnack('Please enter their email address.');
-                            return;
-                          }
-                          if (pEmail.isNotEmpty && !pEmail.contains('@')) {
-                            _showSnack('Please enter a valid email.');
-                            return;
-                          }
-                          FocusScope.of(context).unfocus();
-                          _completeOnboarding();
-                        },
-                  style: FilledButton.styleFrom(
-                    backgroundColor: AppColors.white,
-                    foregroundColor: AppColors.navy,
-                    disabledBackgroundColor: AppColors.white.withAlpha(60),
-                    padding: const EdgeInsets.symmetric(vertical: 18),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                  ),
-                  child: _saving
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: AppColors.navy,
-                          ),
-                        )
-                      : Text(
-                          'GET STARTED',
-                          style: theme.textTheme.labelLarge?.copyWith(
-                            color: AppColors.navy,
-                            letterSpacing: 2,
-                          ),
-                        ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton(
-                  onPressed: _saving
-                      ? null
-                      : () {
-                          _partnerNameController.clear();
-                          _partnerEmailController.clear();
-                          FocusScope.of(context).unfocus();
-                          _completeOnboarding();
-                        },
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.white,
-                    side:
-                        BorderSide(color: AppColors.white.withAlpha(100)),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                  ),
-                  child: Text(
-                    'Skip for now',
-                    style: theme.textTheme.labelLarge?.copyWith(
-                      color: AppColors.white.withAlpha(180),
-                      letterSpacing: 1,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
+        );
+      },
     );
   }
 }
