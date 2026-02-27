@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/constants/app_colors.dart';
+import '../../features/psychoeducation/psychoeducation_cards.dart';
 import '../../models/guardable_app.dart';
 import '../../services/guard_service.dart';
 import '../../services/premium_service.dart';
@@ -265,6 +266,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         child: const Text('See all exercises'),
                       ),
                     ),
+
+                    const SizedBox(height: 20),
+
+                    // ── Learn ──────────────────────────────────────
+                    Text('Learn', style: theme.textTheme.titleMedium),
+                    const SizedBox(height: 10),
+                    const PsychoeducationSection(),
 
                     const SizedBox(height: 12),
 
