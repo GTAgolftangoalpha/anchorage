@@ -355,14 +355,15 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
               onTap: () => context.push('/custom-blocklist'),
             ),
 
-            const SizedBox(height: 8),
-            _SectionHeader(title: 'Accountability'),
-            _SettingsTile(
-              icon: Icons.person_add,
-              title: 'Accountability Partner',
-              subtitle: 'Share your progress with someone',
-              onTap: () => context.push('/accountability'),
-            ),
+            // HIDDEN: Accountability partner UI hidden until Cloud Function backend is built. Do not delete.
+            // const SizedBox(height: 8),
+            // _SectionHeader(title: 'Accountability'),
+            // _SettingsTile(
+            //   icon: Icons.person_add,
+            //   title: 'Accountability Partner',
+            //   subtitle: 'Share your progress with someone',
+            //   onTap: () => context.push('/accountability'),
+            // ),
 
             const SizedBox(height: 8),
             _SectionHeader(title: 'Account'),

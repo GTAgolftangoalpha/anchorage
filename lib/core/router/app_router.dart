@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/about/about_screen.dart';
-import '../../features/accountability/accountability_screen.dart';
+// HIDDEN: Accountability partner UI hidden until Cloud Function backend is built. Do not delete.
+// import '../../features/accountability/accountability_screen.dart';
 import '../../features/blocked_domain/blocked_domain_screen.dart';
 import '../../features/custom_blocklist/custom_blocklist_screen.dart';
 import '../../features/exercises/body_scan_screen.dart';
@@ -103,13 +104,14 @@ class AppRouter {
           child: GuardedAppsScreen(),
         ),
       ),
-      GoRoute(
-        path: '/accountability',
-        name: 'accountability',
-        pageBuilder: (context, state) => const MaterialPage(
-          child: AccountabilityScreen(),
-        ),
-      ),
+      // HIDDEN: Accountability partner UI hidden until Cloud Function backend is built. Do not delete.
+      // GoRoute(
+      //   path: '/accountability',
+      //   name: 'accountability',
+      //   pageBuilder: (context, state) => const MaterialPage(
+      //     child: AccountabilityScreen(),
+      //   ),
+      // ),
       GoRoute(
         path: '/urge-log',
         name: 'urge-log',
