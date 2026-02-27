@@ -1,37 +1,39 @@
 import 'package:flutter/material.dart';
+import '../../theme.dart';
 
+/// Backwards-compatible alias — delegates to Mokuso palette.
 class AppColors {
   AppColors._();
 
-  // Primary palette
-  static const Color navy = Color(0xFF0A1628);
-  static const Color white = Color(0xFFFFFFFF);
+  // Primary palette (Mokuso)
+  static const Color navy = Mokuso.textPrimary;
+  static const Color white = Mokuso.bgPrimary;
 
-  // Navy shades
-  static const Color navyLight = Color(0xFF1E3A5F);
-  static const Color navyDark = Color(0xFF060F1A);
-  static const Color navyMid = Color(0xFF0D2040);
+  // Navy shades → charcoal shades
+  static const Color navyLight = Mokuso.textSecond;
+  static const Color navyDark = Mokuso.textPrimary;
+  static const Color navyMid = Mokuso.textSecond;
 
-  // Nautical accents
-  static const Color gold = Color(0xFFD4AF37);    // brass compass
-  static const Color seafoam = Color(0xFF7EC8C8); // ocean accent
-  static const Color rope = Color(0xFFB8925A);    // hemp rope
+  // Accents
+  static const Color gold = Mokuso.accent;
+  static const Color seafoam = Mokuso.accentLight;
+  static const Color rope = Mokuso.borderMid;
 
   // Neutrals
-  static const Color lightGray = Color(0xFFF5F7FA);
-  static const Color midGray = Color(0xFFD1D9E0);
-  static const Color slate = Color(0xFF8FA3B1);
+  static const Color lightGray = Mokuso.bgCard;
+  static const Color midGray = Mokuso.borderLight;
+  static const Color slate = Mokuso.textHint;
 
   // Semantic
-  static const Color success = Color(0xFF2ECC71);
-  static const Color warning = Color(0xFFF39C12);
-  static const Color danger = Color(0xFFE74C3C);
+  static const Color success = Mokuso.accent;
+  static const Color warning = Color(0xFFD4A03A);
+  static const Color danger = Mokuso.danger;
 
   // Utility
   static const Color transparent = Color(0x00000000);
 
   // Text
-  static const Color textPrimary = navy;
-  static const Color textSecondary = Color(0xFF4A6080);
-  static const Color textMuted = Color(0xFF8FA3B1);
+  static const Color textPrimary = Mokuso.textPrimary;
+  static const Color textSecondary = Mokuso.textSecond;
+  static const Color textMuted = Mokuso.textHint;
 }
