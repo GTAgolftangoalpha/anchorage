@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#0D2B45"
+    android:orientation="vertical"
+    android:paddingHorizontal="24dp"
+    android:paddingTop="24dp"
+    android:paddingBottom="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="CHOOSE AN EXERCISE"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.1" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="6dp"
+        android:text="Pick one to try right now."
+        android:textColor="#80FFFFFF"
+        android:textSize="12sp" />
+
+    <Button
+        android:id="@+id/btn_ex_breathing"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="#1AFFFFFF"
+        android:text="Deep Breathing (4-7-8)"
+        android:textColor="#DDFFFFFF"
+        android:textSize="13sp"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/btn_ex_grounding"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="#1AFFFFFF"
+        android:text="5-4-3-2-1 Grounding"
+        android:textColor="#DDFFFFFF"
+        android:textSize="13sp"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/btn_ex_body_scan"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="#1AFFFFFF"
+        android:text="Quick Body Scan"
+        android:textColor="#DDFFFFFF"
+        android:textSize="13sp"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/btn_ex_urge_surfing"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="#1AFFFFFF"
+        android:text="Urge Surfing"
+        android:textColor="#DDFFFFFF"
+        android:textSize="13sp"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/btn_ex_values"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="#1AFFFFFF"
+        android:text="Values Check-in"
+        android:textColor="#DDFFFFFF"
+        android:textSize="13sp"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/btn_ex_cancel"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="12dp"
+        android:text="Cancel"
+        android:textColor="#80FFFFFF"
+        android:textSize="12sp" />
+</LinearLayout>

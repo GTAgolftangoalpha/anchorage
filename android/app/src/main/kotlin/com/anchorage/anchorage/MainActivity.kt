@@ -248,8 +248,22 @@ class MainActivity : FlutterActivity() {
         val navigateTo = intent?.getStringExtra(OverlayService.EXTRA_NAVIGATE_TO)
         if (navigateTo != null) {
             intent.removeExtra(OverlayService.EXTRA_NAVIGATE_TO)
-            Log.d(TAG, "deliverGuardIntent: navigateTo='$navigateTo'")
-            channel?.invokeMethod("navigateTo", navigateTo)
+
+            // Pass emotional state and exercise choice if present
+            val emotion = intent.getStringExtra(OverlayService.EXTRA_EMOTION)
+            val exercise = intent.getStringExtra(OverlayService.EXTRA_EXERCISE)
+            intent.removeExtra(OverlayService.EXTRA_EMOTION)
+            intent.removeExtra(OverlayService.EXTRA_EXERCISE)
+
+            Log.d(TAG, "deliverGuardIntent: navigateTo='$navigateTo' emotion=$emotion exercise=$exercise")
+
+            val args = mutableMapOf<String, Any?>(
+                "route" to navigateTo,
+            )
+            if (emotion != null) args["emotion"] = emotion
+            if (exercise != null) args["exercise"] = exercise
+
+            channel?.invokeMethod("navigateTo", args)
         }
 
         // Handle fallback activity-based intercept (overlay permission not granted)

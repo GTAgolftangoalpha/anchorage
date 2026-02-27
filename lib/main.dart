@@ -145,12 +145,12 @@ Future<void> main() async {
     }
   });
 
-  // Overlay button → Flutter navigation (e.g. "Reflect" tapped on native overlay)
-  GuardService.onNavigateTo((route) async {
+  // Overlay button tapped on native overlay (e.g. "Reflect", "Stay Anchored", exercise)
+  GuardService.onNavigateTo((nav) async {
     await _waitForNavigator();
     final context = navigatorKey.currentContext;
     if (context != null && context.mounted) {
-      context.go('/$route');
+      context.go('/${nav.route}');
     }
   });
 

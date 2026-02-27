@@ -2,7 +2,20 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Flutter ↔ Native bridge for the AppGuardService foreground service.
+/// Data passed from the native overlay when the user navigates.
+class GuardNavigation {
+  final String route;
+  final String? emotion;
+  final String? exercise;
+
+  const GuardNavigation({
+    required this.route,
+    this.emotion,
+    this.exercise,
+  });
+}
+
+/// Flutter / Native bridge for the AppGuardService foreground service.
 class GuardService {
   GuardService._();
 
@@ -10,21 +23,32 @@ class GuardService {
   static const _prefsKey = 'guarded_app_packages';
 
   static void Function(String appName)? _onDetected;
-  static void Function(String route)? _onNavigateTo;
+  static void Function(GuardNavigation nav)? _onNavigateTo;
 
-  /// Call once at app startup to wire up the native → Flutter callback.
+  /// Call once at app startup to wire up the native to Flutter callback.
   static void init() {
     debugPrint('[GuardService] init: registering MethodChannel handler');
     _channel.setMethodCallHandler((call) async {
-      debugPrint('[GuardService] native→flutter: ${call.method} args=${call.arguments}');
+      debugPrint('[GuardService] native->flutter: ${call.method} args=${call.arguments}');
       if (call.method == 'onGuardedAppDetected') {
         final appName = call.arguments as String;
-        debugPrint('[GuardService] onGuardedAppDetected: "$appName" callback=${_onDetected != null}');
+        debugPrint('[GuardService] onGuardedAppDetected: "$appName"');
         _onDetected?.call(appName);
       } else if (call.method == 'navigateTo') {
-        final route = call.arguments as String;
-        debugPrint('[GuardService] navigateTo: "$route"');
-        _onNavigateTo?.call(route);
+        final args = call.arguments;
+        GuardNavigation nav;
+        if (args is Map) {
+          nav = GuardNavigation(
+            route: args['route'] as String? ?? 'home',
+            emotion: args['emotion'] as String?,
+            exercise: args['exercise'] as String?,
+          );
+        } else {
+          // Backwards compatibility: plain string route
+          nav = GuardNavigation(route: args as String);
+        }
+        debugPrint('[GuardService] navigateTo: route=${nav.route} emotion=${nav.emotion} exercise=${nav.exercise}');
+        _onNavigateTo?.call(nav);
       }
     });
   }
@@ -37,8 +61,8 @@ class GuardService {
   }
 
   /// Register a callback invoked when the native overlay triggers navigation
-  /// (e.g. user taps "Reflect" on the overlay → navigates to /reflect).
-  static void onNavigateTo(void Function(String route) callback) {
+  /// (e.g. user taps "Reflect" on the overlay, navigates to /reflect).
+  static void onNavigateTo(void Function(GuardNavigation nav) callback) {
     debugPrint('[GuardService] onNavigateTo: callback registered');
     _onNavigateTo = callback;
   }
