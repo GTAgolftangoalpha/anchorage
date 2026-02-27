@@ -2,93 +2,93 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// MOKUSO Design System
-// Scandi-Japani: warm, minimal, purposeful
+// ANCHORAGE Design System
+// Clean, purposeful, maritime-inspired
 // ═══════════════════════════════════════════════════════════════════════════════
 
 // ── Colours ──────────────────────────────────────────────────────────────────
 
-class Mokuso {
-  Mokuso._();
+class Anchorage {
+  Anchorage._();
 
   // Backgrounds
-  static const Color bgPrimary = Color(0xFFF7F4F0);
-  static const Color bgCard = Color(0xFFFBF9F6);
+  static const Color bgPrimary = Color(0xFFFFFFFF);
+  static const Color bgCard = Color(0xFFF5F8FA);
 
   // Text
-  static const Color textPrimary = Color(0xFF1E1E1E);
-  static const Color textSecond = Color(0xFF6B6560);
-  static const Color textHint = Color(0xFFABA49D);
+  static const Color textPrimary = Color(0xFF0D2B45);
+  static const Color textSecond = Color(0xFF3D5A6E);
+  static const Color textHint = Color(0xFF8FA3B1);
 
   // Borders
-  static const Color borderLight = Color(0xFFE2DDD8);
-  static const Color borderMid = Color(0xFFCFC5B8);
+  static const Color borderLight = Color(0xFFE1E8ED);
+  static const Color borderMid = Color(0xFFC4D0D8);
 
-  // Accent
-  static const Color accent = Color(0xFF2D6A4F);
-  static const Color accentLight = Color(0xFFE8F0EB);
+  // Accent — deep teal
+  static const Color accent = Color(0xFF1A6B72);
+  static const Color accentLight = Color(0xFFE5F0F1);
 
   // Semantic
-  static const Color danger = Color(0xFFB04A3A);
+  static const Color danger = Color(0xFFC0392B);
 }
 
 // ── Typography helpers ───────────────────────────────────────────────────────
 
-class MokusoType {
-  MokusoType._();
+class AnchorageType {
+  AnchorageType._();
 
   // Headings — DM Serif Display
   static TextStyle displayLarge({Color? color}) => GoogleFonts.dmSerifDisplay(
         fontSize: 36,
         fontWeight: FontWeight.w400,
-        color: color ?? Mokuso.textPrimary,
+        color: color ?? Anchorage.textPrimary,
       );
 
   static TextStyle headingMedium({Color? color}) => GoogleFonts.dmSerifDisplay(
         fontSize: 24,
         fontWeight: FontWeight.w400,
-        color: color ?? Mokuso.textPrimary,
+        color: color ?? Anchorage.textPrimary,
       );
 
   static TextStyle headingSmall({Color? color}) => GoogleFonts.dmSerifDisplay(
         fontSize: 20,
         fontWeight: FontWeight.w400,
-        color: color ?? Mokuso.textPrimary,
+        color: color ?? Anchorage.textPrimary,
       );
 
   // Body — DM Sans
   static TextStyle bodyLarge({Color? color}) => GoogleFonts.dmSans(
         fontSize: 16,
         fontWeight: FontWeight.w400,
-        color: color ?? Mokuso.textSecond,
+        color: color ?? Anchorage.textSecond,
         height: 1.6,
       );
 
   static TextStyle bodyMedium({Color? color}) => GoogleFonts.dmSans(
         fontSize: 14,
         fontWeight: FontWeight.w400,
-        color: color ?? Mokuso.textSecond,
+        color: color ?? Anchorage.textSecond,
         height: 1.5,
       );
 
   static TextStyle bodySmall({Color? color}) => GoogleFonts.dmSans(
         fontSize: 12,
         fontWeight: FontWeight.w400,
-        color: color ?? Mokuso.textHint,
+        color: color ?? Anchorage.textHint,
       );
 
   // Labels
   static TextStyle label({Color? color}) => GoogleFonts.dmSans(
         fontSize: 11,
         fontWeight: FontWeight.w600,
-        color: color ?? Mokuso.textHint,
+        color: color ?? Anchorage.textHint,
         letterSpacing: 1.5,
       );
 
   static TextStyle labelMedium({Color? color}) => GoogleFonts.dmSans(
         fontSize: 13,
         fontWeight: FontWeight.w600,
-        color: color ?? Mokuso.textSecond,
+        color: color ?? Anchorage.textSecond,
         letterSpacing: 0.5,
       );
 
@@ -96,7 +96,7 @@ class MokusoType {
   static TextStyle button({Color? color}) => GoogleFonts.dmSans(
         fontSize: 15,
         fontWeight: FontWeight.w600,
-        color: color ?? Mokuso.textPrimary,
+        color: color ?? Anchorage.textPrimary,
         letterSpacing: 0.5,
       );
 
@@ -104,75 +104,75 @@ class MokusoType {
   static TextStyle navLabel({Color? color}) => GoogleFonts.dmSans(
         fontSize: 10,
         fontWeight: FontWeight.w600,
-        color: color ?? Mokuso.textHint,
+        color: color ?? Anchorage.textHint,
         letterSpacing: 1.2,
       );
 }
 
 // ── ThemeData ────────────────────────────────────────────────────────────────
 
-class MokusoTheme {
-  MokusoTheme._();
+class AnchorageTheme {
+  AnchorageTheme._();
 
   static ThemeData get light {
     final base = ThemeData(
       useMaterial3: true,
       colorScheme: const ColorScheme.light(
-        primary: Mokuso.accent,
-        onPrimary: Color(0xFFFBF9F6),
-        primaryContainer: Mokuso.accentLight,
-        onPrimaryContainer: Mokuso.accent,
-        secondary: Mokuso.borderMid,
-        onSecondary: Mokuso.textPrimary,
-        surface: Mokuso.bgPrimary,
-        onSurface: Mokuso.textPrimary,
-        surfaceContainerHighest: Mokuso.borderLight,
-        error: Mokuso.danger,
-        onError: Color(0xFFFBF9F6),
+        primary: Anchorage.accent,
+        onPrimary: Color(0xFFFFFFFF),
+        primaryContainer: Anchorage.accentLight,
+        onPrimaryContainer: Anchorage.accent,
+        secondary: Anchorage.borderMid,
+        onSecondary: Anchorage.textPrimary,
+        surface: Anchorage.bgPrimary,
+        onSurface: Anchorage.textPrimary,
+        surfaceContainerHighest: Anchorage.borderLight,
+        error: Anchorage.danger,
+        onError: Color(0xFFFFFFFF),
       ),
-      scaffoldBackgroundColor: Mokuso.bgPrimary,
+      scaffoldBackgroundColor: Anchorage.bgPrimary,
     );
 
     final textTheme = GoogleFonts.dmSansTextTheme(base.textTheme).copyWith(
-      displayLarge: MokusoType.displayLarge(),
+      displayLarge: AnchorageType.displayLarge(),
       displayMedium: GoogleFonts.dmSerifDisplay(
         fontSize: 28,
         fontWeight: FontWeight.w400,
-        color: Mokuso.textPrimary,
+        color: Anchorage.textPrimary,
       ),
       headlineLarge: GoogleFonts.dmSerifDisplay(
         fontSize: 24,
         fontWeight: FontWeight.w400,
-        color: Mokuso.textPrimary,
+        color: Anchorage.textPrimary,
       ),
-      headlineMedium: MokusoType.headingMedium(),
-      headlineSmall: MokusoType.headingSmall(),
+      headlineMedium: AnchorageType.headingMedium(),
+      headlineSmall: AnchorageType.headingSmall(),
       titleLarge: GoogleFonts.dmSans(
         fontSize: 18,
         fontWeight: FontWeight.w600,
-        color: Mokuso.textPrimary,
+        color: Anchorage.textPrimary,
       ),
       titleMedium: GoogleFonts.dmSans(
         fontSize: 16,
         fontWeight: FontWeight.w500,
-        color: Mokuso.textPrimary,
+        color: Anchorage.textPrimary,
       ),
       titleSmall: GoogleFonts.dmSans(
         fontSize: 14,
         fontWeight: FontWeight.w500,
-        color: Mokuso.textSecond,
+        color: Anchorage.textSecond,
         letterSpacing: 0.5,
       ),
-      bodyLarge: MokusoType.bodyLarge(),
-      bodyMedium: MokusoType.bodyMedium(),
-      bodySmall: MokusoType.bodySmall(),
+      bodyLarge: AnchorageType.bodyLarge(),
+      bodyMedium: AnchorageType.bodyMedium(),
+      bodySmall: AnchorageType.bodySmall(),
       labelLarge: GoogleFonts.dmSans(
         fontSize: 14,
         fontWeight: FontWeight.w600,
         letterSpacing: 0.5,
       ),
-      labelMedium: MokusoType.labelMedium(),
-      labelSmall: MokusoType.label(),
+      labelMedium: AnchorageType.labelMedium(),
+      labelSmall: AnchorageType.label(),
     );
 
     return base.copyWith(
@@ -180,25 +180,25 @@ class MokusoTheme {
 
       // AppBar
       appBarTheme: AppBarTheme(
-        backgroundColor: Mokuso.bgPrimary,
-        foregroundColor: Mokuso.textPrimary,
+        backgroundColor: Anchorage.bgPrimary,
+        foregroundColor: Anchorage.textPrimary,
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: true,
         titleTextStyle: GoogleFonts.dmSans(
           fontSize: 13,
           fontWeight: FontWeight.w600,
-          color: Mokuso.textPrimary,
+          color: Anchorage.textPrimary,
           letterSpacing: 2.0,
         ),
-        iconTheme: const IconThemeData(color: Mokuso.textPrimary, size: 22),
+        iconTheme: const IconThemeData(color: Anchorage.textPrimary, size: 22),
       ),
 
       // Filled Button (primary)
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          backgroundColor: Mokuso.accent,
-          foregroundColor: const Color(0xFFFBF9F6),
+          backgroundColor: Anchorage.accent,
+          foregroundColor: const Color(0xFFFFFFFF),
           elevation: 0,
           minimumSize: const Size(double.infinity, 56),
           shape: RoundedRectangleBorder(
@@ -215,8 +215,8 @@ class MokusoTheme {
       // Elevated Button → redirect to filled style
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: Mokuso.accent,
-          foregroundColor: const Color(0xFFFBF9F6),
+          backgroundColor: Anchorage.accent,
+          foregroundColor: const Color(0xFFFFFFFF),
           elevation: 0,
           minimumSize: const Size(double.infinity, 56),
           shape: RoundedRectangleBorder(
@@ -233,8 +233,8 @@ class MokusoTheme {
       // Outlined Button (secondary)
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: Mokuso.textPrimary,
-          side: const BorderSide(color: Mokuso.borderMid, width: 1),
+          foregroundColor: Anchorage.textPrimary,
+          side: const BorderSide(color: Anchorage.borderMid, width: 1),
           minimumSize: const Size(double.infinity, 56),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
@@ -250,7 +250,7 @@ class MokusoTheme {
       // Text Button
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: Mokuso.accent,
+          foregroundColor: Anchorage.accent,
           textStyle: GoogleFonts.dmSans(
             fontSize: 14,
             fontWeight: FontWeight.w600,
@@ -260,11 +260,11 @@ class MokusoTheme {
 
       // Card
       cardTheme: CardThemeData(
-        color: Mokuso.bgCard,
+        color: Anchorage.bgCard,
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: Mokuso.borderLight, width: 1),
+          side: const BorderSide(color: Anchorage.borderLight, width: 1),
         ),
         margin: EdgeInsets.zero,
       ),
@@ -272,39 +272,39 @@ class MokusoTheme {
       // Input Decoration
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: Mokuso.bgCard,
+        fillColor: Anchorage.bgCard,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: Mokuso.borderLight),
+          borderSide: const BorderSide(color: Anchorage.borderLight),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: Mokuso.borderLight),
+          borderSide: const BorderSide(color: Anchorage.borderLight),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: Mokuso.accent, width: 2),
+          borderSide: const BorderSide(color: Anchorage.accent, width: 2),
         ),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         hintStyle: GoogleFonts.dmSans(
-          color: Mokuso.textHint,
+          color: Anchorage.textHint,
           fontSize: 14,
         ),
       ),
 
       // Divider
       dividerTheme: const DividerThemeData(
-        color: Mokuso.borderLight,
+        color: Anchorage.borderLight,
         thickness: 1,
         space: 1,
       ),
 
       // Bottom Navigation
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        backgroundColor: Mokuso.bgPrimary,
-        selectedItemColor: Mokuso.accent,
-        unselectedItemColor: Mokuso.textHint,
+        backgroundColor: Anchorage.bgPrimary,
+        selectedItemColor: Anchorage.accent,
+        unselectedItemColor: Anchorage.textHint,
         elevation: 0,
         type: BottomNavigationBarType.fixed,
         selectedLabelStyle: GoogleFonts.dmSans(
@@ -321,17 +321,17 @@ class MokusoTheme {
 
       // Bottom Sheet
       bottomSheetTheme: const BottomSheetThemeData(
-        backgroundColor: Mokuso.bgPrimary,
+        backgroundColor: Anchorage.bgPrimary,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
-        dragHandleColor: Mokuso.borderMid,
+        dragHandleColor: Anchorage.borderMid,
         dragHandleSize: Size(40, 4),
       ),
 
       // Dialog
       dialogTheme: DialogThemeData(
-        backgroundColor: Mokuso.bgPrimary,
+        backgroundColor: Anchorage.bgPrimary,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -341,15 +341,15 @@ class MokusoTheme {
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return const Color(0xFFFBF9F6);
+            return const Color(0xFFFFFFFF);
           }
-          return Mokuso.textHint;
+          return Anchorage.textHint;
         }),
         trackColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return Mokuso.accent;
+            return Anchorage.accent;
           }
-          return Mokuso.borderLight;
+          return Anchorage.borderLight;
         }),
       ),
     );
@@ -358,9 +358,9 @@ class MokusoTheme {
 
 // ── Reusable Widgets ─────────────────────────────────────────────────────────
 
-/// Standard card widget for the Mokuso design system.
-class MokusoCard extends StatelessWidget {
-  const MokusoCard({
+/// Standard card widget for the Anchorage design system.
+class AnchorageCard extends StatelessWidget {
+  const AnchorageCard({
     super.key,
     required this.child,
     this.onTap,
@@ -381,10 +381,10 @@ class MokusoCard extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: padding,
         decoration: BoxDecoration(
-          color: selected ? Mokuso.accentLight : Mokuso.bgCard,
+          color: selected ? Anchorage.accentLight : Anchorage.bgCard,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: selected ? Mokuso.accent : Mokuso.borderLight,
+            color: selected ? Anchorage.accent : Anchorage.borderLight,
             width: selected ? 1.5 : 1,
           ),
         ),
@@ -405,7 +405,7 @@ class StatusBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: active ? Mokuso.accent : Mokuso.borderLight,
+        color: active ? Anchorage.accent : Anchorage.borderLight,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
@@ -413,7 +413,7 @@ class StatusBadge extends StatelessWidget {
         style: GoogleFonts.dmSans(
           fontSize: 11,
           fontWeight: FontWeight.w700,
-          color: active ? const Color(0xFFFBF9F6) : Mokuso.textHint,
+          color: active ? const Color(0xFFFFFFFF) : Anchorage.textHint,
           letterSpacing: 1.0,
         ),
       ),
@@ -422,8 +422,8 @@ class StatusBadge extends StatelessWidget {
 }
 
 /// Footer widget for bottom of scrollable screens.
-class MokusoFooter extends StatelessWidget {
-  const MokusoFooter({super.key});
+class AnchorageFooter extends StatelessWidget {
+  const AnchorageFooter({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -433,20 +433,20 @@ class MokusoFooter extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'MOKUSO',
+            'ANCHORAGE',
             style: GoogleFonts.dmSans(
               fontSize: 13,
               fontWeight: FontWeight.w600,
-              color: Mokuso.textHint,
+              color: Anchorage.textHint,
               letterSpacing: 2.0,
             ),
           ),
           const SizedBox(height: 4),
           Text(
-            'Pause. Breathe. Do What Matters.',
+            'Stay anchored. Stay free.',
             style: GoogleFonts.dmSans(
               fontSize: 11,
-              color: Mokuso.textHint,
+              color: Anchorage.textHint,
             ),
           ),
         ],
@@ -456,8 +456,8 @@ class MokusoFooter extends StatelessWidget {
 }
 
 /// Section header in label style.
-class MokusoSectionHeader extends StatelessWidget {
-  const MokusoSectionHeader(this.text, {super.key});
+class AnchorageSectionHeader extends StatelessWidget {
+  const AnchorageSectionHeader(this.text, {super.key});
 
   final String text;
 
@@ -467,15 +467,15 @@ class MokusoSectionHeader extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 12, top: 8),
       child: Text(
         text.toUpperCase(),
-        style: MokusoType.label(),
+        style: AnchorageType.label(),
       ),
     );
   }
 }
 
 /// Settings-style row with icon, title, optional subtitle — no chevron.
-class MokusoSettingsRow extends StatelessWidget {
-  const MokusoSettingsRow({
+class AnchorageSettingsRow extends StatelessWidget {
+  const AnchorageSettingsRow({
     super.key,
     required this.icon,
     required this.title,
@@ -499,22 +499,22 @@ class MokusoSettingsRow extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 4),
         child: Row(
           children: [
-            Icon(icon, color: Mokuso.accent, size: 22),
+            Icon(icon, color: Anchorage.accent, size: 22),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: MokusoType.bodyMedium(color: Mokuso.textPrimary)),
+                  Text(title, style: AnchorageType.bodyMedium(color: Anchorage.textPrimary)),
                   if (subtitle != null)
                     Padding(
                       padding: const EdgeInsets.only(top: 2),
-                      child: Text(subtitle!, style: MokusoType.bodySmall()),
+                      child: Text(subtitle!, style: AnchorageType.bodySmall()),
                     ),
                 ],
               ),
             ),
-            if (trailing != null) trailing!,
+            ?trailing,
           ],
         ),
       ),

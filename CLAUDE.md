@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-ANCHORAGE — Flutter Android app that blocks pornography via VPN filtering and app interception. Nautical theme: navy `#0A1628` / white `#FFFFFF`, anchor ⚓ imagery, Inter font.
+ANCHORAGE — Flutter Android app that blocks pornography via VPN filtering and app interception. White/navy/teal palette, anchor imagery, DM Serif Display + DM Sans typography.
 
 **Package ID:** `com.anchorage.app`
 **Test device:** Samsung Galaxy A16 5G (SM-A166P), Android 14 / OneUI 6.1
@@ -34,28 +34,50 @@ Feature-first structure under `lib/features/<name>/`.
 ```
 lib/
 ├── main.dart                          # Firebase + RevenueCat + GuardService init + callbacks
+├── theme.dart                         # ANCHORAGE design system — Anchorage, AnchorageType, AnchorageTheme + widgets
 ├── core/
 │   ├── app_globals.dart               # navigatorKey (avoids circular imports with app_router)
-│   ├── constants/app_colors.dart      # Single source of truth for all colors
-│   ├── theme/app_theme.dart           # Material 3 theme — AppTheme.light
-│   └── router/app_router.dart         # go_router config, uses navigatorKey from app_globals
+│   ├── constants/app_colors.dart      # Backwards-compatible alias → delegates to Anchorage palette
+│   ├── theme/app_theme.dart           # Backwards-compatible alias → delegates to AnchorageTheme.light
+│   └── router/app_router.dart         # go_router config (19 routes), uses navigatorKey from app_globals
 ├── features/
+│   ├── about/                         # About screen with crisis resources
+│   ├── accountability/                # Accountability partner invite + management
+│   ├── blocked_domain/                # Blocked domain intercept screen (VPN)
+│   ├── custom_blocklist/              # User-added blocked domains
+│   ├── guarded_apps/                  # 10-app selector with free-tier 3-slot limit
+│   ├── help/                          # FAQ screen (5 topics)
 │   ├── home/                          # Dashboard: guard status, stats, permission banners
-│   ├── onboarding/                    # 4-page PageView; requests overlay then VPN permission
-│   ├── reflect/                       # Mood selector + journal entry
+│   ├── intercept/                     # Full-screen app guard intercept with ACT prompt
+│   ├── journey/                       # Journey dashboard (days since install, stats)
+│   ├── legal/                         # Privacy policy + terms of service (WebView)
+│   ├── onboarding/                    # 4-page PageView; requests permissions + setup
+│   ├── paywall/                       # RevenueCat plan selector (monthly/annual)
+│   ├── reflect/                       # Mood selector + journal + trigger + values
+│   ├── relapse_log/                   # Relapse journal (what happened, triggers, learnings)
+│   ├── settings/                      # VPN toggle (live), guarded apps entry, account
 │   ├── sos/                           # Emergency SOS screen (Lifeline, Beyond Blue, IASP)
 │   ├── streak/                        # Streak counter, weekly calendar, milestones
-│   ├── settings/                      # VPN toggle (live), guarded apps entry, account
-│   ├── paywall/                       # RevenueCat 3-tier plan (monthly/annual/lifetime)
-│   └── guarded_apps/                  # 7-app selector with free-tier 3-slot limit
+│   └── urge_log/                      # Urge/trigger logger with notes
 ├── models/
-│   └── guardable_app.dart             # GuardableApp model + predefined list of 7 apps
+│   └── guardable_app.dart             # GuardableApp model + predefined list of 10 apps
 ├── services/
+│   ├── accountability_service.dart    # Partner invite, Firestore sync, stats sharing
+│   ├── custom_blocklist_service.dart  # User-added domains, hot-reload to VPN
+│   ├── export_service.dart            # CSV export for streak + urge data
 │   ├── guard_service.dart             # MethodChannel bridge to native guard + overlay
+│   ├── intercept_prompt_service.dart  # ACT-based intervention prompts
+│   ├── premium_service.dart           # RevenueCat entitlements, purchase, restore
+│   ├── reflect_service.dart           # Mood/journal persistence + Firestore sync
+│   ├── relapse_service.dart           # Relapse log persistence
+│   ├── streak_service.dart            # Streak tracking, daily check-in, milestones
+│   ├── tamper_service.dart            # Heartbeat, VPN revocation detection, device admin
+│   ├── urge_log_service.dart          # Urge/trigger logging + persistence
+│   ├── user_preferences_service.dart  # SharedPreferences wrapper (name, values, onboarding)
 │   └── vpn_service.dart               # MethodChannel bridge to AnchorageVpnService
 └── shared/widgets/
     ├── anchor_logo.dart               # AnchorLogo + AnchorBrandLogo
-    ├── bottom_nav_scaffold.dart        # Shell scaffold (Home / Streak / Settings tabs)
+    ├── bottom_nav_scaffold.dart       # Shell scaffold (Home / Streak / Settings tabs)
     └── intercept_bottom_sheet.dart    # Fallback intercept UI (used when overlay not granted)
 ```
 
@@ -73,6 +95,17 @@ lib/
 | `/sos` | EmergencySosScreen | no (fullscreenDialog) |
 | `/paywall` | PaywallScreen | no (fullscreenDialog) |
 | `/guarded-apps` | GuardedAppsScreen | no |
+| `/accountability` | AccountabilityScreen | no |
+| `/urge-log` | UrgeLogScreen | no |
+| `/relapse-log` | RelapseLogScreen | no (fullscreenDialog) |
+| `/custom-blocklist` | CustomBlocklistScreen | no |
+| `/blocked-domain` | BlockedDomainScreen | no (fullscreenDialog) |
+| `/intercept` | InterceptScreen | no (fullscreenDialog) |
+| `/journey` | JourneyScreen | no |
+| `/help` | HelpScreen | no |
+| `/about` | AboutScreen | no |
+| `/privacy` | LegalViewerScreen | no |
+| `/terms` | LegalViewerScreen | no |
 
 Navigate with `context.go('/route')` (replace) or `context.push('/route')` (push).
 
@@ -86,7 +119,7 @@ Samsung blocks `FLAG_ACTIVITY_NEW_TASK` from background services launching over 
 
 **Full intercept flow:**
 ```
-AppGuardService (polls 300ms)
+AppGuardService (polls 150ms)
   → detects guarded app via UsageStatsManager.queryEvents()
   → falls back to queryUsageStats() if events empty (Samsung quirk)
   → Settings.canDrawOverlays()?
@@ -110,7 +143,9 @@ AppGuardService (polls 300ms)
 | `OverlayService.kt` | Inflates `overlay_intercept.xml` over WindowManager; handles button taps |
 | `AnchorageVpnService.kt` | VPN service; DNS interception, blocklist matching, TCP RST |
 | `BlocklistUpdateWorker.kt` | WorkManager worker; refreshes blocklist every 14 days |
-| `MainActivity.kt` | MethodChannel hub for both `guard` and `vpn` channels; VPN consent via `onActivityResult` |
+| `HeartbeatWorker.kt` | WorkManager worker; 4-hour periodic heartbeat to Firestore |
+| `AnchorageDeviceAdminReceiver.kt` | Device admin receiver for tamper detection |
+| `MainActivity.kt` | MethodChannel hub for `guard`, `vpn`, and `tamper` channels; VPN consent via `onActivityResult` |
 
 ### MethodChannel `com.anchorage.app/guard`
 
@@ -138,6 +173,7 @@ AppGuardService (polls 300ms)
 | `startVpn` | void | Starts `AnchorageVpnService` |
 | `stopVpn` | void | Stops `AnchorageVpnService` |
 | `isVpnActive` | bool | Reads `AnchorageVpnService.isRunning` |
+| `reloadCustomBlocklist` | void | Hot-reloads user-added domains into VPN |
 
 `prepareVpn` returning `false` means the system dialog was shown — caller must wait for `AppLifecycleState.resumed` and call again to confirm.
 
@@ -192,12 +228,13 @@ AnchorageVpnService
 
 - **Bundled:** `android/app/src/main/assets/blocklist.txt` — 157,176 domains (Steven Black porn category)
 - **Updated:** `filesDir/blocklist.txt` — written by `BlocklistUpdateWorker` every 14 days; preferred over bundled if present
+- **Custom:** User-added domains via `CustomBlocklistService` → hot-reloaded into VPN via MethodChannel
 - Source: `https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/porn/hosts`
 - Loaded into `HashSet<String>` at VPN start on a background thread
 
 ### Blocked page
 
-`android/app/src/main/assets/blocked_page.html` — navy-themed page served when a user navigates to a blocked domain over HTTP. Contains:
+`android/app/src/main/assets/blocked_page.html` — themed page served when a user navigates to a blocked domain over HTTP. Contains:
 - "You've got this." heading + anchor logo
 - "I NEED SUPPORT" → `anchorage://sos` deep link (opens SOS screen in app)
 - "GO BACK" → `history.back()`
@@ -210,6 +247,7 @@ Note: The HTML is bundled for future use. Currently, TCP connections to `10.111.
 2. **`SYSTEM_ALERT_WINDOW`** — user grants via Settings → Apps → Anchorage → Appear on top
 3. **VPN consent** — system dialog shown once via `VpnService.prepare()`; onboarding requests this after overlay permission
 4. **Battery optimization exemption** — prevents Samsung doze from throttling the guard poll handler
+5. **Device admin** (optional) — enables tamper detection for uninstall protection
 
 ### Guarded apps (free tier: max 3)
 
@@ -218,6 +256,13 @@ Note: The HTML is bundled for future use. Currently, TCP connections to `10.111.
 | Reddit | `com.reddit.frontpage` |
 | Twitter / X | `com.twitter.android` |
 | Telegram | `org.telegram.messenger` |
+| Instagram | `com.instagram.android` |
+| TikTok | `com.zhiliaoapp.musically` |
+| Snapchat | `com.snapchat.android` |
+| Discord | `com.discord` |
+| YouTube | `com.google.android.youtube` |
+| Tumblr | `com.tumblr` |
+| Pinterest | `com.pinterest` |
 
 Browsers (Chrome, Firefox, Brave, Opera) are intentionally excluded — browser content is handled exclusively by the VPN DNS filter. Adding a browser here would cause the app-guard overlay to fire on every browser launch, fighting with the VPN blocked-domain overlay.
 
@@ -233,13 +278,13 @@ Browsers (Chrome, Firefox, Brave, Opera) are intentionally excluded — browser 
 
 Always test the **full intercept loop**, not just the happy path:
 
-1. Open guarded app → overlay appears ✓
-2. Tap "I'M STAYING ANCHORED" → overlay dismisses, ANCHORAGE comes forward ✓
-3. Open guarded app again → overlay appears again (re-arm confirmed, 2s cooldown) ✓
-4. Tap "REFLECT ON THIS MOMENT" → overlay dismisses, `/reflect` screen opens ✓
-5. Complete reflect, return to home → open guarded app → overlay appears again ✓
-6. Enable VPN in Settings → toggle shows "Active — explicit content blocked" ✓
-7. Open Chrome → navigate to a porn domain → DNS resolves to 10.111.222.3 → connection refused ✓
+1. Open guarded app → overlay appears
+2. Tap "I'M STAYING ANCHORED" → overlay dismisses, ANCHORAGE comes forward
+3. Open guarded app again → overlay appears again (re-arm confirmed, 2s cooldown)
+4. Tap "REFLECT ON THIS MOMENT" → overlay dismisses, `/reflect` screen opens
+5. Complete reflect, return to home → open guarded app → overlay appears again
+6. Enable VPN in Settings → toggle shows "Active — explicit content blocked"
+7. Open Chrome → navigate to a porn domain → DNS resolves to 10.111.222.3 → connection refused
 
 ## Android Configuration
 
@@ -251,14 +296,66 @@ Always test the **full intercept loop**, not just the happy path:
 - Overlay layout: `android/app/src/main/res/layout/overlay_intercept.xml`.
 - WorkManager dependency: `androidx.work:work-runtime-ktx:2.9.1` in `app/build.gradle.kts`.
 
-## Design System Rules
+## Design System
 
-- **Never** use `Colors.*` directly — always `AppColors.*`. Key values: `navy=#0A1628`, `seafoam=#7EC8C8`, `gold=#D4AF37`.
-- **Never** hardcode text styles — always `Theme.of(context).textTheme.*`.
+The design system lives in `lib/theme.dart` with three main classes:
+
+| Class | Purpose |
+|---|---|
+| `Anchorage` | Colour constants (backgrounds, text, borders, accent, semantic) |
+| `AnchorageType` | Typography helpers — DM Serif Display (headings) + DM Sans (body) |
+| `AnchorageTheme` | Full Material 3 `ThemeData` (accessed via `AnchorageTheme.light`) |
+
+**Backwards-compatible aliases:** `AppColors` delegates to `Anchorage.*`, `AppTheme.light` delegates to `AnchorageTheme.light`.
+
+### Colour palette
+
+| Token | Hex | Usage |
+|---|---|---|
+| `bgPrimary` | `#FFFFFF` | Scaffold, primary background |
+| `bgCard` | `#F5F8FA` | Card fill, input fill |
+| `textPrimary` | `#0D2B45` | Navy — headings, primary text |
+| `textSecond` | `#3D5A6E` | Body text, secondary labels |
+| `textHint` | `#8FA3B1` | Muted text, placeholders |
+| `borderLight` | `#E1E8ED` | Card borders, dividers |
+| `borderMid` | `#C4D0D8` | Outlined button borders |
+| `accent` | `#1A6B72` | Deep teal — buttons, links, active states |
+| `accentLight` | `#E5F0F1` | Light teal — selected card backgrounds |
+| `danger` | `#C0392B` | Destructive actions, errors |
+
+### Reusable widgets (in `lib/theme.dart`)
+
+| Widget | Purpose |
+|---|---|
+| `AnchorageCard` | Standard card with optional `selected` state + `onTap` |
+| `StatusBadge` | ON/OFF pill badge |
+| `AnchorageFooter` | Branded footer for scrollable screens |
+| `AnchorageSectionHeader` | Uppercase label-style section header |
+| `AnchorageSettingsRow` | Icon + title + optional subtitle row for settings |
+
+### Rules
+
+- **Never** use `Colors.*` directly — always `AppColors.*` or `Anchorage.*`.
+- **Never** hardcode text styles — always `Theme.of(context).textTheme.*` or `AnchorageType.*`.
 - Use `WidgetState` (not deprecated `MaterialState`) for theme property callbacks.
 - Use `.withAlpha(n)` (0–255) not `.withOpacity(n)`.
-- All new screens: `AppBar` with `title: const Text('SCREEN NAME')` — theme auto-applies navy + white.
+- All new screens: `AppBar` with `title: const Text('SCREEN NAME')` — theme auto-applies styling.
 
 ## Firebase + RevenueCat Init
 
 Both initialized in `main()` before `runApp`. Firebase wrapped in try/catch. RevenueCat configured unconditionally. Firestore writes go in the feature file. Auth state not yet wired to a provider.
+
+## Tamper Detection
+
+- 4-hour periodic heartbeat via WorkManager (`HeartbeatWorker`)
+- Heartbeat writes `uid`, `timestamp`, `vpn_active`, `guard_active`, `client_time` to `users/{uid}/heartbeats/latest`
+- VPN revocation events logged to `users/{uid}/tamper_events`
+- Device admin activation for uninstall protection
+- Immediate heartbeat on app startup (3s timeout, fire-and-forget)
+
+## Accountability System
+
+- Partner invite via email + name → stored at `users/{uid}/partners/{id}` in Firestore
+- Free tier: 1 partner; Premium: unlimited
+- Stats sync: streak days, weekly intercepts, weekly reflections
+- Cloud Function for weekly summary emails (backend, not in this repo)
