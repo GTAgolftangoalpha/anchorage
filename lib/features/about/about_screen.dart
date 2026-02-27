@@ -1,5 +1,3 @@
-import 'dart:ui' as ui;
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -10,30 +8,8 @@ import '../../shared/widgets/anchor_logo.dart';
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
 
-  static const _crisisResources = {
-    'AU': [
-      ('Lifeline Australia', '13 11 14', '131114'),
-      ('Beyond Blue', '1300 22 4636', '1300224636'),
-    ],
-    'US': [
-      ('988 Suicide & Crisis Lifeline', '988', '988'),
-      ('SAMHSA National Helpline', '1-800-662-4357', '18006624357'),
-    ],
-    'GB': [
-      ('Samaritans', '116 123', '116123'),
-      ('CALM', '0800 58 58 58', '0800585858'),
-    ],
-  };
-
-  Future<void> _call(String number) async {
-    final uri = Uri.parse('tel:$number');
-    try {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } catch (_) {}
-  }
-
-  Future<void> _openIasp() async {
-    final uri = Uri.parse('https://www.iasp.info/resources/Crisis_Centres/');
+  Future<void> _openFindAHelpline() async {
+    final uri = Uri.parse('https://findahelpline.com');
     try {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } catch (_) {}
@@ -42,8 +18,6 @@ class AboutScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final countryCode = ui.PlatformDispatcher.instance.locale.countryCode;
-    final resources = _crisisResources[countryCode] ?? [];
 
     return Scaffold(
       appBar: AppBar(
@@ -192,39 +166,40 @@ class AboutScreen extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
-              if (resources.isNotEmpty) ...[
-                ...resources.map((r) => Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: _SupportCard(
-                        name: r.$1,
-                        number: r.$2,
-                        onCall: () => _call(r.$3),
-                        theme: theme,
-                      ),
-                    )),
-                const SizedBox(height: 8),
-              ],
+              Text(
+                'If you are in crisis, please visit findahelpline.com for support in your country.',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                  height: 1.7,
+                ),
+              ),
+              const SizedBox(height: 16),
 
               GestureDetector(
-                onTap: _openIasp,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.language,
-                        size: 18, color: AppColors.seafoam),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Find crisis centres worldwide',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: AppColors.seafoam,
-                        decoration: TextDecoration.underline,
-                        decorationColor: AppColors.seafoam,
+                onTap: _openFindAHelpline,
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppColors.navy,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.language, color: AppColors.white, size: 20),
+                      const SizedBox(width: 10),
+                      Text(
+                        'findahelpline.com',
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          color: AppColors.white,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 4),
-                    const Icon(Icons.open_in_new,
-                        size: 14, color: AppColors.seafoam),
-                  ],
+                      const SizedBox(width: 6),
+                      const Icon(Icons.open_in_new, color: AppColors.white, size: 14),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 32),
@@ -293,71 +268,3 @@ class _BulletPoint extends StatelessWidget {
   }
 }
 
-class _SupportCard extends StatelessWidget {
-  final String name;
-  final String number;
-  final VoidCallback onCall;
-  final ThemeData theme;
-
-  const _SupportCard({
-    required this.name,
-    required this.number,
-    required this.onCall,
-    required this.theme,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.midGray),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    color: AppColors.navy,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  number,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    color: AppColors.seafoam,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          ElevatedButton.icon(
-            onPressed: onCall,
-            icon: const Icon(Icons.phone, size: 14),
-            label: const Text('CALL'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.navy,
-              foregroundColor: AppColors.white,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              textStyle: const TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 1,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}

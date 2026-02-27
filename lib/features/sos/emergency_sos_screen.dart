@@ -73,6 +73,13 @@ class EmergencySosScreen extends StatelessWidget {
     } catch (_) {}
   }
 
+  Future<void> _openFindAHelpline() async {
+    final uri = Uri.parse('https://findahelpline.com');
+    try {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (_) {}
+  }
+
   Future<void> _openIasp() async {
     final uri = Uri.parse('https://www.iasp.info/resources/Crisis_Centres/');
     try {
@@ -135,9 +142,53 @@ class EmergencySosScreen extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 36),
+              const SizedBox(height: 28),
+
+              // Primary: findahelpline.com
+              GestureDetector(
+                onTap: _openFindAHelpline,
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: AppColors.navy,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Column(
+                    children: [
+                      const Icon(Icons.language, color: AppColors.white, size: 28),
+                      const SizedBox(height: 12),
+                      Text(
+                        'findahelpline.com',
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          color: AppColors.white,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Free crisis support in your country.\nTap to find your local helpline.',
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: AppColors.white.withAlpha(180),
+                          height: 1.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 24),
 
               if (resources.isNotEmpty) ...[
+                Text(
+                  'LOCAL RESOURCES',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    letterSpacing: 2,
+                  ),
+                ),
+                const SizedBox(height: 12),
                 // Local crisis resource cards
                 ...List.generate(resources.length, (i) {
                   final r = resources[i];
@@ -150,12 +201,12 @@ class EmergencySosScreen extends StatelessWidget {
                     ),
                   );
                 }),
-                const SizedBox(height: 32),
+                const SizedBox(height: 24),
                 const Divider(color: AppColors.midGray),
-                const SizedBox(height: 20),
+                const SizedBox(height: 16),
               ],
 
-              // IASP worldwide link — always shown
+              // IASP worldwide link
               GestureDetector(
                 onTap: _openIasp,
                 child: Row(
@@ -164,7 +215,7 @@ class EmergencySosScreen extends StatelessWidget {
                     const Icon(Icons.language, size: 18, color: AppColors.seafoam),
                     const SizedBox(width: 8),
                     Text(
-                      'Find crisis centres worldwide',
+                      'IASP crisis centres worldwide',
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: AppColors.seafoam,
                         decoration: TextDecoration.underline,
