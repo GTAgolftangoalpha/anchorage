@@ -23,6 +23,64 @@ class InterceptPromptService {
   final _random = Random();
   PromptCategory? _lastCategory;
 
+  /// Emotion-to-category mappings.
+  /// Each emotional state maps to 2 preferred ACT categories,
+  /// ordered by relevance for that state.
+  static const Map<String, List<PromptCategory>> emotionCategories = {
+    'bored': [PromptCategory.urgeSurfing, PromptCategory.valuesPrompt],
+    'stressed': [PromptCategory.presentMoment, PromptCategory.defusion],
+    'lonely': [PromptCategory.valuesPrompt, PromptCategory.presentMoment],
+    'tired': [PromptCategory.presentMoment, PromptCategory.urgeSurfing],
+    'anxious': [PromptCategory.presentMoment, PromptCategory.defusion],
+    'down': [PromptCategory.valuesPrompt, PromptCategory.urgeSurfing],
+    'angry': [PromptCategory.defusion, PromptCategory.presentMoment],
+    'aroused': [PromptCategory.urgeSurfing, PromptCategory.defusion],
+    'numb': [PromptCategory.presentMoment, PromptCategory.valuesPrompt],
+    'rewarding': [PromptCategory.valuesPrompt, PromptCategory.defusion],
+  };
+
+  /// Get a prompt matched to the given emotional state.
+  /// Falls back to random category if emotion is unknown.
+  InterceptPrompt getPromptForEmotion(String emotion) {
+    final mapped = emotionCategories[emotion.toLowerCase()];
+    if (mapped == null || mapped.isEmpty) {
+      return getPrompt();
+    }
+
+    final prefs = UserPreferencesService.instance;
+    final name = prefs.firstName.isNotEmpty ? prefs.firstName : null;
+    final values = prefs.values;
+
+    // Pick from the mapped categories, avoiding the last-used one.
+    // Prefer the primary category unless it was just used.
+    var candidates = mapped.where((c) => c != _lastCategory).toList();
+
+    // If values are not set, exclude the values category
+    if (values.isEmpty) {
+      candidates =
+          candidates.where((c) => c != PromptCategory.valuesPrompt).toList();
+    }
+
+    if (candidates.isEmpty) {
+      // Fall back to any mapped category that works
+      candidates = mapped
+          .where(
+              (c) => c != PromptCategory.valuesPrompt || values.isNotEmpty)
+          .toList();
+    }
+
+    if (candidates.isEmpty) {
+      return getPrompt();
+    }
+
+    final category = candidates[_random.nextInt(candidates.length)];
+    _lastCategory = category;
+
+    final prompts = _getPrompts(category, name, values);
+    return prompts[_random.nextInt(prompts.length)];
+  }
+
+  /// Get a random prompt (no emotion context).
   InterceptPrompt getPrompt() {
     final prefs = UserPreferencesService.instance;
     final name = prefs.firstName.isNotEmpty ? prefs.firstName : null;
@@ -67,8 +125,8 @@ class InterceptPromptService {
             category: category,
             title: 'Notice the thought.',
             body: hasName
-                ? "$n, you're having the thought that you need this right now. That's just a thought \u2014 not a command."
-                : "You're having the thought that you need this right now. That's just a thought \u2014 not a command.",
+                ? "$n, you're having the thought that you need this right now. That's just a thought, not a command."
+                : "You're having the thought that you need this right now. That's just a thought, not a command.",
           ),
           InterceptPrompt(
             category: category,
@@ -116,7 +174,7 @@ class InterceptPromptService {
             category: category,
             title: 'Ride the wave.',
             body:
-                "This urge will peak and pass \u2014 like a wave. You don't have to act on it.",
+                "This urge will peak and pass, like a wave. You don't have to act on it.",
           ),
           InterceptPrompt(
             category: category,
@@ -129,7 +187,7 @@ class InterceptPromptService {
             category: category,
             title: "You've survived every one.",
             body:
-                "Urges last 15\u201320 minutes. You've survived every one so far.",
+                "Urges last 15 to 20 minutes. You've survived every one so far.",
           ),
         ];
       case PromptCategory.presentMoment:
@@ -138,7 +196,7 @@ class InterceptPromptService {
             category: category,
             title: 'Name the feeling.',
             body:
-                'What are you actually feeling right now \u2014 bored, stressed, lonely, tired? Name it.',
+                'What are you actually feeling right now: bored, stressed, lonely, tired? Name it.',
           ),
           InterceptPrompt(
             category: category,

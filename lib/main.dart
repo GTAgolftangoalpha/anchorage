@@ -12,6 +12,7 @@ import 'models/guardable_app.dart';
 import 'services/accountability_service.dart';
 import 'services/custom_blocklist_service.dart';
 import 'services/guard_service.dart';
+import 'services/intercept_event_service.dart';
 import 'services/premium_service.dart';
 import 'services/reflect_service.dart';
 import 'services/relapse_service.dart';
@@ -73,6 +74,7 @@ Future<void> main() async {
   await ReflectService.instance.init();
   await RelapseService.instance.init();
   await CustomBlocklistService.instance.init();
+  await InterceptEventService.instance.init();
 
   // Sync accountability stats whenever streak or reflect data changes.
   // Fire-and-forget — updateStats has its own error handling.
