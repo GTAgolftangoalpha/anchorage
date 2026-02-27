@@ -39,24 +39,36 @@ lib/
 │   ├── app_globals.dart               # navigatorKey (avoids circular imports with app_router)
 │   ├── constants/app_colors.dart      # Backwards-compatible alias → delegates to Anchorage palette
 │   ├── theme/app_theme.dart           # Backwards-compatible alias → delegates to AnchorageTheme.light
-│   └── router/app_router.dart         # go_router config (19 routes), uses navigatorKey from app_globals
+│   └── router/app_router.dart         # go_router config (26 routes), uses navigatorKey from app_globals
 ├── features/
-│   ├── about/                         # About screen with crisis resources
-│   ├── accountability/                # Accountability partner invite + management
+│   ├── about/                         # About screen with findahelpline.com link
+│   ├── accountability/                # Accountability partner invite + management (UI HIDDEN)
 │   ├── blocked_domain/                # Blocked domain intercept screen (VPN)
 │   ├── custom_blocklist/              # User-added blocked domains
+│   ├── exercises/                     # 5 guided exercises + chooser screen
+│   │   ├── exercise_chooser_screen.dart  # List of all exercises with durations
+│   │   ├── box_breathing_screen.dart     # 4-4-4-4 pattern with square tracer animation
+│   │   ├── physiological_sigh_screen.dart # Double inhale + long exhale with pulsing circle
+│   │   ├── grounding_screen.dart         # 5-4-3-2-1 interactive sense-based steps
+│   │   ├── urge_surfing_screen.dart      # Guided meditation with wave animation
+│   │   └── body_scan_screen.dart         # Progressive relaxation through 7 body regions
+│   ├── export/                        # Premium PDF export ("Anchor Report")
+│   │   ├── export_screen.dart            # Date pickers, notes, generate + share
+│   │   └── pdf_generator.dart            # Styled PDF with 5 sections
 │   ├── guarded_apps/                  # 10-app selector with free-tier 3-slot limit
 │   ├── help/                          # FAQ screen (5 topics)
-│   ├── home/                          # Dashboard: guard status, stats, permission banners
+│   ├── home/                          # Dashboard: guard status, stats, exercises, learn, quick actions
 │   ├── intercept/                     # Full-screen app guard intercept with ACT prompt
 │   ├── journey/                       # Journey dashboard (days since install, stats)
 │   ├── legal/                         # Privacy policy + terms of service (WebView)
 │   ├── onboarding/                    # 4-page PageView; requests permissions + setup
 │   ├── paywall/                       # RevenueCat plan selector (monthly/annual)
+│   ├── psychoeducation/               # 5 expandable learn cards for home screen
+│   │   └── psychoeducation_cards.dart    # PsychoeducationCard, PsychoeducationSection widgets
 │   ├── reflect/                       # Mood selector + journal + trigger + values
 │   ├── relapse_log/                   # Relapse journal (what happened, triggers, learnings)
-│   ├── settings/                      # VPN toggle (live), guarded apps entry, account
-│   ├── sos/                           # Emergency SOS screen (Lifeline, Beyond Blue, IASP)
+│   ├── settings/                      # VPN toggle, guarded apps, export, account
+│   ├── sos/                           # Emergency SOS: findahelpline.com + local resources + IASP
 │   ├── streak/                        # Streak counter, weekly calendar, milestones
 │   └── urge_log/                      # Urge/trigger logger with notes
 ├── models/
@@ -65,8 +77,9 @@ lib/
 │   ├── accountability_service.dart    # Partner invite, Firestore sync, stats sharing
 │   ├── custom_blocklist_service.dart  # User-added domains, hot-reload to VPN
 │   ├── export_service.dart            # CSV export for streak + urge data
-│   ├── guard_service.dart             # MethodChannel bridge to native guard + overlay
-│   ├── intercept_prompt_service.dart  # ACT-based intervention prompts
+│   ├── guard_service.dart             # MethodChannel bridge to native guard + overlay (GuardNavigation)
+│   ├── intercept_event_service.dart   # Intercept event storage with emotion + Firestore sync
+│   ├── intercept_prompt_service.dart  # ACT prompts with emotion-to-category mappings
 │   ├── premium_service.dart           # RevenueCat entitlements, purchase, restore
 │   ├── reflect_service.dart           # Mood/journal persistence + Firestore sync
 │   ├── relapse_service.dart           # Relapse log persistence
@@ -95,7 +108,6 @@ lib/
 | `/sos` | EmergencySosScreen | no (fullscreenDialog) |
 | `/paywall` | PaywallScreen | no (fullscreenDialog) |
 | `/guarded-apps` | GuardedAppsScreen | no |
-| `/accountability` | AccountabilityScreen | no |
 | `/urge-log` | UrgeLogScreen | no |
 | `/relapse-log` | RelapseLogScreen | no (fullscreenDialog) |
 | `/custom-blocklist` | CustomBlocklistScreen | no |
@@ -106,10 +118,106 @@ lib/
 | `/about` | AboutScreen | no |
 | `/privacy` | LegalViewerScreen | no |
 | `/terms` | LegalViewerScreen | no |
+| `/export` | ExportScreen | no |
+| `/exercises` | ExerciseChooserScreen | no |
+| `/exercise/box-breathing` | BoxBreathingScreen | no (fullscreenDialog) |
+| `/exercise/physiological-sigh` | PhysiologicalSighScreen | no (fullscreenDialog) |
+| `/exercise/grounding` | GroundingScreen | no (fullscreenDialog) |
+| `/exercise/urge-surfing` | UrgeSurfingScreen | no (fullscreenDialog) |
+| `/exercise/body-scan` | BodyScanScreen | no (fullscreenDialog) |
 
 Navigate with `context.go('/route')` (replace) or `context.push('/route')` (push).
 
 The `anchorage://sos` deep link (from the VPN blocked page) opens the app and routes to `/sos`.
+
+**Note:** The `/accountability` route is commented out (HIDDEN) until the Cloud Function backend is built.
+
+## Home Screen Sections
+
+The home screen displays these sections in order:
+
+1. **Status hero card** — guard active/inactive, guarded app chips
+2. **Permission warning** — shown if usage access not granted
+3. **Streak hero** — current streak count with motivational message
+4. **Daily values card** — rotating value with prompt to reflect
+5. **Stats row** — current streak, longest streak, weekly intercepts, anchored days
+6. **Weekly bar chart** — 7-day visual streak tracker
+7. **Exercises** — 4 quick-access exercise tiles + "See all exercises" link
+8. **Learn** — 5 expandable psychoeducation cards (PsychoeducationSection)
+9. **Quick Actions** — manage guarded apps, urge log, reflect, relapse log, go premium
+
+## Exercises
+
+5 guided exercises in `lib/features/exercises/`, each a full-screen page with animation and timer:
+
+| Exercise | Route | Duration | Animation |
+|---|---|---|---|
+| Box Breathing | `/exercise/box-breathing` | ~4 min | Square tracer with dot, phase labels |
+| Physiological Sigh | `/exercise/physiological-sigh` | ~3 min | Pulsing circle, pattern step indicators |
+| 5-4-3-2-1 Grounding | `/exercise/grounding` | ~5 min | Interactive checkable sense items |
+| Urge Surfing | `/exercise/urge-surfing` | ~2 min | Sine wave with amplitude tied to phase |
+| Body Scan | `/exercise/body-scan` | ~2.5 min | Icon-based region focus, progress bar |
+
+Exercise chooser at `/exercises` lists all 5 with descriptions and durations.
+
+## Psychoeducation Cards
+
+5 expandable cards in `lib/features/psychoeducation/psychoeducation_cards.dart`:
+
+1. **Urges Are Waves** — urge duration, habituation, ride-it-out framing
+2. **Not a Character Flaw** — learned behaviour vs moral failure, dopamine loop
+3. **Shame vs Guilt** — identity vs behaviour, growth framing
+4. **Why Willpower Is Not Enough** — systems over motivation, depletion model
+5. **What Aroused Means Here** — physiological response awareness, naming without judging
+
+## Intercept System
+
+### Emotion-to-Category Mappings
+
+`InterceptPromptService.getPromptForEmotion(emotion)` maps 10 emotional states to preferred ACT prompt categories:
+
+| Emotion | Primary Category | Secondary Category |
+|---|---|---|
+| Bored | Urge Surfing | Values |
+| Stressed | Present Moment | Cognitive Defusion |
+| Lonely | Values | Present Moment |
+| Tired | Present Moment | Urge Surfing |
+| Anxious | Present Moment | Cognitive Defusion |
+| Down | Values | Urge Surfing |
+| Angry | Cognitive Defusion | Present Moment |
+| Aroused | Urge Surfing | Cognitive Defusion |
+| Numb | Present Moment | Values |
+| Rewarding | Values | Cognitive Defusion |
+
+### Intercept Event Storage
+
+`InterceptEventService` stores each intercept with:
+- `emotion` — selected emotional state (from native overlay or Flutter)
+- `exercise` — exercise chosen (if any)
+- `outcome` — 'reflected', 'stayed', 'exercised'
+- `source` — 'app_guard' or 'vpn_block'
+- Persisted to SharedPreferences + synced to Firestore `users/{uid}/intercept_events`
+
+### Native Overlay (Two-Phase)
+
+The native overlay (`OverlayService.kt`) uses a two-phase flow:
+
+**Phase 1 — Emotion selector:** 10 emotion cards in a 2x5 grid. User selects emotional state.
+
+**Phase 2 — Intervention:** ACT prompt matched to emotion, 2 random behavioural suggestions, exercise chooser button, 60-second countdown timer. Action buttons (Reflect, Stay Anchored) appear when timer completes.
+
+`GuardNavigation` data class passes `route`, `emotion`, and `exercise` from native to Flutter via MethodChannel.
+
+## PDF Export (Premium)
+
+`lib/features/export/` — premium-only "Anchor Report" PDF generation:
+
+- **Date range pickers** — default last 30 days
+- **Notes field** — user-entered context for therapist (max 500 chars)
+- **5 PDF sections:** Overview (streak stats), Emotional Pattern (emotion frequency table), Urge Log (date/trigger/notes table), Reflection Entries (mood/journal cards), Notes
+- **Styling:** Navy headers, teal section dividers, light background tables
+- **Share:** via `share_plus` share sheet
+- **Premium gate:** non-premium users see upgrade prompt
 
 ## App Guard System
 
@@ -124,12 +232,12 @@ AppGuardService (polls 150ms)
   → falls back to queryUsageStats() if events empty (Samsung quirk)
   → Settings.canDrawOverlays()?
       YES → startService(OverlayService) with app name
-              OverlayService.showOverlay() → WindowManager.addView(TYPE_APPLICATION_OVERLAY)
-              User taps "REFLECT" → dismiss overlay + startActivity(MainActivity, NAVIGATE_TO=reflect)
-              User taps "STAY ANCHORED" → dismiss overlay + startActivity(MainActivity)
-              User taps "EMERGENCY SOS" → dismiss overlay + startActivity(MainActivity, NAVIGATE_TO=sos)
-              MainActivity.deliverGuardIntent() → channel.invokeMethod("navigateTo", route)
-              Flutter GuardService.onNavigateTo callback → context.go('/reflect') or context.go('/sos')
+              Phase 1: Emotion grid (10 states)
+              Phase 2: Matched ACT prompt + suggestions + timer
+              User taps "Reflect" → dismiss + startActivity(MainActivity, NAVIGATE_TO=reflect, EMOTION, EXERCISE)
+              User taps "Stay Anchored" → dismiss + startActivity(MainActivity, EMOTION)
+              MainActivity.deliverGuardIntent() → channel.invokeMethod("navigateTo", {route, emotion, exercise})
+              Flutter GuardService.onNavigateTo(GuardNavigation) → context.go('/${nav.route}')
       NO  → startActivity(MainActivity, EXTRA_APP_NAME) [fallback]
               → channel.invokeMethod("onGuardedAppDetected", appName)
               → Flutter shows InterceptBottomSheet
@@ -140,12 +248,12 @@ AppGuardService (polls 150ms)
 | File | Role |
 |---|---|
 | `AppGuardService.kt` | Foreground service, polls UsageStats, calls `launchIntercept()` |
-| `OverlayService.kt` | Inflates `overlay_intercept.xml` over WindowManager; handles button taps |
+| `OverlayService.kt` | Two-phase overlay: emotion grid → matched prompt + timer + suggestions |
 | `AnchorageVpnService.kt` | VPN service; DNS interception, blocklist matching, TCP RST |
 | `BlocklistUpdateWorker.kt` | WorkManager worker; refreshes blocklist every 14 days |
 | `HeartbeatWorker.kt` | WorkManager worker; 4-hour periodic heartbeat to Firestore |
 | `AnchorageDeviceAdminReceiver.kt` | Device admin receiver for tamper detection |
-| `MainActivity.kt` | MethodChannel hub for `guard`, `vpn`, and `tamper` channels; VPN consent via `onActivityResult` |
+| `MainActivity.kt` | MethodChannel hub for `guard`, `vpn`, and `tamper` channels; passes emotion/exercise extras |
 
 ### MethodChannel `com.anchorage.app/guard`
 
@@ -163,7 +271,7 @@ AppGuardService (polls 150ms)
 | Method | Arg | Notes |
 |---|---|---|
 | `onGuardedAppDetected` | `String appName` | Fallback only (no overlay permission) |
-| `navigateTo` | `String route` | Overlay button tapped; Flutter calls `context.go('/$route')` |
+| `navigateTo` | `Map {route, emotion?, exercise?}` | Overlay button tapped; Flutter receives `GuardNavigation` |
 
 ### MethodChannel `com.anchorage.app/vpn`
 
@@ -278,13 +386,15 @@ Browsers (Chrome, Firefox, Brave, Opera) are intentionally excluded — browser 
 
 Always test the **full intercept loop**, not just the happy path:
 
-1. Open guarded app → overlay appears
-2. Tap "I'M STAYING ANCHORED" → overlay dismisses, ANCHORAGE comes forward
-3. Open guarded app again → overlay appears again (re-arm confirmed, 2s cooldown)
-4. Tap "REFLECT ON THIS MOMENT" → overlay dismisses, `/reflect` screen opens
-5. Complete reflect, return to home → open guarded app → overlay appears again
-6. Enable VPN in Settings → toggle shows "Active — explicit content blocked"
-7. Open Chrome → navigate to a porn domain → DNS resolves to 10.111.222.3 → connection refused
+1. Open guarded app → overlay appears (Phase 1: emotion grid)
+2. Select an emotion → Phase 2: matched ACT prompt + suggestions + 60s timer
+3. Wait for timer → action buttons appear
+4. Tap "Stay Anchored" → overlay dismisses, ANCHORAGE comes forward
+5. Open guarded app again → overlay appears again (re-arm confirmed, 2s cooldown)
+6. Select emotion → tap "Reflect" → overlay dismisses, `/reflect` screen opens
+7. Complete reflect, return to home → open guarded app → overlay appears again
+8. Enable VPN in Settings → toggle shows "Active — explicit content blocked"
+9. Open Chrome → navigate to a porn domain → DNS resolves to 10.111.222.3 → connection refused
 
 ## Android Configuration
 
@@ -293,7 +403,8 @@ Always test the **full intercept loop**, not just the happy path:
 - `google-services.json` at `android/app/google-services.json`.
 - Namespace (`com.anchorage.anchorage`) and applicationId (`com.anchorage.app`) intentionally differ.
 - Notification icon: `android/app/src/main/res/drawable/ic_notification.xml` (white anchor vector).
-- Overlay layout: `android/app/src/main/res/layout/overlay_intercept.xml`.
+- Overlay layout: `android/app/src/main/res/layout/overlay_intercept.xml` (two-phase: emotion grid + intervention).
+- Exercise chooser dialog: `android/app/src/main/res/layout/dialog_exercise_chooser.xml`.
 - WorkManager dependency: `androidx.work:work-runtime-ktx:2.9.1` in `app/build.gradle.kts`.
 
 ## Design System
@@ -337,9 +448,17 @@ The design system lives in `lib/theme.dart` with three main classes:
 
 - **Never** use `Colors.*` directly — always `AppColors.*` or `Anchorage.*`.
 - **Never** hardcode text styles — always `Theme.of(context).textTheme.*` or `AnchorageType.*`.
+- **Never** use em dashes in UI text, comments, or strings.
 - Use `WidgetState` (not deprecated `MaterialState`) for theme property callbacks.
-- Use `.withAlpha(n)` (0–255) not `.withOpacity(n)`.
+- Use `.withAlpha(n)` (0-255) not `.withOpacity(n)`.
 - All new screens: `AppBar` with `title: const Text('SCREEN NAME')` — theme auto-applies styling.
+
+## Crisis Resources
+
+- **Primary:** `findahelpline.com` — shown prominently on SOS screen and About screen
+- **Local resources:** AU (Lifeline, Beyond Blue), US (988, SAMHSA), GB (Samaritans, CALM) — shown on SOS screen below primary, detected via device locale
+- **IASP link:** secondary worldwide directory on SOS screen
+- **Non-SOS locations:** use "If you are in crisis, please visit findahelpline.com for support in your country." instead of hardcoded numbers
 
 ## Firebase + RevenueCat Init
 
@@ -353,7 +472,9 @@ Both initialized in `main()` before `runApp`. Firebase wrapped in try/catch. Rev
 - Device admin activation for uninstall protection
 - Immediate heartbeat on app startup (3s timeout, fire-and-forget)
 
-## Accountability System
+## Accountability System (HIDDEN)
+
+UI is hidden until Cloud Function backend is built. Code preserved with HIDDEN comments in `app_router.dart` and `settings_screen.dart`.
 
 - Partner invite via email + name → stored at `users/{uid}/partners/{id}` in Firestore
 - Free tier: 1 partner; Premium: unlimited
