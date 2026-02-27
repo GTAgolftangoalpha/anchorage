@@ -372,6 +372,12 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
               title: 'Subscription',
               onTap: () => context.push('/paywall'),
             ),
+            _SettingsTile(
+              icon: Icons.picture_as_pdf,
+              title: 'Export My Data',
+              subtitle: 'Generate a PDF report for your therapist',
+              onTap: () => context.push('/export'),
+            ),
 
             const SizedBox(height: 8),
             _SectionHeader(title: 'Support'),

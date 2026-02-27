@@ -7,6 +7,7 @@ import '../../features/about/about_screen.dart';
 import '../../features/blocked_domain/blocked_domain_screen.dart';
 import '../../features/custom_blocklist/custom_blocklist_screen.dart';
 import '../../features/exercises/body_scan_screen.dart';
+import '../../features/export/export_screen.dart';
 import '../../features/exercises/box_breathing_screen.dart';
 import '../../features/exercises/exercise_chooser_screen.dart';
 import '../../features/exercises/grounding_screen.dart';
@@ -153,6 +154,13 @@ class AppRouter {
         name: 'journey',
         pageBuilder: (context, state) => const MaterialPage(
           child: JourneyScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/export',
+        name: 'export',
+        pageBuilder: (context, state) => const MaterialPage(
+          child: ExportScreen(),
         ),
       ),
       GoRoute(
