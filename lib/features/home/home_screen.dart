@@ -230,6 +230,44 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
                     const SizedBox(height: 20),
 
+                    // ── Exercises ──────────────────────────────────
+                    Text('Exercises', style: theme.textTheme.titleMedium),
+                    const SizedBox(height: 10),
+                    _ExerciseRow(
+                      exercises: const [
+                        _MiniExercise(
+                          icon: Icons.square_outlined,
+                          label: 'Box\nBreathing',
+                          route: '/exercise/box-breathing',
+                        ),
+                        _MiniExercise(
+                          icon: Icons.air,
+                          label: 'Physio\nSigh',
+                          route: '/exercise/physiological-sigh',
+                        ),
+                        _MiniExercise(
+                          icon: Icons.visibility,
+                          label: '5-4-3-2-1\nGrounding',
+                          route: '/exercise/grounding',
+                        ),
+                        _MiniExercise(
+                          icon: Icons.waves,
+                          label: 'Urge\nSurfing',
+                          route: '/exercise/urge-surfing',
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: () => context.push('/exercises'),
+                        child: const Text('See all exercises'),
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
                     // ── Quick actions ────────────────────────────────
                     Text('Quick Actions', style: theme.textTheme.titleMedium),
                     const SizedBox(height: 10),
@@ -617,6 +655,67 @@ class _StatCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _MiniExercise {
+  final IconData icon;
+  final String label;
+  final String route;
+
+  const _MiniExercise({
+    required this.icon,
+    required this.label,
+    required this.route,
+  });
+}
+
+class _ExerciseRow extends StatelessWidget {
+  final List<_MiniExercise> exercises;
+
+  const _ExerciseRow({required this.exercises});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: exercises.map((ex) {
+        return Expanded(
+          child: Padding(
+            padding: EdgeInsets.only(
+              right: ex == exercises.last ? 0 : 8,
+            ),
+            child: InkWell(
+              onTap: () => context.push(ex.route),
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                decoration: BoxDecoration(
+                  color: AppColors.lightGray,
+                  borderRadius: BorderRadius.circular(12),
+                  border: const Border.fromBorderSide(
+                    BorderSide(color: AppColors.midGray),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Icon(ex.icon, color: AppColors.navy, size: 22),
+                    const SizedBox(height: 6),
+                    Text(
+                      ex.label,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            fontSize: 11,
+                            height: 1.3,
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 }

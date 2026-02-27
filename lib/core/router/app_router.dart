@@ -5,6 +5,12 @@ import '../../features/about/about_screen.dart';
 import '../../features/accountability/accountability_screen.dart';
 import '../../features/blocked_domain/blocked_domain_screen.dart';
 import '../../features/custom_blocklist/custom_blocklist_screen.dart';
+import '../../features/exercises/body_scan_screen.dart';
+import '../../features/exercises/box_breathing_screen.dart';
+import '../../features/exercises/exercise_chooser_screen.dart';
+import '../../features/exercises/grounding_screen.dart';
+import '../../features/exercises/physiological_sigh_screen.dart';
+import '../../features/exercises/urge_surfing_screen.dart';
 import '../../features/guarded_apps/guarded_apps_screen.dart';
 import '../../features/help/help_screen.dart';
 import '../../features/legal/legal_viewer_screen.dart';
@@ -145,6 +151,53 @@ class AppRouter {
         name: 'journey',
         pageBuilder: (context, state) => const MaterialPage(
           child: JourneyScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/exercises',
+        name: 'exercises',
+        pageBuilder: (context, state) => const MaterialPage(
+          child: ExerciseChooserScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/exercise/box-breathing',
+        name: 'box-breathing',
+        pageBuilder: (context, state) => const MaterialPage(
+          fullscreenDialog: true,
+          child: BoxBreathingScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/exercise/physiological-sigh',
+        name: 'physiological-sigh',
+        pageBuilder: (context, state) => const MaterialPage(
+          fullscreenDialog: true,
+          child: PhysiologicalSighScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/exercise/grounding',
+        name: 'grounding',
+        pageBuilder: (context, state) => const MaterialPage(
+          fullscreenDialog: true,
+          child: GroundingScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/exercise/urge-surfing',
+        name: 'urge-surfing',
+        pageBuilder: (context, state) => const MaterialPage(
+          fullscreenDialog: true,
+          child: UrgeSurfingScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/exercise/body-scan',
+        name: 'body-scan',
+        pageBuilder: (context, state) => const MaterialPage(
+          fullscreenDialog: true,
+          child: BodyScanScreen(),
         ),
       ),
       GoRoute(
