@@ -1,0 +1,42 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(taskkill:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(cd /c/Users/jacki/AndroidStudioProjects/anchorage && flutter run -d R94Y60BRV0T 2>&1)",
+      "Bash(cd /c/Users/jacki/AndroidStudioProjects/anchorage && flutter run -d R92X61HX9PJ 2>&1)",
+      "Bash(cd:*)",
+      "Bash(gh auth:*)",
+      "Bash(winget install:*)",
+      "Bash(export PATH=\"/c/Program Files/GitHub CLI:$PATH\" && gh auth status 2>&1)",
+      "Bash(export PATH=\"/c/Program Files/GitHub CLI:$PATH\" && gh auth login --web 2>&1)",
+      "Bash(export PATH=\"/c/Program Files/GitHub CLI:$PATH\" && cd /c/Users/jacki/AndroidStudioProjects/anchorage && gh repo create anchorage --private --source=. --push 2>&1)",
+      "Bash(export PATH=\"/c/Program Files/GitHub CLI:$PATH\" && gh repo edit GTAgolftangoalpha/anchorage --visibility public 2>&1)",
+      "Bash(export PATH=\"/c/Program Files/GitHub CLI:$PATH\" && gh repo edit GTAgolftangoalpha/anchorage --visibility public --accept-visibility-change-consequences 2>&1)",
+      "Bash(cd /c/Users/jacki/AndroidStudioProjects/anchorage && flutter devices 2>&1)",
+      "Bash(cd /c/Users/jacki/AndroidStudioProjects/anchorage && npx firebase deploy --only firestore:rules --force 2>&1)",
+      "Bash(cd /c/Users/jacki/AndroidStudioProjects/anchorage && flutter analyze --no-fatal-infos 2>&1)",
+      "Bash(flutter devices:*)",
+      "Bash(adb devices:*)",
+      "Bash(adb kill-server && adb start-server && sleep 5 && adb devices 2>&1)",
+      "Bash(claude mcp:*)",
+      "Bash(adb kill-server:*)",
+      "Bash(cd /c/Users/jacki/AndroidStudioProjects/anchorage && git push origin master 2>&1)",
+      "Bash(cd /c/Users/jacki/AndroidStudioProjects/anchorage && flutter run 2>&1)",
+      "Bash(grep:*)",
+      "Bash(cd /c/Users/jacki/AndroidStudioProjects/anchorage && git push 2>&1)",
+      "Bash(grep share_plus:*)",
+      "Bash(adb:*)",
+      "Bash(tr >:*)",
+      "Bash(cd C:/Users/jacki/AndroidStudioProjects/anchorage && git push origin master 2>&1)",
+      "Bash(cd /c/Users/jacki/AndroidStudioProjects/anchorage/functions && npm run build 2>&1)",
+      "Bash(curl:*)",
+      "Bash(cd /c/Users/jacki/AndroidStudioProjects/anchorage && firebase deploy --only functions 2>&1)",
+      "Bash(wc:*)",
+      "Bash(cat:*)",
+      "Bash(cd /c/Users/jacki/AndroidStudioProjects/anchorage && ls lib/services/*.dart 2>&1)",
+      "Bash(cd /c/Users/jacki/AndroidStudioProjects/anchorage && flutter pub add pdf 2>&1)"
+    ]
+  }
+}
