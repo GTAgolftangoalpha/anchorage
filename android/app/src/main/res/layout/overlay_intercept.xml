@@ -71,7 +71,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:columnCount="2"
-                android:rowCount="5"
+                android:rowCount="6"
                 android:useDefaultMargins="false">
 
                 <!-- Row 1 -->
@@ -198,6 +198,20 @@
                     android:text="Rewarding Myself"
                     android:textColor="#DDFFFFFF"
                     android:textSize="12sp" />
+
+                <!-- Row 6: Not sure (outlined, spans both columns) -->
+                <TextView
+                    android:id="@+id/emo_not_sure"
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_columnSpan="2"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/bg_emotion_card_outlined"
+                    android:gravity="center"
+                    android:text="Not sure"
+                    android:textColor="#99FFFFFF"
+                    android:textSize="13sp" />
             </GridLayout>
         </LinearLayout>
 

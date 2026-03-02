@@ -143,6 +143,13 @@ class OverlayService : Service() {
             "Go out for food. Treat yourself to something you actually enjoy.",
             "Call someone and share the good news.",
             "Write down what went well today. Savour it properly."
+        ),
+        "Not sure" to listOf(
+            "Go for a walk. Movement helps when you cannot name what you feel.",
+            "Write down whatever comes to mind. No filter, just get it out.",
+            "Call or text someone. Connection can help you figure out what you need.",
+            "Do something physical. Walk, stretch, cold water on your face.",
+            "Step outside for 2 minutes. A change of environment can bring clarity."
         )
     )
 
@@ -260,6 +267,16 @@ class OverlayService : Service() {
                     if (values.isNotEmpty()) "You said $v1 matters to you. Reward yourself in a way that honours that."
                     else "Reward yourself in a way that honours your values. You have earned it.")
             )
+            "Not sure" -> listOf(
+                ActPrompt("You do not need to have all the answers.",
+                    if (hasName) "$name, not knowing how you feel is okay. What matters is that you paused."
+                    else "Not knowing how you feel is okay. What matters is that you paused."),
+                ActPrompt("Just pause.",
+                    "You are here. That means something. Take a moment before you decide what to do next."),
+                ActPrompt("Check in with yourself.",
+                    if (values.isNotEmpty()) "You said $v1 and $v2 matter to you. Would continuing bring you closer to those?"
+                    else "Ask yourself: will this make the next hour better or worse?")
+            )
             else -> listOf(
                 ActPrompt("Pause.", "Take a breath. You do not have to act on this urge."),
             )
@@ -303,7 +320,8 @@ class OverlayService : Service() {
             R.id.emo_angry to "Angry",
             R.id.emo_aroused to "Aroused",
             R.id.emo_numb to "Numb",
-            R.id.emo_rewarding to "Rewarding Myself"
+            R.id.emo_rewarding to "Rewarding Myself",
+            R.id.emo_not_sure to "Not sure"
         )
 
         for ((viewId, emotion) in emotionIds) {

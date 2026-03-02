@@ -149,6 +149,20 @@ Future<void> main() async {
 
   // Overlay button tapped on native overlay (e.g. "Reflect", "Stay Anchored", exercise)
   GuardService.onNavigateTo((nav) async {
+    // Normalize emotion for event logging (e.g. "Not sure" -> "not_sure")
+    final emotionKey = nav.emotion?.toLowerCase().replaceAll(' ', '_');
+    final outcome = nav.route == 'reflect'
+        ? 'reflected'
+        : nav.exercise != null
+            ? 'exercised'
+            : 'stayed';
+    InterceptEventService.instance.logEvent(
+      emotion: emotionKey,
+      exercise: nav.exercise,
+      outcome: outcome,
+      source: 'app_guard',
+    );
+
     await _waitForNavigator();
     final context = navigatorKey.currentContext;
     if (context != null && context.mounted) {

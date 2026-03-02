@@ -37,12 +37,20 @@ class InterceptPromptService {
     'aroused': [PromptCategory.urgeSurfing, PromptCategory.defusion],
     'numb': [PromptCategory.presentMoment, PromptCategory.valuesPrompt],
     'rewarding': [PromptCategory.valuesPrompt, PromptCategory.defusion],
+    'not_sure': [
+      PromptCategory.valuesPrompt,
+      PromptCategory.presentMoment,
+      PromptCategory.urgeSurfing,
+      PromptCategory.defusion,
+    ],
   };
 
   /// Get a prompt matched to the given emotional state.
   /// Falls back to random category if emotion is unknown.
   InterceptPrompt getPromptForEmotion(String emotion) {
-    final mapped = emotionCategories[emotion.toLowerCase()];
+    final lower = emotion.toLowerCase();
+    final mapped = emotionCategories[lower] ??
+        emotionCategories[lower.replaceAll(' ', '_')];
     if (mapped == null || mapped.isEmpty) {
       return getPrompt();
     }
