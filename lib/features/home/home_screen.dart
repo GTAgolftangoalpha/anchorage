@@ -4,7 +4,6 @@ import '../../core/constants/app_colors.dart';
 import '../../models/guardable_app.dart';
 import '../../services/guard_service.dart';
 import '../../services/premium_service.dart';
-import '../../services/streak_service.dart';
 import '../../services/user_preferences_service.dart';
 import '../../shared/widgets/anchor_logo.dart';
 
@@ -57,7 +56,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final name = UserPreferencesService.instance.firstName;
 
     return Scaffold(
       backgroundColor: AppColors.white,
@@ -85,56 +83,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Greeting
-                Center(
-                  child: Text(
-                    name.isNotEmpty ? 'Hey $name.' : 'Hey.',
-                    style: theme.textTheme.headlineMedium?.copyWith(
-                      color: AppColors.navy,
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 12),
-
-                // Small streak indicator (tappable -> Journey tab)
-                ValueListenableBuilder<StreakData>(
-                  valueListenable: StreakService.instance.data,
-                  builder: (context, streak, _) {
-                    return Center(
-                      child: GestureDetector(
-                        onTap: () {
-                          // Navigate to Journey tab (index 3)
-                          final shell = StatefulNavigationShell.maybeOf(context);
-                          if (shell != null) {
-                            shell.goBranch(3);
-                          }
-                        },
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.anchor,
-                                color: AppColors.seafoam, size: 18),
-                            const SizedBox(width: 6),
-                            Text(
-                              '${streak.currentStreak} days anchored',
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: AppColors.textSecondary,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SizedBox(width: 4),
-                            const Icon(Icons.chevron_right,
-                                color: AppColors.slate, size: 16),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-
-                const SizedBox(height: 20),
-
                 // Status card
                 _StatusCard(
                   isActive: _guardActive,
@@ -479,7 +427,7 @@ class _UpgradeBanner extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Unlock the full ANCHORAGE experience',
+                    'Unlock ANCHORAGE+',
                     style: theme.textTheme.titleSmall?.copyWith(
                       color: AppColors.white,
                       fontWeight: FontWeight.w700,
@@ -487,7 +435,7 @@ class _UpgradeBanner extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Hard blocking, unlimited apps, journal, and more.',
+                    'Hard blocking, White Flag, unlimited apps, journal, and more.',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: AppColors.white.withAlpha(160),
                       height: 1.4,
