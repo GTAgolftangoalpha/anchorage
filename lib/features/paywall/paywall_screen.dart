@@ -399,7 +399,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
                       TextButton(
                         onPressed: () {
                           launchUrl(
-                            Uri.parse('https://anchorage.com.au/terms'),
+                            Uri.parse('https://getanchorage.app/terms'),
                             mode: LaunchMode.externalApplication,
                           );
                         },
@@ -417,7 +417,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
                       TextButton(
                         onPressed: () {
                           launchUrl(
-                            Uri.parse('https://anchorage.com.au/privacy'),
+                            Uri.parse('https://getanchorage.app/privacy'),
                             mode: LaunchMode.externalApplication,
                           );
                         },

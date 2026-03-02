@@ -118,6 +118,7 @@ class LegalHtml {
   <li><strong>Personal values</strong> &mdash; your selected core values (up to 3)</li>
   <li><strong>First name</strong> &mdash; used only for personalising the app locally</li>
   <li><strong>App preferences</strong> &mdash; guarded app selections and settings</li>
+  <li><strong>Date of birth and gender (optional)</strong> &mdash; provided during onboarding for age verification and app personalisation. Stored locally on your device only.</li>
 </ul>
 <p>This data remains on your device and is deleted when you clear app data or uninstall ANCHORAGE.</p>
 
@@ -163,6 +164,7 @@ class LegalHtml {
   <li>We do <strong>not</strong> log which domains are blocked by the VPN filter</li>
   <li>We do <strong>not</strong> use advertising SDKs or fingerprinting</li>
   <li>We do <strong>not</strong> sell, rent, or share your data with third parties for marketing</li>
+  <li>We do <strong>not</strong> have access to anything you write in free-text fields within the app. Journal entries, urge log notes, and reflection entries are stored locally on your device and are never transmitted to our servers.</li>
 </ul>
 
 <h2>4. VPN and Content Filtering</h2>
@@ -205,7 +207,7 @@ class LegalHtml {
 <h2>10. Contact Us</h2>
 <div class="contact-box">
   <p><strong>Privacy requests and questions:</strong></p>
-  <p>Email: <a href="mailto:hello@anchorage.com.au">hello@anchorage.com.au</a></p>
+  <p>Email: <a href="mailto:hello@getanchorage.app">hello@getanchorage.app</a></p>
   <p>Published by Temporal Psychology</p>
 </div>
 
@@ -357,7 +359,7 @@ class LegalHtml {
 <h2>14. Contact Us</h2>
 <div class="contact-box">
   <p><strong>Questions about these Terms:</strong></p>
-  <p>Email: <a href="mailto:hello@anchorage.com.au">hello@anchorage.com.au</a></p>
+  <p>Email: <a href="mailto:hello@getanchorage.app">hello@getanchorage.app</a></p>
   <p>Published by Temporal Psychology</p>
 </div>
 
