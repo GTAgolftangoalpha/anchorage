@@ -30,6 +30,7 @@ dependencies:
 
   # Storage
   shared_preferences: ^2.3.0
+  flutter_secure_storage: ^9.2.4
 
   # URL launching (tel: calls, web links)
   url_launcher: ^6.3.0

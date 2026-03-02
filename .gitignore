@@ -44,4 +44,9 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# Environment secrets (Cloud Functions)
+functions/.env
+functions/.env.local
+*.env
+
 # Claude Code local state

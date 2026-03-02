@@ -7,10 +7,12 @@ import android.content.Intent
 import android.net.Uri
 import android.net.VpnService
 import android.os.Build
+import android.os.Bundle
 import android.os.PowerManager
 import android.os.Process
 import android.provider.Settings
 import android.util.Log
+import android.view.WindowManager
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
@@ -34,6 +36,16 @@ class MainActivity : FlutterActivity() {
 
     // Pending result for VPN consent dialog (returned to Flutter after onActivityResult)
     private var pendingVpnResult: MethodChannel.Result? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // Prevent screenshots and screen recording on all screens.
+        // Protects sensitive data: urge logs, reflections, lapse logs, journey stats.
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_SECURE,
+            WindowManager.LayoutParams.FLAG_SECURE
+        )
+    }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)

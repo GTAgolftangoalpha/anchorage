@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ReflectEntry {
@@ -47,7 +48,12 @@ class ReflectService {
   ReflectService._();
   static final ReflectService instance = ReflectService._();
 
-  static const _prefsKey = 'reflect_entries';
+  static const _secureKey = 'reflect_entries';
+  static const _legacyPrefsKey = 'reflect_entries';
+
+  static const _secureStorage = FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+  );
 
   final ValueNotifier<List<ReflectEntry>> entries = ValueNotifier([]);
 
@@ -81,13 +87,29 @@ class ReflectService {
 
   Future<void> _load() async {
     try {
+      // Try secure storage first
+      final raw = await _secureStorage.read(key: _secureKey);
+      if (raw != null) {
+        final list = jsonDecode(raw) as List;
+        entries.value = list
+            .map((e) => ReflectEntry.fromJson(e as Map<String, dynamic>))
+            .toList();
+        return;
+      }
+
+      // Migrate from SharedPreferences if present
       final prefs = await SharedPreferences.getInstance();
-      final raw = prefs.getString(_prefsKey);
-      if (raw == null) return;
-      final list = jsonDecode(raw) as List;
-      entries.value = list
-          .map((e) => ReflectEntry.fromJson(e as Map<String, dynamic>))
-          .toList();
+      final legacyRaw = prefs.getString(_legacyPrefsKey);
+      if (legacyRaw != null) {
+        final list = jsonDecode(legacyRaw) as List;
+        entries.value = list
+            .map((e) => ReflectEntry.fromJson(e as Map<String, dynamic>))
+            .toList();
+        // Write to secure storage and remove from SharedPreferences
+        await _save();
+        await prefs.remove(_legacyPrefsKey);
+        debugPrint('[ReflectService] migrated to secure storage');
+      }
     } catch (e) {
       debugPrint('[ReflectService] load error: $e');
     }
@@ -95,9 +117,8 @@ class ReflectService {
 
   Future<void> _save() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
       final json = jsonEncode(entries.value.map((e) => e.toJson()).toList());
-      await prefs.setString(_prefsKey, json);
+      await _secureStorage.write(key: _secureKey, value: json);
     } catch (e) {
       debugPrint('[ReflectService] save error: $e');
     }

@@ -23,6 +23,33 @@ function getSgMail(): typeof sgMail {
   return sgMail;
 }
 
+// ── Rate limiting ─────────────────────────────────────────────────────────
+
+const EMAIL_RATE_LIMIT = 10; // max emails per user per day
+
+async function checkRateLimit(userId: string): Promise<boolean> {
+  const now = new Date();
+  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  const countSnap = await db
+    .collection("users")
+    .doc(userId)
+    .collection("email_sends")
+    .where("sentAt", ">=", admin.firestore.Timestamp.fromDate(startOfDay))
+    .count()
+    .get();
+
+  return countSnap.data().count < EMAIL_RATE_LIMIT;
+}
+
+async function recordEmailSend(userId: string): Promise<void> {
+  await db
+    .collection("users")
+    .doc(userId)
+    .collection("email_sends")
+    .add({sentAt: admin.firestore.FieldValue.serverTimestamp()});
+}
+
 // ── Types ──────────────────────────────────────────────────────────────────
 
 interface PartnerDoc {
@@ -61,6 +88,15 @@ export const onPartnerInvited = functions.firestore.onDocumentCreated(
 
     const {partnerEmail, partnerName, userName, inviteToken, userId} = data;
 
+    // Rate limit: max 10 emails per user per day
+    const withinLimit = await checkRateLimit(userId);
+    if (!withinLimit) {
+      functions.logger.warn(
+        `[onPartnerInvited] Rate limit exceeded for user ${userId}`
+      );
+      return;
+    }
+
     const acceptUrl =
       `${APP_URL}/partner-accept?token=${inviteToken}&action=accept&uid=${userId}`;
     const declineUrl =
@@ -82,6 +118,7 @@ export const onPartnerInvited = functions.firestore.onDocumentCreated(
         subject,
         html,
       });
+      await recordEmailSend(userId);
       functions.logger.info(
         `[onPartnerInvited] Invitation sent to ${partnerEmail} for user ${userId}`
       );
@@ -174,6 +211,15 @@ async function sendReportForPartner(
     unsubscribeUrl,
   });
 
+  // Rate limit: max 10 emails per user per day
+  const withinLimit = await checkRateLimit(userId);
+  if (!withinLimit) {
+    functions.logger.warn(
+      `[sendReportForPartner] Rate limit exceeded for user ${userId}`
+    );
+    return;
+  }
+
   await getSgMail().send({
     to: {email: partner.partnerEmail, name: partner.partnerName},
     from: {email: FROM_EMAIL, name: FROM_NAME},
@@ -181,6 +227,7 @@ async function sendReportForPartner(
     html,
   });
 
+  await recordEmailSend(userId);
   functions.logger.info(
     `[sendReportForPartner] Report sent to ${partner.partnerEmail} for user ${userId}`
   );
@@ -603,6 +650,15 @@ async function checkHeartbeatForUser(
     }
   }
 
+  // Rate limit: max 10 emails per user per day
+  const withinLimit = await checkRateLimit(userId);
+  if (!withinLimit) {
+    functions.logger.warn(
+      `[checkHeartbeatForUser] Rate limit exceeded for user ${userId}`
+    );
+    return;
+  }
+
   // Send alert email
   const userName = partner.userName || "Your partner";
   const subject = `Check in with ${userName}`;
@@ -615,6 +671,8 @@ async function checkHeartbeatForUser(
       subject,
       html,
     });
+
+    await recordEmailSend(userId);
 
     // Record that we sent this alert
     await db

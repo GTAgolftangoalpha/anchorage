@@ -1,6 +1,8 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Default deny: no read or write access to any collection unless explicitly granted.
+
     // Users can only read/write their own data (document + all subcollections)
     match /users/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
@@ -10,10 +12,16 @@ service cloud.firestore {
       }
     }
 
-    // Partner acceptance tokens — readable by anyone with the token (for email links)
+    // Partner acceptance tokens: only Cloud Functions write here.
+    // Read restricted to authenticated users only (email link handler uses CF endpoint, not direct read).
     match /partnerInvites/{inviteId} {
-      allow read: if true;
-      allow write: if false; // Only Cloud Functions write here
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+
+    // Catch-all: deny everything else
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RelapseEntry {
@@ -44,7 +45,12 @@ class RelapseService {
   RelapseService._();
   static final RelapseService instance = RelapseService._();
 
-  static const _prefsKey = 'relapse_log_entries';
+  static const _secureKey = 'relapse_log_entries';
+  static const _legacyPrefsKey = 'relapse_log_entries';
+
+  static const _secureStorage = FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+  );
 
   final ValueNotifier<List<RelapseEntry>> entries = ValueNotifier([]);
 
@@ -72,13 +78,29 @@ class RelapseService {
 
   Future<void> _load() async {
     try {
+      // Try secure storage first
+      final raw = await _secureStorage.read(key: _secureKey);
+      if (raw != null) {
+        final list = jsonDecode(raw) as List;
+        entries.value = list
+            .map((e) => RelapseEntry.fromJson(e as Map<String, dynamic>))
+            .toList();
+        return;
+      }
+
+      // Migrate from SharedPreferences if present
       final prefs = await SharedPreferences.getInstance();
-      final raw = prefs.getString(_prefsKey);
-      if (raw == null) return;
-      final list = jsonDecode(raw) as List;
-      entries.value = list
-          .map((e) => RelapseEntry.fromJson(e as Map<String, dynamic>))
-          .toList();
+      final legacyRaw = prefs.getString(_legacyPrefsKey);
+      if (legacyRaw != null) {
+        final list = jsonDecode(legacyRaw) as List;
+        entries.value = list
+            .map((e) => RelapseEntry.fromJson(e as Map<String, dynamic>))
+            .toList();
+        // Write to secure storage and remove from SharedPreferences
+        await _save();
+        await prefs.remove(_legacyPrefsKey);
+        debugPrint('[RelapseService] migrated to secure storage');
+      }
     } catch (e) {
       debugPrint('[RelapseService] load error: $e');
     }
@@ -86,10 +108,9 @@ class RelapseService {
 
   Future<void> _save() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
       final json =
           jsonEncode(entries.value.map((e) => e.toJson()).toList());
-      await prefs.setString(_prefsKey, json);
+      await _secureStorage.write(key: _secureKey, value: json);
     } catch (e) {
       debugPrint('[RelapseService] save error: $e');
     }
