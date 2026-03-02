@@ -233,7 +233,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 Text('Quick Actions', style: theme.textTheme.titleMedium),
                 const SizedBox(height: 10),
 
-                // 2x2 grid
                 Row(
                   children: [
                     Expanded(
@@ -251,27 +250,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         onTap: () => context.push('/reflect'),
                       ),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
+                    const SizedBox(width: 12),
                     Expanded(
                       child: _QuickActionCard(
                         icon: Icons.replay,
                         label: 'Lapse Log',
                         onTap: () => context.push('/relapse-log'),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _QuickActionCard(
-                        icon: Icons.security,
-                        label: 'Guarded Apps',
-                        onTap: () async {
-                          await context.push('/guarded-apps');
-                          _refresh();
-                        },
                       ),
                     ),
                   ],
