@@ -18,7 +18,7 @@ class _GuardedAppsScreenState extends State<GuardedAppsScreen>
   bool _hasUsagePermission = false;
   bool _loading = true;
   bool _saving = false;
-  // True when we sent the user to Settings; on resume we auto-activate
+  // True when we sent the user to Settings; on resume we auto-save
   bool _waitingForPermission = false;
 
   @override
@@ -40,22 +40,22 @@ class _GuardedAppsScreenState extends State<GuardedAppsScreen>
     if (state == AppLifecycleState.resumed && _waitingForPermission) {
       _waitingForPermission = false;
       debugPrint('[GuardedApps] Returned from Settings, re-checking permission');
-      _recheckPermissionAndActivate();
+      _recheckPermissionAndSave();
     }
   }
 
-  Future<void> _recheckPermissionAndActivate() async {
+  Future<void> _recheckPermissionAndSave() async {
     final granted = await GuardService.hasUsagePermission();
     debugPrint('[GuardedApps] Permission re-check after Settings: granted=$granted');
     if (!mounted) return;
     setState(() => _hasUsagePermission = granted);
     if (granted) {
-      // Auto-activate now that we have permission
-      await _activateGuard();
+      // Auto-save now that we have permission
+      await _saveAndApply();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Usage access not granted. Tap ACTIVATE to try again.'),
+          content: Text('Usage access not granted. Tap SAVE to try again.'),
           backgroundColor: AppColors.danger,
         ),
       );
@@ -124,9 +124,9 @@ class _GuardedAppsScreenState extends State<GuardedAppsScreen>
 
   Future<void> _save() async {
     if (!_hasUsagePermission) {
-      // Send to Settings — we'll auto-activate when they return via
-      // didChangeAppLifecycleState + _recheckPermissionAndActivate()
-      debugPrint('[GuardedApps] No usage permission — opening Settings');
+      // Send to Settings; we will auto-save when they return via
+      // didChangeAppLifecycleState + _recheckPermissionAndSave()
+      debugPrint('[GuardedApps] No usage permission, opening Settings');
       _waitingForPermission = true;
       await GuardService.requestUsagePermission();
       // Don't check here — user is still in Settings app
@@ -142,18 +142,18 @@ class _GuardedAppsScreenState extends State<GuardedAppsScreen>
       return;
     }
 
-    await _activateGuard();
+    await _saveAndApply();
   }
 
-  Future<void> _activateGuard() async {
+  Future<void> _saveAndApply() async {
     setState(() => _saving = true);
     final packages = _selected.toList();
-    debugPrint('[GuardedApps] Activating guard for packages: $packages');
+    debugPrint('[GuardedApps] Saving guard for packages: $packages');
 
     await GuardService.saveGuardedPackages(packages);
 
     if (packages.isEmpty) {
-      debugPrint('[GuardedApps] No packages selected — stopping guard service');
+      debugPrint('[GuardedApps] No packages selected, stopping guard service');
       await GuardService.stop();
     } else {
       debugPrint('[GuardedApps] Starting guard service with ${packages.length} apps');
@@ -169,7 +169,7 @@ class _GuardedAppsScreenState extends State<GuardedAppsScreen>
           content: Text(
             packages.isEmpty
                 ? 'Guard stopped.'
-                : '⚓ Guarding ${packages.length} app(s). Open a guarded app to test.',
+                : 'Guarding ${packages.length} app${packages.length == 1 ? '' : 's'}. Open a guarded app to test.',
           ),
           backgroundColor: AppColors.navy,
           duration: const Duration(seconds: 4),
@@ -253,8 +253,8 @@ class _GuardedAppsScreenState extends State<GuardedAppsScreen>
                     )
                   : Text(
                       _hasUsagePermission
-                          ? 'ACTIVATE GUARD (${_selected.length})'
-                          : 'GRANT PERMISSION & ACTIVATE',
+                          ? 'SAVE (${_selected.length} app${_selected.length == 1 ? '' : 's'})'
+                          : 'GRANT PERMISSION & SAVE',
                       style: theme.textTheme.labelLarge,
                     ),
             ),
@@ -310,7 +310,7 @@ class _FreeTierBar extends StatelessWidget {
             child: Text(
               remaining > 0
                   ? '$remaining slot${remaining == 1 ? '' : 's'} remaining (free plan)'
-                  : 'All free slots used — upgrade for more',
+                  : 'All free slots used. Upgrade for more.',
               style: theme.textTheme.bodySmall?.copyWith(
                 color:
                     remaining > 0 ? AppColors.textSecondary : AppColors.danger,
@@ -337,7 +337,7 @@ class _PermissionBanner extends StatelessWidget {
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              'Usage access required. Tap "ACTIVATE" to open Settings.',
+              'Usage access required. Tap "SAVE" to open Settings.',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w500,
