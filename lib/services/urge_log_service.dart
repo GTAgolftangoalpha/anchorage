@@ -88,6 +88,23 @@ class UrgeLogService {
     return entries.value.take(7).toList();
   }
 
+  /// Count of urge log entries created in the current calendar month.
+  int urgeLogsThisMonth() {
+    final now = DateTime.now();
+    final monthStart = DateTime(now.year, now.month);
+    return entries.value
+        .where((e) => !e.timestamp.isBefore(monthStart))
+        .length;
+  }
+
+  /// For free users: remaining logs this month (max 3).
+  /// For premium users: returns -1 (unlimited).
+  int freeLogsRemaining({required bool isPremium}) {
+    if (isPremium) return -1;
+    final used = urgeLogsThisMonth();
+    return (3 - used).clamp(0, 3);
+  }
+
   Future<void> _load() async {
     try {
       // Try secure storage first

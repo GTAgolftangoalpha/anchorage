@@ -37,6 +37,12 @@ class _UrgeLogScreenState extends State<UrgeLogScreen> {
       );
       return;
     }
+    // Check free tier limit
+    final isPremium = PremiumService.instance.isPremium.value;
+    if (!isPremium &&
+        UrgeLogService.instance.freeLogsRemaining(isPremium: false) <= 0) {
+      return;
+    }
     setState(() => _saving = true);
     await UrgeLogService.instance.addEntry(
       trigger: _selectedTrigger!,
@@ -164,81 +170,107 @@ class _UrgeLogScreenState extends State<UrgeLogScreen> {
 
                 const SizedBox(height: 24),
 
-                // ── New entry form ────────────────────────────────
-                Text(
-                  'LOG AN URGE',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: AppColors.textMuted,
-                    letterSpacing: 1.5,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 12),
-
-                // Trigger dropdown
-                DropdownButtonFormField<String>(
-                  key: ValueKey(_formResetKey),
-                  initialValue: _selectedTrigger,
-                  decoration: const InputDecoration(
-                    labelText: 'What triggered this?',
-                    prefixIcon: Icon(Icons.psychology_outlined),
-                  ),
-                  items: UrgeLogService.triggers
-                      .map((t) => DropdownMenuItem(value: t, child: Text(t)))
-                      .toList(),
-                  onChanged: (v) => setState(() => _selectedTrigger = v),
-                ),
-
-                const SizedBox(height: 12),
-
-                // Notes
-                TextFormField(
-                  controller: _notesController,
-                  maxLines: 3,
-                  textCapitalization: TextCapitalization.sentences,
-                  decoration: const InputDecoration(
-                    labelText: 'Notes (optional)',
-                    hintText: 'What were you doing? How did you feel?',
-                    prefixIcon: Padding(
-                      padding: EdgeInsets.only(bottom: 48),
-                      child: Icon(Icons.notes),
-                    ),
-                    alignLabelWithHint: true,
-                  ),
-                ),
-
-                const SizedBox(height: 16),
-
-                SizedBox(
-                  width: double.infinity,
-                  child: FilledButton(
-                    onPressed: _saving ? null : _saveEntry,
-                    style: FilledButton.styleFrom(
-                      backgroundColor: AppColors.navy,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                // ── Free tier counter ─────────────────────────────
+                if (!isPaid) ...[
+                  Builder(builder: (_) {
+                    final remaining = UrgeLogService.instance
+                        .freeLogsRemaining(isPremium: false);
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Text(
+                        '$remaining of 3 logs remaining this month',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: remaining == 0
+                              ? AppColors.warning
+                              : AppColors.textMuted,
+                        ),
                       ),
+                    );
+                  }),
+                ],
+
+                // ── Upgrade card (free, 0 remaining) ─────────────
+                if (!isPaid &&
+                    UrgeLogService.instance.freeLogsRemaining(isPremium: false) == 0) ...[
+                  _UpgradeCard(onDismiss: () {}),
+                  const SizedBox(height: 24),
+                ] else ...[
+                  // ── New entry form ────────────────────────────────
+                  Text(
+                    'LOG AN URGE',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: AppColors.textMuted,
+                      letterSpacing: 1.5,
+                      fontWeight: FontWeight.w600,
                     ),
-                    child: _saving
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: AppColors.white,
-                            ),
-                          )
-                        : const Text(
-                            'LOG ENTRY',
-                            style: TextStyle(
-                              color: AppColors.white,
-                              letterSpacing: 1,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
                   ),
-                ),
+                  const SizedBox(height: 12),
+
+                  // Trigger dropdown
+                  DropdownButtonFormField<String>(
+                    key: ValueKey(_formResetKey),
+                    initialValue: _selectedTrigger,
+                    decoration: const InputDecoration(
+                      labelText: 'What triggered this?',
+                      prefixIcon: Icon(Icons.psychology_outlined),
+                    ),
+                    items: UrgeLogService.triggers
+                        .map((t) => DropdownMenuItem(value: t, child: Text(t)))
+                        .toList(),
+                    onChanged: (v) => setState(() => _selectedTrigger = v),
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  // Notes
+                  TextFormField(
+                    controller: _notesController,
+                    maxLines: 3,
+                    textCapitalization: TextCapitalization.sentences,
+                    decoration: const InputDecoration(
+                      labelText: 'Notes (optional)',
+                      hintText: 'What were you doing? How did you feel?',
+                      prefixIcon: Padding(
+                        padding: EdgeInsets.only(bottom: 48),
+                        child: Icon(Icons.notes),
+                      ),
+                      alignLabelWithHint: true,
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton(
+                      onPressed: _saving ? null : _saveEntry,
+                      style: FilledButton.styleFrom(
+                        backgroundColor: AppColors.navy,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: _saving
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: AppColors.white,
+                              ),
+                            )
+                          : const Text(
+                              'LOG ENTRY',
+                              style: TextStyle(
+                                color: AppColors.white,
+                                letterSpacing: 1,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                    ),
+                  ),
+                ],
 
                 const SizedBox(height: 32),
 
@@ -392,5 +424,83 @@ class _EntryCard extends StatelessWidget {
     if (diff == 0) return 'Today, $timeStr';
     if (diff == 1) return 'Yesterday, $timeStr';
     return '${dt.day}/${dt.month}, $timeStr';
+  }
+}
+
+class _UpgradeCard extends StatelessWidget {
+  final VoidCallback onDismiss;
+
+  const _UpgradeCard({required this.onDismiss});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final now = DateTime.now();
+    final nextMonth = DateTime(now.year, now.month + 1);
+    final daysUntilReset = nextMonth.difference(now).inDays;
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppColors.seafoam.withAlpha(15),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.seafoam.withAlpha(60)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'You are building self-awareness.',
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'You have used your 3 free logs this month. Unlimited logging '
+            'lets you track every urge so nothing gets missed. '
+            'Resets in $daysUntilReset days, or unlock now with ANCHORAGE+.',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: AppColors.textSecondary,
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: FilledButton(
+                  onPressed: () => context.push('/paywall'),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: AppColors.navy,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: const Text(
+                    'UPGRADE',
+                    style: TextStyle(
+                      color: AppColors.white,
+                      letterSpacing: 1,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              TextButton(
+                onPressed: onDismiss,
+                child: Text(
+                  'Got it',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: AppColors.textMuted,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }
