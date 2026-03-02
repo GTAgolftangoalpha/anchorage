@@ -17,7 +17,7 @@ class LearnScreen extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           children: [
             Text(
-              'Short reads on the science behind change. No jargon.',
+              'Evidence-based insights to support your journey.',
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: AppColors.textSecondary,
                 height: 1.5,
