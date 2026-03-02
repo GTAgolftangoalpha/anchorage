@@ -12,7 +12,9 @@ class UserPreferencesService {
   static const _keyOnboardingComplete = 'onboarding_complete';
   static const _keyInstallDate = 'install_date';
   static const _keyGender = 'user_gender';
-  static const _keyDateOfBirth = 'user_date_of_birth';
+  static const _keyBirthYear = 'user_birth_year';
+  static const _keyEmail = 'user_email';
+  static const _keyUsageFrequency = 'user_usage_frequency';
 
   String _firstName = '';
   List<String> _values = [];
@@ -21,7 +23,9 @@ class UserPreferencesService {
   bool _onboardingComplete = false;
   int _installDate = 0;
   String? _gender;
-  DateTime? _dateOfBirth;
+  int? _birthYear;
+  String? _email;
+  String? _usageFrequency;
 
   String get firstName => _firstName;
   List<String> get values => List.unmodifiable(_values);
@@ -30,7 +34,9 @@ class UserPreferencesService {
   bool get onboardingComplete => _onboardingComplete;
   int get installDate => _installDate;
   String? get gender => _gender;
-  DateTime? get dateOfBirth => _dateOfBirth;
+  int? get birthYear => _birthYear;
+  String? get email => _email;
+  String? get usageFrequency => _usageFrequency;
 
   Future<void> init() async {
     try {
@@ -42,9 +48,18 @@ class UserPreferencesService {
       _onboardingComplete = prefs.getBool(_keyOnboardingComplete) ?? false;
       _installDate = prefs.getInt(_keyInstallDate) ?? 0;
       _gender = prefs.getString(_keyGender);
-      final dobMillis = prefs.getInt(_keyDateOfBirth);
-      _dateOfBirth =
-          dobMillis != null ? DateTime.fromMillisecondsSinceEpoch(dobMillis) : null;
+      _birthYear = prefs.getInt(_keyBirthYear);
+      _email = prefs.getString(_keyEmail);
+      _usageFrequency = prefs.getString(_keyUsageFrequency);
+
+      // Migrate old dateOfBirth (milliseconds) to birthYear if present
+      final oldDob = prefs.getInt('user_date_of_birth');
+      if (oldDob != null && _birthYear == null) {
+        final year = DateTime.fromMillisecondsSinceEpoch(oldDob).year;
+        _birthYear = year;
+        await prefs.setInt(_keyBirthYear, year);
+        await prefs.remove('user_date_of_birth');
+      }
     } catch (e) {
       debugPrint('[UserPreferencesService] init error: $e');
     }
@@ -96,13 +111,33 @@ class UserPreferencesService {
     }
   }
 
-  Future<void> setDateOfBirth(DateTime? dob) async {
-    _dateOfBirth = dob;
+  Future<void> setBirthYear(int? year) async {
+    _birthYear = year;
     final prefs = await SharedPreferences.getInstance();
-    if (dob == null) {
-      await prefs.remove(_keyDateOfBirth);
+    if (year == null) {
+      await prefs.remove(_keyBirthYear);
     } else {
-      await prefs.setInt(_keyDateOfBirth, dob.millisecondsSinceEpoch);
+      await prefs.setInt(_keyBirthYear, year);
+    }
+  }
+
+  Future<void> setEmail(String? email) async {
+    _email = email;
+    final prefs = await SharedPreferences.getInstance();
+    if (email == null || email.isEmpty) {
+      await prefs.remove(_keyEmail);
+    } else {
+      await prefs.setString(_keyEmail, email);
+    }
+  }
+
+  Future<void> setUsageFrequency(String? frequency) async {
+    _usageFrequency = frequency;
+    final prefs = await SharedPreferences.getInstance();
+    if (frequency == null) {
+      await prefs.remove(_keyUsageFrequency);
+    } else {
+      await prefs.setString(_keyUsageFrequency, frequency);
     }
   }
 }
