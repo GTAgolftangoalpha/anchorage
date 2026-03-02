@@ -720,11 +720,20 @@ class AnchorageVpnService : VpnService() {
         private val WHITELIST_SUFFIXES = setOf(
             "google.com", "googleapis.com", "gstatic.com", "googlevideo.com",
             "googleusercontent.com", "googletagmanager.com",
+            "google-analytics.com",
             "firebase.com", "firebaseapp.com", "firebaseio.com", "firebasestorage.googleapis.com",
             "goog", // Google's own TLD
             "braze.com",
             "revenuecat.com",
             "apple.com", "icloud.com", "mzstatic.com",
+            // CDN and analytics services that must never be blocked
+            "optimizely.com",
+            "cloudflare.com",
+            "sentry.io",
+            "amplitude.com",
+            "segment.io",
+            "mixpanel.com",
+            "fonts.googleapis.com", "fonts.gstatic.com",
         )
 
         /**
@@ -738,8 +747,12 @@ class AnchorageVpnService : VpnService() {
             "googleapis.com", "gstatic.com", "google.com", "googlevideo.com",
             "firebase.com", "firebaseapp.com", "firebaseio.com",
             "crashlytics.com", "app-measurement.com",
-            "googletagmanager.com", "doubleclick.net",
+            "googletagmanager.com", "doubleclick.net", "google-analytics.com",
             "googleadservices.com", "googlesyndication.com", "2mdn.net",
+            // CDN providers
+            "optimizely.com", "cloudflare.com",
+            // Error tracking
+            "sentry.io",
             // Analytics / marketing SDKs
             "braze.com", "branch.io",
             "facebook.com", "fbcdn.net",
