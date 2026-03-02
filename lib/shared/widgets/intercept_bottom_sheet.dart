@@ -1,7 +1,11 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/constants/app_colors.dart';
+import '../../services/intercept_event_service.dart';
 import '../../services/intercept_prompt_service.dart';
+import '../../services/premium_service.dart';
 
 /// Shown as a full-height modal bottom sheet when a guarded app is
 /// detected in the foreground. The user must actively choose to reflect
@@ -187,12 +191,121 @@ class InterceptBottomSheet extends StatelessWidget {
                       ),
                     ),
                   ),
+
+                  // Upgrade nudge for free users
+                  _UpgradeNudge(),
+
                   const SizedBox(height: 32),
                 ],
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _UpgradeNudge extends StatefulWidget {
+  @override
+  State<_UpgradeNudge> createState() => _UpgradeNudgeState();
+}
+
+class _UpgradeNudgeState extends State<_UpgradeNudge> {
+  bool _show = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _check();
+  }
+
+  Future<void> _check() async {
+    if (PremiumService.instance.isPremium.value) return;
+
+    final totalIntercepts = InterceptEventService.instance.events.value.length;
+    if (totalIntercepts == 0) return;
+
+    final prefs = await SharedPreferences.getInstance();
+    final lastNudge = prefs.getString('paywall_nudge_last_date') ?? '';
+    final today = DateTime.now().toIso8601String().substring(0, 10);
+    if (lastNudge == today) return;
+
+    if (mounted) {
+      setState(() => _show = true);
+      await prefs.setString('paywall_nudge_last_date', today);
+      FirebaseAnalytics.instance.logEvent(
+        name: 'paywall_nudge_shown',
+        parameters: {'source': 'post_intercept'},
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_show) return const SizedBox.shrink();
+
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(top: 16),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.seafoam.withAlpha(15),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppColors.seafoam.withAlpha(40)),
+        ),
+        child: Column(
+          children: [
+            const Icon(Icons.shield_outlined,
+                color: AppColors.seafoam, size: 24),
+            const SizedBox(height: 8),
+            Text(
+              'Want stronger protection next time?',
+              textAlign: TextAlign.center,
+              style: theme.textTheme.titleSmall?.copyWith(
+                color: AppColors.white,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'ANCHORAGE+ adds hard blocking, unlimited guarded apps, '
+              'and a journal to track your patterns.',
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: AppColors.white.withAlpha(160),
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: () {
+                  FirebaseAnalytics.instance.logEvent(
+                    name: 'paywall_nudge_tapped',
+                    parameters: {'source': 'post_intercept'},
+                  );
+                  Navigator.of(context).pop();
+                  context.push('/paywall');
+                },
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.seafoam,
+                  foregroundColor: AppColors.navy,
+                ),
+                child: const Text(
+                  'SEE PLANS',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 1,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
