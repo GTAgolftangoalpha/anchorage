@@ -233,7 +233,17 @@ class AppRouter {
               ),
             ],
           ),
-          // Tab 1: Learn
+          // Tab 1: Journey (streak dashboard)
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/journey',
+                name: 'journey',
+                builder: (context, state) => const StreakDashboardScreen(),
+              ),
+            ],
+          ),
+          // Tab 2: Learn
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -243,23 +253,13 @@ class AppRouter {
               ),
             ],
           ),
-          // Tab 2: Exercises
+          // Tab 3: Exercises
           StatefulShellBranch(
             routes: [
               GoRoute(
                 path: '/exercises',
                 name: 'exercises',
                 builder: (context, state) => const ExerciseChooserScreen(),
-              ),
-            ],
-          ),
-          // Tab 3: Journey (streak dashboard)
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: '/journey',
-                name: 'journey',
-                builder: (context, state) => const StreakDashboardScreen(),
               ),
             ],
           ),

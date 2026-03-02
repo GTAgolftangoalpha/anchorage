@@ -19,11 +19,19 @@ class BottomNavScaffold extends StatelessWidget {
             initialLocation: index == navigationShell.currentIndex,
           );
         },
+        labelTextStyle: WidgetStatePropertyAll(
+          TextStyle(fontSize: 14),
+        ),
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
             selectedIcon: Icon(Icons.home),
             label: 'Home',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.timeline_outlined),
+            selectedIcon: Icon(Icons.timeline),
+            label: 'Journey',
           ),
           NavigationDestination(
             icon: Icon(Icons.menu_book_outlined),
@@ -34,11 +42,6 @@ class BottomNavScaffold extends StatelessWidget {
             icon: Icon(Icons.self_improvement_outlined),
             selectedIcon: Icon(Icons.self_improvement),
             label: 'Exercises',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.timeline_outlined),
-            selectedIcon: Icon(Icons.timeline),
-            label: 'Journey',
           ),
           NavigationDestination(
             icon: Icon(Icons.settings_outlined),
