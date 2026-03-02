@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../services/premium_service.dart';
@@ -391,6 +392,17 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
               icon: Icons.help_outline,
               title: 'Help & FAQ',
               onTap: () => context.push('/help'),
+            ),
+            _SettingsTile(
+              icon: Icons.feedback_outlined,
+              title: 'Send Feedback',
+              subtitle: 'Help us improve ANCHORAGE',
+              onTap: () {
+                launchUrl(
+                  Uri.parse(
+                      'mailto:hello@getanchorage.app?subject=ANCHORAGE%20Feedback%20(v1.0.0)'),
+                );
+              },
             ),
             _SettingsTile(
               icon: Icons.privacy_tip_outlined,
