@@ -718,22 +718,44 @@ class AnchorageVpnService : VpnService() {
          * never be blocked (Google services, Firebase, Apple, key analytics SDKs).
          */
         private val WHITELIST_SUFFIXES = setOf(
+            // Google ecosystem
             "google.com", "googleapis.com", "gstatic.com", "googlevideo.com",
             "googleusercontent.com", "googletagmanager.com",
-            "google-analytics.com",
-            "firebase.com", "firebaseapp.com", "firebaseio.com", "firebasestorage.googleapis.com",
+            "google-analytics.com", "googleadservices.com",
+            "googlesyndication.com", "doubleclick.net", "2mdn.net",
             "goog", // Google's own TLD
-            "braze.com",
+            // Firebase
+            "firebase.com", "firebaseapp.com", "firebaseio.com",
+            "crashlytics.com", "app-measurement.com",
+            // RevenueCat
             "revenuecat.com",
+            // Apple
             "apple.com", "icloud.com", "mzstatic.com",
-            // CDN and analytics services that must never be blocked
-            "optimizely.com",
-            "cloudflare.com",
+            // CDN providers
+            "optimizely.com", "cloudflare.com", "cloudflare-dns.com",
+            "akamai.com", "akamaized.net", "akamaihd.net",
+            "fastly.net", "fastlylb.net",
+            "cloudfront.net", "amazonaws.com",
+            // Error tracking and analytics
             "sentry.io",
             "amplitude.com",
-            "segment.io",
+            "segment.io", "segment.com",
             "mixpanel.com",
-            "fonts.googleapis.com", "fonts.gstatic.com",
+            "braze.com", "branch.io",
+            // Social SDKs (ad attribution, not content)
+            "facebook.com", "fbcdn.net",
+            "appsflyer.com", "adjust.com", "kochava.com",
+            // Microsoft / LinkedIn
+            "microsoft.com", "msn.com", "live.com", "outlook.com",
+            "linkedin.com",
+            // Payment and auth providers
+            "stripe.com", "paypal.com",
+            "auth0.com", "okta.com",
+            // Common app infrastructure
+            "algolia.com", "algolianet.com",
+            "twilio.com", "sendgrid.net",
+            "pusher.com", "intercom.io",
+            "zendesk.com",
         )
 
         /**
@@ -745,19 +767,25 @@ class AnchorageVpnService : VpnService() {
         private val INFRASTRUCTURE_SUFFIXES = setOf(
             // Google / Firebase
             "googleapis.com", "gstatic.com", "google.com", "googlevideo.com",
+            "googleusercontent.com", "googletagmanager.com",
             "firebase.com", "firebaseapp.com", "firebaseio.com",
             "crashlytics.com", "app-measurement.com",
-            "googletagmanager.com", "doubleclick.net", "google-analytics.com",
+            "doubleclick.net", "google-analytics.com",
             "googleadservices.com", "googlesyndication.com", "2mdn.net",
             // CDN providers
-            "optimizely.com", "cloudflare.com",
-            // Error tracking
+            "optimizely.com", "cloudflare.com", "cloudflare-dns.com",
+            "akamai.com", "akamaized.net", "akamaihd.net",
+            "fastly.net", "fastlylb.net",
+            "cloudfront.net", "amazonaws.com",
+            // Error tracking and analytics
             "sentry.io",
-            // Analytics / marketing SDKs
             "braze.com", "branch.io",
             "facebook.com", "fbcdn.net",
             "appsflyer.com", "adjust.com", "kochava.com",
             "mixpanel.com", "amplitude.com", "segment.io", "segment.com",
+            // Microsoft / LinkedIn
+            "microsoft.com", "msn.com", "live.com", "outlook.com",
+            "linkedin.com",
         )
     }
 }
