@@ -23,7 +23,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     with WidgetsBindingObserver {
   final PageController _controller = PageController();
   int _currentPage = 0;
-  static const _totalPages = 5;
+  static const _totalPages = 6;
 
   // Screen 1: Name + Email
   final _nameController = TextEditingController();
@@ -36,7 +36,23 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   bool _underageBlocked = false;
   String? _selectedUsageFrequency;
 
-  // Screen 3: Permissions
+  // Screen 3: Values
+  final Set<String> _selectedValues = {};
+
+  static const _valueOptions = [
+    'Relationship integrity',
+    'Self-respect',
+    'Being present for family',
+    'Career focus',
+    'Mental clarity',
+    'Physical health',
+    'Spiritual growth',
+    'Emotional stability',
+    'Trust',
+    'Freedom',
+  ];
+
+  // Screen 4: Permissions
   bool _usageGranted = false;
   bool _overlayGranted = false;
   bool _batteryExempt = false;
@@ -48,10 +64,10 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   bool _waitingForDeviceAdmin = false;
   bool _deviceAdminActive = false;
 
-  // Screen 4: Guarded apps
+  // Screen 5: Guarded apps
   final Set<String> _selectedApps = {};
 
-  // Screen 5: Accountability
+  // Screen 6: Accountability
   final _partnerNameController = TextEditingController();
   final _partnerEmailController = TextEditingController();
   bool _saving = false;
@@ -214,8 +230,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(_totalPages, (i) {
                   final isCurrent = i == _currentPage;
-                  // On the about-you page (index 1) use navy dots on white bg
-                  final onLightBg = _currentPage == 1;
+                  // Pages with white bg use navy dots
+                  final onLightBg = _currentPage == 1 || _currentPage == 2;
                   return AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
                     margin: const EdgeInsets.symmetric(horizontal: 4),
@@ -245,6 +261,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                 children: [
                   _buildWelcomePage(),
                   _buildAboutYouPage(),
+                  _buildValuesPage(),
                   _buildPermissionsPage(),
                   _buildGuardedAppsPage(),
                   _buildAccountabilityPage(),
@@ -825,7 +842,138 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     );
   }
 
-  // == Screen 3: Permissions ==============================================
+  // == Screen 3: Values =====================================================
+
+  Widget _buildValuesPage() {
+    final theme = Theme.of(context);
+
+    return Container(
+      color: AppColors.white,
+      child: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 32),
+                  Text(
+                    'What matters to you?',
+                    style: theme.textTheme.headlineMedium?.copyWith(
+                      color: AppColors.navy,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Choose 3 values. These will guide your ANCHORAGE experience.',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                      height: 1.5,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    '${_selectedValues.length} of 3 selected',
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      color: _selectedValues.length == 3
+                          ? AppColors.navy
+                          : AppColors.textMuted,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: _valueOptions.map((v) {
+                      final isSelected = _selectedValues.contains(v);
+                      return FilterChip(
+                        label: Text(v),
+                        selected: isSelected,
+                        selectedColor: AppColors.navy,
+                        backgroundColor: AppColors.lightGray,
+                        checkmarkColor: AppColors.white,
+                        labelStyle: TextStyle(
+                          color: isSelected ? AppColors.white : AppColors.navy,
+                          fontWeight:
+                              isSelected ? FontWeight.w600 : FontWeight.w400,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(24),
+                          side: BorderSide(
+                            color: isSelected
+                                ? AppColors.navy
+                                : AppColors.midGray,
+                          ),
+                        ),
+                        onSelected: (sel) {
+                          setState(() {
+                            if (sel && _selectedValues.length < 3) {
+                              _selectedValues.add(v);
+                            } else if (!sel) {
+                              _selectedValues.remove(v);
+                            }
+                          });
+                        },
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 24),
+                  Center(
+                    child: Text(
+                      'You can change these later in Settings.',
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: AppColors.textMuted,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(32, 8, 32, 16),
+            child: SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: _selectedValues.length == 3
+                    ? () {
+                        UserPreferencesService.instance
+                            .setValues(_selectedValues.toList());
+                        _nextPage();
+                      }
+                    : null,
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.navy,
+                  foregroundColor: AppColors.white,
+                  disabledBackgroundColor: AppColors.navy.withAlpha(30),
+                  disabledForegroundColor: AppColors.navy.withAlpha(80),
+                  padding: const EdgeInsets.symmetric(vertical: 18),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                child: Text(
+                  'CONTINUE',
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    color: _selectedValues.length == 3
+                        ? AppColors.white
+                        : AppColors.navy.withAlpha(80),
+                    letterSpacing: _selectedValues.length == 3 ? 2 : 1,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // == Screen 4: Permissions ==============================================
 
   Widget _buildPermissionsPage() {
     final theme = Theme.of(context);
@@ -957,7 +1105,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     );
   }
 
-  // == Screen 4: Guarded Apps =============================================
+  // == Screen 5: Guarded Apps =============================================
 
   Widget _buildGuardedAppsPage() {
     final theme = Theme.of(context);
@@ -1078,7 +1226,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     );
   }
 
-  // == Screen 5: Accountability Partner ===================================
+  // == Screen 6: Accountability Partner ===================================
 
   Widget _buildAccountabilityPage() {
     final theme = Theme.of(context);
