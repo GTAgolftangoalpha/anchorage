@@ -70,6 +70,42 @@ class _CustomBlocklistScreenState extends State<CustomBlocklistScreen> {
                 return ListView(
                   padding: const EdgeInsets.all(24),
                   children: [
+                    // How blocking works
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: AppColors.lightGray,
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(color: AppColors.midGray),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'How blocking works',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            'ANCHORAGE uses the Steven Black unified hosts list '
+                            'as its standard blocklist, which covers over 100,000 '
+                            'known adult content domains. This list is updated '
+                            'with each app update. Your custom domains below are '
+                            'added on top of this standard list.',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: AppColors.textSecondary,
+                              height: 1.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
                     // Explainer
                     Container(
                       padding: const EdgeInsets.all(20),
