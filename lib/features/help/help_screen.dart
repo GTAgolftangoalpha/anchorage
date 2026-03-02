@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/constants/app_colors.dart';
 
@@ -53,7 +54,7 @@ class HelpScreen extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('HELP & FAQ')),
+      appBar: AppBar(title: const Text('HELP & LEGAL')),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(24),
@@ -93,6 +94,27 @@ class HelpScreen extends StatelessWidget {
                     answer: faq.answer,
                   ),
                 )),
+            const SizedBox(height: 24),
+            Text(
+              'LEGAL',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: AppColors.textMuted,
+                letterSpacing: 1.5,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 12),
+            _LegalTile(
+              icon: Icons.privacy_tip_outlined,
+              title: 'Privacy Policy',
+              onTap: () => context.push('/privacy'),
+            ),
+            const SizedBox(height: 8),
+            _LegalTile(
+              icon: Icons.description_outlined,
+              title: 'Terms of Service',
+              onTap: () => context.push('/terms'),
+            ),
           ],
         ),
       ),
@@ -137,6 +159,51 @@ class _FaqTile extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _LegalTile extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final VoidCallback onTap;
+
+  const _LegalTile({
+    required this.icon,
+    required this.title,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: AppColors.lightGray,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.midGray),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: AppColors.navy, size: 20),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                title,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ),
+            const Icon(Icons.chevron_right, color: AppColors.slate, size: 20),
+          ],
+        ),
       ),
     );
   }

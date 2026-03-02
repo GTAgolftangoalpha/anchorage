@@ -238,19 +238,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
               onTap: () => context.push('/about'),
             ),
             _SettingsTile(
+              icon: Icons.favorite_outline,
+              title: 'Get Help',
+              subtitle: 'Crisis resources and support lines',
+              onTap: () => context.push('/sos'),
+            ),
+            _SettingsTile(
               icon: Icons.help_outline,
-              title: 'Help & FAQ',
+              title: 'Help & Legal',
+              subtitle: 'FAQ, privacy policy, and terms',
               onTap: () => context.push('/help'),
-            ),
-            _SettingsTile(
-              icon: Icons.privacy_tip_outlined,
-              title: 'Privacy Policy',
-              onTap: () => context.push('/privacy'),
-            ),
-            _SettingsTile(
-              icon: Icons.description_outlined,
-              title: 'Terms of Service',
-              onTap: () => context.push('/terms'),
             ),
 
             const SizedBox(height: 16),
