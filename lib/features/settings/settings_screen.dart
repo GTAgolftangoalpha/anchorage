@@ -1,14 +1,10 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../services/premium_service.dart';
 import '../../services/user_preferences_service.dart';
-import '../../services/vpn_service.dart';
-import '../../shared/widgets/anchor_logo.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -17,32 +13,7 @@ class SettingsScreen extends StatefulWidget {
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObserver {
-  bool _vpnActive = false;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
-    _refreshVpnState();
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) _refreshVpnState();
-  }
-
-  Future<void> _refreshVpnState() async {
-    final active = await VpnService.isVpnActive();
-    if (mounted) setState(() => _vpnActive = active);
-  }
-
+class _SettingsScreenState extends State<SettingsScreen> {
   static const _valueOptions = [
     'Relationship integrity',
     'Self-respect',
@@ -164,39 +135,6 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
     );
   }
 
-  Future<void> _signOut(BuildContext context) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Sign out?'),
-        content: const Text(
-          'This will clear all local data (logs, reflections, settings) '
-          'and sign you out. Your streak is backed up to the cloud and '
-          'will restore on sign-in.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: TextButton.styleFrom(foregroundColor: AppColors.danger),
-            child: const Text('Sign Out'),
-          ),
-        ],
-      ),
-    );
-    if (confirmed != true || !context.mounted) return;
-
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
-    await FirebaseAuth.instance.signOut();
-    if (context.mounted) {
-      context.go('/onboarding');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -207,78 +145,7 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
         child: ListView(
           padding: const EdgeInsets.all(24),
           children: [
-            // Profile card
-            ValueListenableBuilder<bool>(
-              valueListenable: PremiumService.instance.isPremium,
-              builder: (context, isPremium, _) {
-                return Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: AppColors.navy,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 56,
-                        height: 56,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: AppColors.white.withAlpha(15),
-                          border: Border.all(
-                            color: AppColors.white.withAlpha(60),
-                          ),
-                        ),
-                        child: const Center(
-                          child: AnchorLogo(size: 24, color: AppColors.white),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Builder(builder: (context) {
-                              final name =
-                                  UserPreferencesService.instance.firstName;
-                              return Text(
-                                name.isNotEmpty
-                                    ? 'Welcome, $name'
-                                    : 'Welcome, Sailor',
-                                style:
-                                    theme.textTheme.titleMedium?.copyWith(
-                                  color: AppColors.white,
-                                ),
-                              );
-                            }),
-                            Text(
-                              isPremium ? 'ANCHORAGE+' : 'Free plan',
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: isPremium
-                                    ? AppColors.gold
-                                    : AppColors.seafoam,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      if (!isPremium)
-                        TextButton(
-                          onPressed: () => context.push('/paywall'),
-                          style: TextButton.styleFrom(
-                            foregroundColor: AppColors.gold,
-                          ),
-                          child: const Text('UPGRADE'),
-                        ),
-                    ],
-                  ),
-                );
-              },
-            ),
-
-            const SizedBox(height: 32),
-
-            _SectionHeader(title: 'Personalisation'),
+            _SectionHeader(title: 'Profile'),
             _SettingsTile(
               icon: Icons.edit,
               title: 'Edit my name',
@@ -295,12 +162,6 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
                   : 'Not set',
               onTap: () => _showEditValuesSheet(context),
             ),
-            _SettingsTile(
-              icon: Icons.timeline,
-              title: 'My ANCHORAGE journey',
-              subtitle: 'Your progress and stats',
-              onTap: () => context.push('/journey'),
-            ),
 
             const SizedBox(height: 8),
             _SectionHeader(title: 'Protection'),
@@ -309,45 +170,6 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
               title: 'Guarded Apps',
               subtitle: 'Choose apps to intercept',
               onTap: () => context.push('/guarded-apps'),
-            ),
-            _SettingsTile(
-              icon: Icons.vpn_lock,
-              title: 'VPN Protection',
-              subtitle: _vpnActive
-                  ? 'Active — explicit content blocked'
-                  : 'Inactive — tap to enable',
-              onTap: () async {
-                if (_vpnActive) {
-                  await VpnService.stopVpn();
-                } else {
-                  final prepared = await VpnService.prepareVpn();
-                  if (prepared) await VpnService.startVpn();
-                }
-                await _refreshVpnState();
-              },
-              trailing: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: _vpnActive
-                      ? AppColors.seafoam.withAlpha(40)
-                      : AppColors.slate.withAlpha(30),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: _vpnActive
-                        ? AppColors.seafoam.withAlpha(120)
-                        : AppColors.slate.withAlpha(80),
-                  ),
-                ),
-                child: Text(
-                  _vpnActive ? 'ON' : 'OFF',
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: _vpnActive ? AppColors.seafoam : AppColors.slate,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1,
-                  ),
-                ),
-              ),
             ),
             _SettingsTile(
               icon: Icons.dns_outlined,
@@ -367,12 +189,28 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
             // ),
 
             const SizedBox(height: 8),
-            _SectionHeader(title: 'Account'),
-            _SettingsTile(
-              icon: Icons.star,
-              title: 'Subscription',
-              onTap: () => context.push('/paywall'),
+            _SectionHeader(title: 'Subscription'),
+            ValueListenableBuilder<bool>(
+              valueListenable: PremiumService.instance.isPremium,
+              builder: (context, isPremium, _) {
+                if (isPremium) {
+                  return _SettingsTile(
+                    icon: Icons.check_circle,
+                    title: 'ANCHORAGE+ Active',
+                    subtitle: 'Manage your subscription via Google Play',
+                  );
+                }
+                return _SettingsTile(
+                  icon: Icons.star,
+                  title: 'Upgrade to ANCHORAGE+',
+                  subtitle: 'Unlock unlimited apps, custom blocklist, and more',
+                  onTap: () => context.push('/paywall'),
+                );
+              },
             ),
+
+            const SizedBox(height: 8),
+            _SectionHeader(title: 'Data'),
             _SettingsTile(
               icon: Icons.picture_as_pdf,
               title: 'Export My Data',
@@ -382,17 +220,6 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
 
             const SizedBox(height: 8),
             _SectionHeader(title: 'Support'),
-            _SettingsTile(
-              icon: Icons.info_outline,
-              title: 'About ANCHORAGE',
-              subtitle: 'Our approach, beliefs, and privacy',
-              onTap: () => context.push('/about'),
-            ),
-            _SettingsTile(
-              icon: Icons.help_outline,
-              title: 'Help & FAQ',
-              onTap: () => context.push('/help'),
-            ),
             _SettingsTile(
               icon: Icons.feedback_outlined,
               title: 'Send Feedback',
@@ -405,6 +232,17 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
               },
             ),
             _SettingsTile(
+              icon: Icons.info_outline,
+              title: 'About ANCHORAGE',
+              subtitle: 'Our approach, beliefs, and privacy',
+              onTap: () => context.push('/about'),
+            ),
+            _SettingsTile(
+              icon: Icons.help_outline,
+              title: 'Help & FAQ',
+              onTap: () => context.push('/help'),
+            ),
+            _SettingsTile(
               icon: Icons.privacy_tip_outlined,
               title: 'Privacy Policy',
               onTap: () => context.push('/privacy'),
@@ -413,14 +251,6 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
               icon: Icons.description_outlined,
               title: 'Terms of Service',
               onTap: () => context.push('/terms'),
-            ),
-
-            const SizedBox(height: 8),
-            _SettingsTile(
-              icon: Icons.logout,
-              title: 'Sign Out',
-              titleColor: AppColors.danger,
-              onTap: () => _signOut(context),
             ),
 
             const SizedBox(height: 16),
@@ -462,17 +292,13 @@ class _SettingsTile extends StatelessWidget {
   final IconData icon;
   final String title;
   final String? subtitle;
-  final Widget? trailing;
   final VoidCallback? onTap;
-  final Color? titleColor;
 
   const _SettingsTile({
     required this.icon,
     required this.title,
     this.subtitle,
-    this.trailing,
     this.onTap,
-    this.titleColor,
   });
 
   @override
@@ -497,20 +323,19 @@ class _SettingsTile extends StatelessWidget {
           title,
           style: theme.textTheme.bodyLarge?.copyWith(
             fontWeight: FontWeight.w500,
-            color: titleColor ?? AppColors.textPrimary,
+            color: AppColors.textPrimary,
           ),
         ),
         subtitle: subtitle != null
             ? Text(subtitle!, style: theme.textTheme.bodySmall)
             : null,
-        trailing: trailing ??
-            (onTap != null
-                ? const Icon(
-                    Icons.chevron_right,
-                    color: AppColors.slate,
-                    size: 20,
-                  )
-                : null),
+        trailing: onTap != null
+            ? const Icon(
+                Icons.chevron_right,
+                color: AppColors.slate,
+                size: 20,
+              )
+            : null,
       ),
     );
   }
