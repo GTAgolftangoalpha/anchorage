@@ -4,7 +4,7 @@ import '../../core/constants/app_colors.dart';
 import '../../theme.dart';
 
 /// Physiological Sigh: double inhale (2s + 1s) then long exhale (6s).
-/// Fastest evidence-based technique for real-time stress reduction.
+/// A rapid stress-reduction breathing technique supported by recent neuroscience research.
 class PhysiologicalSighScreen extends StatefulWidget {
   const PhysiologicalSighScreen({super.key});
 
@@ -146,7 +146,7 @@ class _PhysiologicalSighScreenState extends State<PhysiologicalSighScreen>
             ),
             const SizedBox(height: 8),
             Text(
-              'The fastest way to calm your nervous system in real time',
+              'A rapid stress-reduction breathing technique supported by recent neuroscience research',
               textAlign: TextAlign.center,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: AppColors.white.withAlpha(120),

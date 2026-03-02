@@ -9,14 +9,14 @@ class ExerciseChooserScreen extends StatelessWidget {
     _ExerciseInfo(
       icon: Icons.square_outlined,
       title: 'Box Breathing',
-      subtitle: '4-4-4-4 pattern to calm your nervous system',
+      subtitle: 'A timed breathing pattern designed to calm your nervous system',
       duration: '4 min',
       route: '/exercise/box-breathing',
     ),
     _ExerciseInfo(
       icon: Icons.air,
       title: 'Physiological Sigh',
-      subtitle: 'Double inhale, long exhale to reduce stress fast',
+      subtitle: 'A rapid stress-reduction breathing technique supported by recent neuroscience research',
       duration: '3 min',
       route: '/exercise/physiological-sigh',
     ),

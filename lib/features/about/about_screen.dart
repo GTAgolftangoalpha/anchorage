@@ -52,7 +52,7 @@ class AboutScreen extends StatelessWidget {
               _SectionTitle(title: 'Our Approach'),
               const SizedBox(height: 12),
               Text(
-                "ANCHORAGE isn't just another blocker. It's built on Acceptance and Commitment Therapy (ACT) \u2014 the most evidence-based psychological approach for changing unwanted sexual behaviours, with clinical trials showing 85\u201393% reductions in problematic use.",
+                "ANCHORAGE is informed by Acceptance and Commitment Therapy (ACT), which has strong research support for helping people change unwanted behaviours. Early clinical trials applying ACT to compulsive pornography use have shown promising reductions in problematic viewing.",
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: AppColors.textSecondary,
                   height: 1.7,
@@ -199,6 +199,27 @@ class AboutScreen extends StatelessWidget {
                       const SizedBox(width: 6),
                       const Icon(Icons.open_in_new, color: AppColors.white, size: 14),
                     ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 32),
+              const Divider(color: AppColors.midGray),
+              const SizedBox(height: 24),
+
+              // Disclaimer
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppColors.lightGray,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.midGray),
+                ),
+                child: Text(
+                  'ANCHORAGE is a self-help tool. It is not a mental health service, and using it does not establish a therapeutic relationship. If you are experiencing significant distress, please seek support from a registered mental health professional.',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                    height: 1.6,
                   ),
                 ),
               ),
