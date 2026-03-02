@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../core/constants/app_colors.dart';
 import '../../models/guardable_app.dart';
 import '../../services/accountability_service.dart';
@@ -21,12 +23,17 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     with WidgetsBindingObserver {
   final PageController _controller = PageController();
   int _currentPage = 0;
-  static const _totalPages = 4;
+  static const _totalPages = 5;
 
   // Screen 1: Name
   final _nameController = TextEditingController();
 
-  // Screen 2: Permissions
+  // Screen 2: DOB + Gender
+  String? _selectedGender;
+  DateTime? _selectedDob;
+  bool _underageBlocked = false;
+
+  // Screen 3: Permissions
   bool _usageGranted = false;
   bool _overlayGranted = false;
   bool _batteryExempt = false;
@@ -38,10 +45,10 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   bool _waitingForDeviceAdmin = false;
   bool _deviceAdminActive = false;
 
-  // Screen 3: Guarded apps
+  // Screen 4: Guarded apps
   final Set<String> _selectedApps = {};
 
-  // Screen 4: Accountability
+  // Screen 5: Accountability
   final _partnerNameController = TextEditingController();
   final _partnerEmailController = TextEditingController();
   bool _saving = false;
@@ -221,6 +228,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                 onPageChanged: (page) => setState(() => _currentPage = page),
                 children: [
                   _buildWelcomePage(),
+                  _buildAboutYouPage(),
                   _buildPermissionsPage(),
                   _buildGuardedAppsPage(),
                   _buildAccountabilityPage(),
@@ -344,7 +352,312 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     );
   }
 
-  // ── Screen 2: Permissions ─────────────────────────────────────────
+  // ── Screen 2: About You (DOB + Gender) ───────────────────────────
+
+  bool _isUnder18(DateTime dob) {
+    final now = DateTime.now();
+    var age = now.year - dob.year;
+    if (now.month < dob.month ||
+        (now.month == dob.month && now.day < dob.day)) {
+      age--;
+    }
+    return age < 18;
+  }
+
+  Widget _buildAboutYouPage() {
+    if (_underageBlocked) return _buildUnderageScreen();
+
+    final theme = Theme.of(context);
+
+    return Column(
+      children: [
+        // Skip button
+        Align(
+          alignment: Alignment.topRight,
+          child: Padding(
+            padding: const EdgeInsets.only(right: 16, top: 4),
+            child: TextButton(
+              onPressed: () => _nextPage(),
+              child: Text(
+                'Skip',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: AppColors.white.withAlpha(160),
+                ),
+              ),
+            ),
+          ),
+        ),
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 8),
+                Text(
+                  'A bit about you',
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    color: AppColors.white,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'This helps us personalise your experience. Both are optional.',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: AppColors.white.withAlpha(160),
+                    height: 1.5,
+                  ),
+                ),
+
+                const SizedBox(height: 32),
+
+                // Gender selection
+                Text(
+                  'Gender',
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    color: AppColors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: ['Male', 'Female', 'Non-binary', 'Prefer not to say']
+                      .map((g) {
+                    final isSelected = _selectedGender == g;
+                    return GestureDetector(
+                      onTap: () => setState(() =>
+                          _selectedGender = isSelected ? null : g),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? AppColors.white
+                              : AppColors.white.withAlpha(10),
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(
+                            color: isSelected
+                                ? AppColors.white
+                                : AppColors.white.withAlpha(60),
+                          ),
+                        ),
+                        child: Text(
+                          g,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: isSelected
+                                ? AppColors.navy
+                                : AppColors.white,
+                            fontWeight: isSelected
+                                ? FontWeight.w600
+                                : FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+
+                const SizedBox(height: 32),
+
+                // Date of birth
+                Text(
+                  'When were you born?',
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    color: AppColors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    icon: const Icon(Icons.calendar_today, size: 18),
+                    label: Text(
+                      _selectedDob != null
+                          ? '${_selectedDob!.day}/${_selectedDob!.month}/${_selectedDob!.year}'
+                          : 'Select date',
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.white,
+                      side: BorderSide(color: AppColors.white.withAlpha(60)),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    onPressed: () async {
+                      final now = DateTime.now();
+                      final picked = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime(now.year - 25, now.month, now.day),
+                        firstDate: DateTime(1920),
+                        lastDate: now,
+                        builder: (context, child) {
+                          return Theme(
+                            data: Theme.of(context).copyWith(
+                              colorScheme: const ColorScheme.dark(
+                                primary: AppColors.seafoam,
+                                onPrimary: AppColors.navy,
+                                surface: AppColors.navy,
+                                onSurface: AppColors.white,
+                              ),
+                            ),
+                            child: child!,
+                          );
+                        },
+                      );
+                      if (picked != null && mounted) {
+                        if (_isUnder18(picked)) {
+                          setState(() => _underageBlocked = true);
+                          return;
+                        }
+                        setState(() => _selectedDob = picked);
+                      }
+                    },
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Center(
+                  child: TextButton(
+                    onPressed: () {
+                      setState(() => _selectedDob = null);
+                    },
+                    child: Text(
+                      'Prefer not to say',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: AppColors.white.withAlpha(140),
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 32),
+
+                // Privacy note
+                Center(
+                  child: Text(
+                    'Everything you share here stays on your device. We never see it.',
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: AppColors.white.withAlpha(100),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+            ),
+          ),
+        ),
+        _BottomButton(
+          label: 'CONTINUE',
+          onPressed: () {
+            // Save gender and DOB locally
+            UserPreferencesService.instance.setGender(_selectedGender);
+            UserPreferencesService.instance.setDateOfBirth(_selectedDob);
+            _nextPage();
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildUnderageScreen() {
+    final theme = Theme.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.all(32),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(
+            Icons.shield_outlined,
+            color: AppColors.white,
+            size: 64,
+          ),
+          const SizedBox(height: 32),
+          Text(
+            'ANCHORAGE is designed for adults.',
+            textAlign: TextAlign.center,
+            style: theme.textTheme.headlineMedium?.copyWith(
+              color: AppColors.white,
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'This app is for people aged 18 and over. If you are under 18 and struggling, '
+            'please talk to a trusted adult, school counsellor, or visit findahelpline.com for support.',
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: AppColors.white.withAlpha(200),
+              height: 1.7,
+            ),
+          ),
+          const SizedBox(height: 24),
+          GestureDetector(
+            onTap: () {
+              launchUrl(
+                Uri.parse('https://findahelpline.com'),
+                mode: LaunchMode.externalApplication,
+              );
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+              decoration: BoxDecoration(
+                color: AppColors.white.withAlpha(15),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.white.withAlpha(60)),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.language, color: AppColors.seafoam, size: 20),
+                  const SizedBox(width: 10),
+                  Text(
+                    'findahelpline.com',
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      color: AppColors.seafoam,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  const Icon(Icons.open_in_new, color: AppColors.seafoam, size: 14),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 32),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton(
+              onPressed: () => SystemNavigator.pop(),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.white,
+                side: BorderSide(color: AppColors.white.withAlpha(100)),
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              child: Text(
+                'Close',
+                style: theme.textTheme.labelLarge?.copyWith(
+                  color: AppColors.white,
+                  letterSpacing: 1,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Screen 3: Permissions ─────────────────────────────────────────
 
   Widget _buildPermissionsPage() {
     final theme = Theme.of(context);

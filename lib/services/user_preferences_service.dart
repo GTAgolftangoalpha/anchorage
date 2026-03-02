@@ -11,6 +11,8 @@ class UserPreferencesService {
   static const _keyImpact = 'user_impact';
   static const _keyOnboardingComplete = 'onboarding_complete';
   static const _keyInstallDate = 'install_date';
+  static const _keyGender = 'user_gender';
+  static const _keyDateOfBirth = 'user_date_of_birth';
 
   String _firstName = '';
   List<String> _values = [];
@@ -18,6 +20,8 @@ class UserPreferencesService {
   String _impact = '';
   bool _onboardingComplete = false;
   int _installDate = 0;
+  String? _gender;
+  DateTime? _dateOfBirth;
 
   String get firstName => _firstName;
   List<String> get values => List.unmodifiable(_values);
@@ -25,6 +29,8 @@ class UserPreferencesService {
   String get impact => _impact;
   bool get onboardingComplete => _onboardingComplete;
   int get installDate => _installDate;
+  String? get gender => _gender;
+  DateTime? get dateOfBirth => _dateOfBirth;
 
   Future<void> init() async {
     try {
@@ -35,6 +41,10 @@ class UserPreferencesService {
       _impact = prefs.getString(_keyImpact) ?? '';
       _onboardingComplete = prefs.getBool(_keyOnboardingComplete) ?? false;
       _installDate = prefs.getInt(_keyInstallDate) ?? 0;
+      _gender = prefs.getString(_keyGender);
+      final dobMillis = prefs.getInt(_keyDateOfBirth);
+      _dateOfBirth =
+          dobMillis != null ? DateTime.fromMillisecondsSinceEpoch(dobMillis) : null;
     } catch (e) {
       debugPrint('[UserPreferencesService] init error: $e');
     }
@@ -74,5 +84,25 @@ class UserPreferencesService {
     _installDate = millisSinceEpoch;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_keyInstallDate, millisSinceEpoch);
+  }
+
+  Future<void> setGender(String? gender) async {
+    _gender = gender;
+    final prefs = await SharedPreferences.getInstance();
+    if (gender == null) {
+      await prefs.remove(_keyGender);
+    } else {
+      await prefs.setString(_keyGender, gender);
+    }
+  }
+
+  Future<void> setDateOfBirth(DateTime? dob) async {
+    _dateOfBirth = dob;
+    final prefs = await SharedPreferences.getInstance();
+    if (dob == null) {
+      await prefs.remove(_keyDateOfBirth);
+    } else {
+      await prefs.setInt(_keyDateOfBirth, dob.millisecondsSinceEpoch);
+    }
   }
 }
