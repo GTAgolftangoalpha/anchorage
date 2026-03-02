@@ -15,10 +15,10 @@ import '../../features/exercises/physiological_sigh_screen.dart';
 import '../../features/exercises/urge_surfing_screen.dart';
 import '../../features/guarded_apps/guarded_apps_screen.dart';
 import '../../features/help/help_screen.dart';
+import '../../features/learn/learn_screen.dart';
 import '../../features/legal/legal_viewer_screen.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/intercept/intercept_screen.dart';
-import '../../features/journey/journey_screen.dart';
 import '../../features/onboarding/onboarding_screen.dart';
 import '../../features/paywall/paywall_screen.dart';
 import '../../features/reflect/reflect_screen.dart';
@@ -48,7 +48,7 @@ class AppRouter {
       return null;
     },
     routes: [
-      // ── Full-screen flows (no bottom nav) ────────────────────────────────
+      // Full-screen flows (no bottom nav)
       GoRoute(
         path: '/onboarding',
         name: 'onboarding',
@@ -150,24 +150,10 @@ class AppRouter {
         ),
       ),
       GoRoute(
-        path: '/journey',
-        name: 'journey',
-        pageBuilder: (context, state) => const MaterialPage(
-          child: JourneyScreen(),
-        ),
-      ),
-      GoRoute(
         path: '/export',
         name: 'export',
         pageBuilder: (context, state) => const MaterialPage(
           child: ExportScreen(),
-        ),
-      ),
-      GoRoute(
-        path: '/exercises',
-        name: 'exercises',
-        pageBuilder: (context, state) => const MaterialPage(
-          child: ExerciseChooserScreen(),
         ),
       ),
       GoRoute(
@@ -231,12 +217,13 @@ class AppRouter {
         ),
       ),
 
-      // ── Main shell with bottom navigation ────────────────────────────────
+      // Main shell with bottom navigation (5 tabs)
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return BottomNavScaffold(navigationShell: navigationShell);
         },
         branches: [
+          // Tab 0: Home
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -246,15 +233,37 @@ class AppRouter {
               ),
             ],
           ),
+          // Tab 1: Learn
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: '/streak',
-                name: 'streak',
+                path: '/learn',
+                name: 'learn',
+                builder: (context, state) => const LearnScreen(),
+              ),
+            ],
+          ),
+          // Tab 2: Exercises
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/exercises',
+                name: 'exercises',
+                builder: (context, state) => const ExerciseChooserScreen(),
+              ),
+            ],
+          ),
+          // Tab 3: Journey (streak dashboard)
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/journey',
+                name: 'journey',
                 builder: (context, state) => const StreakDashboardScreen(),
               ),
             ],
           ),
+          // Tab 4: Settings
           StatefulShellBranch(
             routes: [
               GoRoute(

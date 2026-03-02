@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/constants/app_colors.dart';
-import '../../features/psychoeducation/psychoeducation_cards.dart';
 import '../../models/guardable_app.dart';
 import '../../services/guard_service.dart';
 import '../../services/premium_service.dart';
@@ -58,6 +57,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final name = UserPreferencesService.instance.firstName;
 
     return Scaffold(
       backgroundColor: AppColors.white,
@@ -82,383 +82,228 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.all(20),
-            child: ValueListenableBuilder<StreakData>(
-              valueListenable: StreakService.instance.data,
-              builder: (context, streak, _) {
-                final message = StreakService.instance.motivationalMessage;
-                final bars = StreakService.instance.getWeeklyBarData();
-
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // ── Status hero card ──────────────────────────────
-                    _StatusCard(
-                      isActive: _guardActive,
-                      guardedApps: _guardedApps,
-                      onSetupTap: () async {
-                        await context.push('/guarded-apps');
-                        _refresh();
-                      },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Greeting
+                Center(
+                  child: Text(
+                    name.isNotEmpty ? 'Hey $name.' : 'Hey.',
+                    style: theme.textTheme.headlineMedium?.copyWith(
+                      color: AppColors.navy,
                     ),
+                  ),
+                ),
 
-                    const SizedBox(height: 16),
+                const SizedBox(height: 12),
 
-                    // ── Permission warning ────────────────────────────
-                    if (!_hasPermission) ...[
-                      _PermissionCard(
+                // Small streak indicator (tappable -> Journey tab)
+                ValueListenableBuilder<StreakData>(
+                  valueListenable: StreakService.instance.data,
+                  builder: (context, streak, _) {
+                    return Center(
+                      child: GestureDetector(
+                        onTap: () {
+                          // Navigate to Journey tab (index 3)
+                          final shell = StatefulNavigationShell.maybeOf(context);
+                          if (shell != null) {
+                            shell.goBranch(3);
+                          }
+                        },
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.anchor,
+                                color: AppColors.seafoam, size: 18),
+                            const SizedBox(width: 6),
+                            Text(
+                              '${streak.currentStreak} days anchored',
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: AppColors.textSecondary,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            const Icon(Icons.chevron_right,
+                                color: AppColors.slate, size: 16),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+
+                const SizedBox(height: 20),
+
+                // Status card
+                _StatusCard(
+                  isActive: _guardActive,
+                  guardedApps: _guardedApps,
+                  onSetupTap: () async {
+                    await context.push('/guarded-apps');
+                    _refresh();
+                  },
+                ),
+
+                const SizedBox(height: 16),
+
+                // Permission warning
+                if (!_hasPermission) ...[
+                  _PermissionCard(
+                    onTap: () async {
+                      await GuardService.requestUsagePermission();
+                      await Future.delayed(
+                          const Duration(milliseconds: 600));
+                      _refresh();
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                ],
+
+                // Upgrade banner (free users only)
+                ValueListenableBuilder<bool>(
+                  valueListenable: PremiumService.instance.isPremium,
+                  builder: (context, isPremium, _) {
+                    if (isPremium) return const SizedBox.shrink();
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: _UpgradeBanner(
+                        onTap: () => context.push('/paywall'),
+                      ),
+                    );
+                  },
+                ),
+
+                // Daily values card
+                Builder(builder: (context) {
+                  final values =
+                      UserPreferencesService.instance.values;
+                  if (values.isEmpty) return const SizedBox.shrink();
+                  final dayOfYear = DateTime.now()
+                      .difference(DateTime(DateTime.now().year))
+                      .inDays;
+                  final todayValue =
+                      values[dayOfYear % values.length];
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: GestureDetector(
+                      onTap: () => context.push('/reflect'),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: AppColors.white,
+                          borderRadius: BorderRadius.circular(14),
+                          border: const Border(
+                            left: BorderSide(
+                              color: AppColors.seafoam,
+                              width: 4,
+                            ),
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              todayValue,
+                              style: theme.textTheme.titleSmall
+                                  ?.copyWith(
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.navy,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              "What's one thing you can do today that honours this?",
+                              style: theme.textTheme.bodySmall
+                                  ?.copyWith(
+                                color: AppColors.textSecondary,
+                                height: 1.4,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+
+                // Quick Actions
+                Text('Quick Actions', style: theme.textTheme.titleMedium),
+                const SizedBox(height: 10),
+
+                // 2x2 grid
+                Row(
+                  children: [
+                    Expanded(
+                      child: _QuickActionCard(
+                        icon: Icons.edit_note,
+                        label: 'Log Urge',
+                        onTap: () => context.push('/urge-log'),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _QuickActionCard(
+                        icon: Icons.self_improvement,
+                        label: 'Reflect',
+                        onTap: () => context.push('/reflect'),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _QuickActionCard(
+                        icon: Icons.replay,
+                        label: 'Lapse Log',
+                        onTap: () => context.push('/relapse-log'),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _QuickActionCard(
+                        icon: Icons.security,
+                        label: 'Guarded Apps',
                         onTap: () async {
-                          await GuardService.requestUsagePermission();
-                          await Future.delayed(
-                              const Duration(milliseconds: 600));
+                          await context.push('/guarded-apps');
                           _refresh();
                         },
                       ),
-                      const SizedBox(height: 16),
-                    ],
-
-                    // ── Streak hero ──────────────────────────────────
-                    _StreakHero(
-                      currentStreak: streak.currentStreak,
-                      message: message,
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // ── Daily values card ──────────────────────────
-                    Builder(builder: (context) {
-                      final values =
-                          UserPreferencesService.instance.values;
-                      if (values.isEmpty) return const SizedBox.shrink();
-                      final dayOfYear = DateTime.now()
-                          .difference(DateTime(DateTime.now().year))
-                          .inDays;
-                      final todayValue =
-                          values[dayOfYear % values.length];
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 16),
-                        child: GestureDetector(
-                          onTap: () => context.push('/reflect'),
-                          child: Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: AppColors.white,
-                              borderRadius: BorderRadius.circular(14),
-                              border: const Border(
-                                left: BorderSide(
-                                  color: AppColors.seafoam,
-                                  width: 4,
-                                ),
-                              ),
-                            ),
-                            child: Column(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  todayValue,
-                                  style: theme.textTheme.titleSmall
-                                      ?.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColors.navy,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  "What's one thing you can do today that honours this?",
-                                  style: theme.textTheme.bodySmall
-                                      ?.copyWith(
-                                    color: AppColors.textSecondary,
-                                    height: 1.4,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    }),
-
-                    // ── Stats row ────────────────────────────────────
-                    Row(
-                      children: [
-                        _StatCard(
-                          label: 'Current Streak',
-                          value: '${streak.currentStreak}',
-                          unit: 'days',
-                          icon: Icons.local_fire_department,
-                          color: AppColors.gold,
-                        ),
-                        const SizedBox(width: 12),
-                        _StatCard(
-                          label: 'Longest Streak',
-                          value: '${streak.longestStreak}',
-                          unit: 'days',
-                          icon: Icons.emoji_events,
-                          color: AppColors.seafoam,
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    Row(
-                      children: [
-                        _StatCard(
-                          label: 'Weekly Intercepts',
-                          value: '${streak.weeklyIntercepts}',
-                          unit: 'blocked',
-                          icon: Icons.shield,
-                          color: AppColors.navy,
-                        ),
-                        const SizedBox(width: 12),
-                        _StatCard(
-                          label: 'Anchored Days',
-                          value: '${streak.totalCleanDays}',
-                          unit: 'total',
-                          icon: Icons.calendar_today,
-                          color: AppColors.success,
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // ── Weekly bar chart ──────────────────────────────
-                    Text('This Week', style: theme.textTheme.titleMedium),
-                    const SizedBox(height: 12),
-                    _WeeklyBarChart(bars: bars),
-
-                    const SizedBox(height: 20),
-
-                    // ── Exercises ──────────────────────────────────
-                    Text('Exercises', style: theme.textTheme.titleMedium),
-                    const SizedBox(height: 10),
-                    _ExerciseRow(
-                      exercises: const [
-                        _MiniExercise(
-                          icon: Icons.square_outlined,
-                          label: 'Box\nBreathing',
-                          route: '/exercise/box-breathing',
-                        ),
-                        _MiniExercise(
-                          icon: Icons.air,
-                          label: 'Physio\nSigh',
-                          route: '/exercise/physiological-sigh',
-                        ),
-                        _MiniExercise(
-                          icon: Icons.visibility,
-                          label: '5-4-3-2-1\nGrounding',
-                          route: '/exercise/grounding',
-                        ),
-                        _MiniExercise(
-                          icon: Icons.waves,
-                          label: 'Urge\nSurfing',
-                          route: '/exercise/urge-surfing',
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: () => context.push('/exercises'),
-                        child: const Text('See all exercises'),
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // ── Learn ──────────────────────────────────────
-                    Text('Learn', style: theme.textTheme.titleMedium),
-                    const SizedBox(height: 10),
-                    const PsychoeducationSection(),
-
-                    const SizedBox(height: 12),
-
-                    // ── Quick actions ────────────────────────────────
-                    Text('Quick Actions', style: theme.textTheme.titleMedium),
-                    const SizedBox(height: 10),
-
-                    _ActionTile(
-                      icon: Icons.security,
-                      title: 'Manage Guarded Apps',
-                      subtitle: _guardedPackages.isEmpty
-                          ? 'No apps guarded yet'
-                          : '${_guardedPackages.length} app${_guardedPackages.length == 1 ? '' : 's'} protected',
-                      onTap: () async {
-                        await context.push('/guarded-apps');
-                        _refresh();
-                      },
-                    ),
-                    const SizedBox(height: 8),
-                    _ActionTile(
-                      icon: Icons.edit_note,
-                      title: 'Urge Log',
-                      subtitle: 'Track triggers privately',
-                      onTap: () => context.push('/urge-log'),
-                    ),
-                    const SizedBox(height: 8),
-                    _ActionTile(
-                      icon: Icons.self_improvement,
-                      title: 'Reflect',
-                      subtitle: 'Journal a moment of clarity',
-                      onTap: () => context.push('/reflect'),
-                    ),
-                    const SizedBox(height: 8),
-                    _ActionTile(
-                      icon: Icons.replay,
-                      title: 'Lapse Log',
-                      subtitle: 'Understand what happened, move forward',
-                      onTap: () => context.push('/relapse-log'),
-                    ),
-                    ValueListenableBuilder<bool>(
-                      valueListenable: PremiumService.instance.isPremium,
-                      builder: (context, isPremium, _) {
-                        if (isPremium) return const SizedBox.shrink();
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 8),
-                          child: _ActionTile(
-                            icon: Icons.star_outline,
-                            title: 'Go Premium',
-                            subtitle: 'Guard unlimited apps + advanced features',
-                            onTap: () => context.push('/paywall'),
-                          ),
-                        );
-                      },
                     ),
                   ],
-                );
-              },
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
+                ),
 
-// ─────────────────────────────────────────────────────────────────────────────
+                const SizedBox(height: 24),
 
-class _StreakHero extends StatelessWidget {
-  final int currentStreak;
-  final String message;
-
-  const _StreakHero({required this.currentStreak, required this.message});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 24),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [AppColors.navy, AppColors.navyLight],
-        ),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Column(
-        children: [
-          Text(
-            '$currentStreak',
-            style: theme.textTheme.displayLarge?.copyWith(
-              color: AppColors.white,
-              fontSize: 56,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          Text(
-            'DAY STREAK',
-            style: theme.textTheme.titleSmall?.copyWith(
-              color: AppColors.seafoam,
-              letterSpacing: 4,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            message,
-            textAlign: TextAlign.center,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: AppColors.white.withAlpha(180),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _WeeklyBarChart extends StatelessWidget {
-  final List<int> bars;
-  static const _days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-
-  const _WeeklyBarChart({required this.bars});
-
-  @override
-  Widget build(BuildContext context) {
-    final now = DateTime.now();
-    final todayIndex = now.weekday - 1;
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.lightGray,
-        borderRadius: BorderRadius.circular(16),
-        border: const Border.fromBorderSide(
-          BorderSide(color: AppColors.midGray),
-        ),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: List.generate(7, (i) {
-          final active = bars[i] == 1;
-          final isToday = i == todayIndex;
-          final isFuture = i > todayIndex;
-
-          return Expanded(
-            child: Padding(
-              padding: EdgeInsets.only(
-                left: i == 0 ? 0 : 4,
-                right: i == 6 ? 0 : 4,
-              ),
-              child: Column(
-                children: [
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    height: active ? 48 : 20,
-                    decoration: BoxDecoration(
-                      color: isFuture
-                          ? AppColors.midGray.withAlpha(80)
-                          : (active ? AppColors.seafoam : AppColors.midGray),
-                      borderRadius: BorderRadius.circular(6),
-                      border: isToday
-                          ? Border.all(color: AppColors.navy, width: 2)
-                          : null,
+                // Crisis link
+                Center(
+                  child: GestureDetector(
+                    onTap: () => context.push('/sos'),
+                    child: Text(
+                      'Need to talk to someone?',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: AppColors.seafoam,
+                        decoration: TextDecoration.underline,
+                        decorationColor: AppColors.seafoam,
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 6),
-                  Text(
-                    _days[i],
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color:
-                              isToday ? AppColors.navy : AppColors.textMuted,
-                          fontWeight:
-                              isToday ? FontWeight.w700 : FontWeight.w500,
-                        ),
-                  ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 16),
+              ],
             ),
-          );
-        }),
+          ),
+        ),
       ),
     );
   }
 }
+
+// =========================================================================
 
 class _StatusCard extends StatelessWidget {
   final bool isActive;
@@ -564,7 +409,7 @@ class _StatusCard extends StatelessWidget {
               style: TextButton.styleFrom(
                 foregroundColor: AppColors.seafoam,
               ),
-              child: const Text('TAP TO SET UP GUARD →'),
+              child: const Text('TAP TO SET UP GUARD'),
             ),
         ],
       ),
@@ -607,7 +452,7 @@ class _PermissionCard extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Tap to grant in Settings — needed to detect guarded apps.',
+                    'Tap to grant in Settings. Needed to detect guarded apps.',
                     style: theme.textTheme.bodySmall,
                   ),
                 ],
@@ -621,45 +466,71 @@ class _PermissionCard extends StatelessWidget {
   }
 }
 
-class _StatCard extends StatelessWidget {
-  final String label;
-  final String value;
-  final String unit;
-  final IconData icon;
-  final Color color;
+class _UpgradeBanner extends StatelessWidget {
+  final VoidCallback onTap;
 
-  const _StatCard({
-    required this.label,
-    required this.value,
-    required this.unit,
-    required this.icon,
-    required this.color,
-  });
+  const _UpgradeBanner({required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Expanded(
+    return GestureDetector(
+      onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: AppColors.lightGray,
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [AppColors.navy, AppColors.navyLight],
+          ),
           borderRadius: BorderRadius.circular(16),
-          border: const Border.fromBorderSide(
-              BorderSide(color: AppColors.midGray)),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
-            Icon(icon, color: color, size: 20),
-            const SizedBox(height: 8),
-            Text(value,
-                style:
-                    theme.textTheme.displayMedium?.copyWith(fontSize: 32)),
-            Text(unit, style: theme.textTheme.bodySmall),
-            const SizedBox(height: 2),
-            Text(label, style: theme.textTheme.bodySmall),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Unlock the full ANCHORAGE experience',
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      color: AppColors.white,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Hard blocking, unlimited apps, journal, and more.',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: AppColors.white.withAlpha(160),
+                      height: 1.4,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: AppColors.seafoam,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      'SEE PLANS',
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: AppColors.navy,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+            Icon(Icons.star, color: AppColors.gold, size: 36),
           ],
         ),
       ),
@@ -667,77 +538,14 @@ class _StatCard extends StatelessWidget {
   }
 }
 
-class _MiniExercise {
+class _QuickActionCard extends StatelessWidget {
   final IconData icon;
   final String label;
-  final String route;
-
-  const _MiniExercise({
-    required this.icon,
-    required this.label,
-    required this.route,
-  });
-}
-
-class _ExerciseRow extends StatelessWidget {
-  final List<_MiniExercise> exercises;
-
-  const _ExerciseRow({required this.exercises});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: exercises.map((ex) {
-        return Expanded(
-          child: Padding(
-            padding: EdgeInsets.only(
-              right: ex == exercises.last ? 0 : 8,
-            ),
-            child: InkWell(
-              onTap: () => context.push(ex.route),
-              borderRadius: BorderRadius.circular(12),
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                decoration: BoxDecoration(
-                  color: AppColors.lightGray,
-                  borderRadius: BorderRadius.circular(12),
-                  border: const Border.fromBorderSide(
-                    BorderSide(color: AppColors.midGray),
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    Icon(ex.icon, color: AppColors.navy, size: 22),
-                    const SizedBox(height: 6),
-                    Text(
-                      ex.label,
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            fontSize: 11,
-                            height: 1.3,
-                          ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        );
-      }).toList(),
-    );
-  }
-}
-
-class _ActionTile extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
   final VoidCallback onTap;
 
-  const _ActionTile({
+  const _QuickActionCard({
     required this.icon,
-    required this.title,
-    required this.subtitle,
+    required this.label,
     required this.onTap,
   });
 
@@ -749,34 +557,31 @@ class _ActionTile extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(14),
       child: Container(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
         decoration: BoxDecoration(
-          color: AppColors.white,
+          color: AppColors.lightGray,
           borderRadius: BorderRadius.circular(14),
           border: const Border.fromBorderSide(
-              BorderSide(color: AppColors.midGray)),
+            BorderSide(color: AppColors.midGray),
+          ),
         ),
-        child: Row(
+        child: Column(
           children: [
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: AppColors.lightGray,
+                color: AppColors.white,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(icon, color: AppColors.navy, size: 20),
+              child: Icon(icon, color: AppColors.navy, size: 22),
             ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: theme.textTheme.titleSmall),
-                  Text(subtitle, style: theme.textTheme.bodySmall),
-                ],
+            const SizedBox(height: 8),
+            Text(
+              label,
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontSize: 13,
               ),
             ),
-            const Icon(Icons.chevron_right, color: AppColors.slate, size: 20),
           ],
         ),
       ),

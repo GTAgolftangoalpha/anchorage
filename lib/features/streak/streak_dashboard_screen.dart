@@ -14,13 +14,23 @@ class StreakDashboardScreen extends StatefulWidget {
   State<StreakDashboardScreen> createState() => _StreakDashboardScreenState();
 }
 
-class _StreakDashboardScreenState extends State<StreakDashboardScreen> {
+class _StreakDashboardScreenState extends State<StreakDashboardScreen>
+    with SingleTickerProviderStateMixin {
+  late final TabController _tabController;
+
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 3, vsync: this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkStreakReset();
     });
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   void _checkStreakReset() {
@@ -119,11 +129,9 @@ class _StreakDashboardScreenState extends State<StreakDashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
       appBar: AppBar(
-        title: const Text('STREAK'),
+        title: const Text('JOURNEY'),
         actions: [
           ValueListenableBuilder<bool>(
             valueListenable: PremiumService.instance.isPremium,
@@ -142,6 +150,17 @@ class _StreakDashboardScreenState extends State<StreakDashboardScreen> {
             },
           ),
         ],
+        bottom: TabBar(
+          controller: _tabController,
+          indicatorColor: AppColors.white,
+          labelColor: AppColors.white,
+          unselectedLabelColor: AppColors.white.withAlpha(140),
+          tabs: const [
+            Tab(text: 'Day'),
+            Tab(text: 'Week'),
+            Tab(text: 'Month'),
+          ],
+        ),
       ),
       body: SafeArea(
         child: ValueListenableBuilder<StreakData>(
@@ -150,112 +169,16 @@ class _StreakDashboardScreenState extends State<StreakDashboardScreen> {
             final bars = StreakService.instance.getWeeklyBarData();
             final message = StreakService.instance.motivationalMessage;
 
-            return SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Current streak hero
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 40,
-                      horizontal: 24,
-                    ),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [AppColors.navy, AppColors.navyLight],
-                      ),
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: Column(
-                      children: [
-                        Text(
-                          _streakEmoji(streak.currentStreak),
-                          style: const TextStyle(fontSize: 56),
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          '${streak.currentStreak}',
-                          style: theme.textTheme.displayLarge?.copyWith(
-                            color: AppColors.white,
-                            fontSize: 72,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        Text(
-                          'DAY STREAK',
-                          style: theme.textTheme.titleSmall?.copyWith(
-                            color: AppColors.seafoam,
-                            letterSpacing: 4,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          message,
-                          textAlign: TextAlign.center,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: AppColors.white.withAlpha(180),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // Stats row
-                  Row(
-                    children: [
-                      _MilestoneCard(
-                        emoji: '🏆',
-                        label: 'Best Streak',
-                        value: '${streak.longestStreak} days',
-                      ),
-                      const SizedBox(width: 12),
-                      _MilestoneCard(
-                        emoji: '📅',
-                        label: 'Total Anchored Days',
-                        value: '${streak.totalCleanDays}',
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // Weekly calendar
-                  Text('This Week', style: theme.textTheme.titleMedium),
-                  const SizedBox(height: 12),
-                  _WeekCalendar(bars: bars),
-
-                  const SizedBox(height: 24),
-
-                  // Milestones
-                  Text('Milestones', style: theme.textTheme.titleMedium),
-                  const SizedBox(height: 12),
-                  ValueListenableBuilder<bool>(
-                    valueListenable: PremiumService.instance.isPremium,
-                    builder: (context, isPremium, _) {
-                      return Column(
-                        children: _milestones.map(
-                          (m) => Padding(
-                            padding: const EdgeInsets.only(bottom: 8),
-                            child: _MilestoneRow(
-                              milestone: m,
-                              currentStreak: streak.currentStreak,
-                              isPremium: isPremium,
-                              onTap: () => _showMilestoneDialog(
-                                  context, m, streak.currentStreak, isPremium),
-                            ),
-                          ),
-                        ).toList(),
-                      );
-                    },
-                  ),
-                ],
-              ),
+            return TabBarView(
+              controller: _tabController,
+              children: [
+                // Day view
+                _DayView(streak: streak, message: message),
+                // Week view
+                _WeekView(streak: streak, bars: bars),
+                // Month view
+                _MonthView(streak: streak),
+              ],
             );
           },
         ),
@@ -371,27 +294,301 @@ class _StreakDashboardScreenState extends State<StreakDashboardScreen> {
   }
 
   static String _streakEmoji(int streak) {
-    if (streak >= 365) return '👑';
-    if (streak >= 180) return '🌟';
-    if (streak >= 90) return '🏴\u200d☠️';
-    if (streak >= 30) return '🧭';
-    if (streak >= 7) return '🌊';
-    if (streak >= 1) return '⚓';
-    return '🔥';
+    if (streak >= 365) return '\u{1F451}';
+    if (streak >= 180) return '\u{1F31F}';
+    if (streak >= 90) return '\u{1F3F4}\u200D\u2620\uFE0F';
+    if (streak >= 30) return '\u{1F9ED}';
+    if (streak >= 7) return '\u{1F30A}';
+    if (streak >= 1) return '\u2693';
+    return '\u{1F525}';
   }
 
   static const _milestones = [
-    (days: 1, label: '1 Day', emoji: '⚓'),
-    (days: 3, label: '3 Days', emoji: '🔥'),
-    (days: 7, label: '1 Week', emoji: '🌊'),
-    (days: 14, label: '2 Weeks', emoji: '🚀'),
-    (days: 30, label: '1 Month', emoji: '🧭'),
-    (days: 60, label: '2 Months', emoji: '💎'),
-    (days: 90, label: '3 Months', emoji: '🏴\u200d☠️'),
-    (days: 180, label: '6 Months', emoji: '🌟'),
-    (days: 365, label: '1 Year', emoji: '👑'),
+    (days: 1, label: '1 Day', emoji: '\u2693'),
+    (days: 3, label: '3 Days', emoji: '\u{1F525}'),
+    (days: 7, label: '1 Week', emoji: '\u{1F30A}'),
+    (days: 14, label: '2 Weeks', emoji: '\u{1F680}'),
+    (days: 30, label: '1 Month', emoji: '\u{1F9ED}'),
+    (days: 60, label: '2 Months', emoji: '\u{1F48E}'),
+    (days: 90, label: '3 Months', emoji: '\u{1F3F4}\u200D\u2620\uFE0F'),
+    (days: 180, label: '6 Months', emoji: '\u{1F31F}'),
+    (days: 365, label: '1 Year', emoji: '\u{1F451}'),
   ];
 }
+
+// == Day View =============================================================
+
+class _DayView extends StatelessWidget {
+  final StreakData streak;
+  final String message;
+
+  const _DayView({required this.streak, required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Current streak hero
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(
+              vertical: 40,
+              horizontal: 24,
+            ),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [AppColors.navy, AppColors.navyLight],
+              ),
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: Column(
+              children: [
+                Text(
+                  _StreakDashboardScreenState._streakEmoji(
+                      streak.currentStreak),
+                  style: const TextStyle(fontSize: 56),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  '${streak.currentStreak}',
+                  style: theme.textTheme.displayLarge?.copyWith(
+                    color: AppColors.white,
+                    fontSize: 72,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                Text(
+                  'DAY STREAK',
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    color: AppColors.seafoam,
+                    letterSpacing: 4,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: AppColors.white.withAlpha(180),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
+          // Stats row
+          Row(
+            children: [
+              _MilestoneCard(
+                emoji: '\u{1F3C6}',
+                label: 'Best Streak',
+                value: '${streak.longestStreak} days',
+              ),
+              const SizedBox(width: 12),
+              _MilestoneCard(
+                emoji: '\u{1F4C5}',
+                label: 'Total Anchored Days',
+                value: '${streak.totalCleanDays}',
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 24),
+
+          // Milestones
+          Text('Milestones', style: theme.textTheme.titleMedium),
+          const SizedBox(height: 12),
+          ValueListenableBuilder<bool>(
+            valueListenable: PremiumService.instance.isPremium,
+            builder: (context, isPremium, _) {
+              return Column(
+                children:
+                    _StreakDashboardScreenState._milestones.map(
+                  (m) => Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: _MilestoneRow(
+                      milestone: m,
+                      currentStreak: streak.currentStreak,
+                      isPremium: isPremium,
+                      onTap: () =>
+                          _StreakDashboardScreenState._showMilestoneDialog(
+                              context, m, streak.currentStreak, isPremium),
+                    ),
+                  ),
+                ).toList(),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// == Week View ============================================================
+
+class _WeekView extends StatelessWidget {
+  final StreakData streak;
+  final List<int> bars;
+
+  const _WeekView({required this.streak, required this.bars});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Weekly calendar
+          Text('This Week', style: theme.textTheme.titleMedium),
+          const SizedBox(height: 12),
+          _WeekCalendar(bars: bars),
+
+          const SizedBox(height: 24),
+
+          // Stats
+          Row(
+            children: [
+              _MilestoneCard(
+                emoji: '\u{1F6E1}\uFE0F',
+                label: 'Weekly Intercepts',
+                value: '${streak.weeklyIntercepts}',
+              ),
+              const SizedBox(width: 12),
+              _MilestoneCard(
+                emoji: '\u{1F525}',
+                label: 'Current Streak',
+                value: '${streak.currentStreak} days',
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 24),
+
+          Row(
+            children: [
+              _MilestoneCard(
+                emoji: '\u{1F3C6}',
+                label: 'Best Streak',
+                value: '${streak.longestStreak} days',
+              ),
+              const SizedBox(width: 12),
+              _MilestoneCard(
+                emoji: '\u{1F4C5}',
+                label: 'Total Anchored',
+                value: '${streak.totalCleanDays} days',
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// == Month View ===========================================================
+
+class _MonthView extends StatelessWidget {
+  final StreakData streak;
+
+  const _MonthView({required this.streak});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              _MilestoneCard(
+                emoji: '\u{1F525}',
+                label: 'Current Streak',
+                value: '${streak.currentStreak} days',
+              ),
+              const SizedBox(width: 12),
+              _MilestoneCard(
+                emoji: '\u{1F3C6}',
+                label: 'Best Streak',
+                value: '${streak.longestStreak} days',
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 12),
+
+          Row(
+            children: [
+              _MilestoneCard(
+                emoji: '\u{1F4C5}',
+                label: 'Total Anchored',
+                value: '${streak.totalCleanDays} days',
+              ),
+              const SizedBox(width: 12),
+              _MilestoneCard(
+                emoji: '\u{1F6E1}\uFE0F',
+                label: 'Weekly Intercepts',
+                value: '${streak.weeklyIntercepts}',
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 24),
+
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: AppColors.lightGray,
+              borderRadius: BorderRadius.circular(16),
+              border: const Border.fromBorderSide(
+                BorderSide(color: AppColors.midGray),
+              ),
+            ),
+            child: Column(
+              children: [
+                Icon(Icons.insights, color: AppColors.slate, size: 32),
+                const SizedBox(height: 12),
+                Text(
+                  'Monthly insights coming soon',
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Detailed monthly trends and patterns will appear here in a future update.',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: AppColors.textMuted,
+                    height: 1.5,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// == Shared Widgets =======================================================
 
 class _MilestoneCard extends StatelessWidget {
   final String emoji;
@@ -511,7 +708,6 @@ class _MilestoneRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final unlocked = currentStreak >= milestone.days;
-    // Earned milestones always show as unlocked — premium gates the dialog detail
     final showUnlocked = unlocked;
 
     return GestureDetector(

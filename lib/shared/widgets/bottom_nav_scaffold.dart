@@ -15,7 +15,7 @@ class BottomNavScaffold extends StatelessWidget {
         onDestinationSelected: (index) {
           navigationShell.goBranch(
             index,
-            // Re-tap active tab → go to branch root
+            // Re-tap active tab -> go to branch root
             initialLocation: index == navigationShell.currentIndex,
           );
         },
@@ -26,9 +26,19 @@ class BottomNavScaffold extends StatelessWidget {
             label: 'Home',
           ),
           NavigationDestination(
-            icon: Icon(Icons.local_fire_department_outlined),
-            selectedIcon: Icon(Icons.local_fire_department),
-            label: 'Streak',
+            icon: Icon(Icons.menu_book_outlined),
+            selectedIcon: Icon(Icons.menu_book),
+            label: 'Learn',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.self_improvement_outlined),
+            selectedIcon: Icon(Icons.self_improvement),
+            label: 'Exercises',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.timeline_outlined),
+            selectedIcon: Icon(Icons.timeline),
+            label: 'Journey',
           ),
           NavigationDestination(
             icon: Icon(Icons.settings_outlined),
