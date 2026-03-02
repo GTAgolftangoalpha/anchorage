@@ -68,7 +68,7 @@ class _RelapseLogScreenState extends State<RelapseLogScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('RELAPSE LOG'),
+        title: const Text('LAPSE LOG'),
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () => context.pop(),
@@ -132,7 +132,7 @@ class _RelapseLogScreenState extends State<RelapseLogScreen> {
                                 color: AppColors.gold, size: 32),
                             const SizedBox(height: 12),
                             Text(
-                              'Relapse Log is an ANCHORAGE+ feature',
+                              'Lapse Log is an ANCHORAGE+ feature',
                               textAlign: TextAlign.center,
                               style: theme.textTheme.titleSmall,
                             ),

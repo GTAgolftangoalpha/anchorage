@@ -444,7 +444,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
     ('🧭', 'Accountability partner reports'),
     ('🔒', 'Custom domain blocklist'),
     ('📊', 'Full urge log history & export'),
-    ('📓', 'Relapse log & guided reflection'),
+    ('📓', 'Lapse log & guided reflection'),
     ('🏆', 'Milestone badges & progress'),
   ];
 }

@@ -68,7 +68,7 @@ Future<void> main() async {
   // RevenueCat premium status
   await PremiumService.instance.init();
 
-  // Streak + urge log + reflections + relapse — local prefs + Firebase sync
+  // Streak + urge log + reflections + lapse log — secure storage + Firebase sync
   await StreakService.instance.init();
   await UrgeLogService.instance.init();
   await ReflectService.instance.init();

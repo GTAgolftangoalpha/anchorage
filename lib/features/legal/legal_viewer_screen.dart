@@ -113,7 +113,7 @@ class LegalHtml {
 <p>The following data is stored exclusively on your device using local storage and is <strong>never</strong> transmitted to our servers:</p>
 <ul>
   <li><strong>Urge logs</strong> &mdash; trigger categories, timestamps, and optional notes</li>
-  <li><strong>Relapse logs</strong> &mdash; guided reflection responses (what happened, what triggered it, what you learned, what to do next time)</li>
+  <li><strong>Lapse logs</strong> &mdash; guided reflection responses (what happened, what triggered it, what you learned, what to do next time)</li>
   <li><strong>Reflection entries</strong> &mdash; mood ratings and free-text journal entries</li>
   <li><strong>Personal values</strong> &mdash; your selected core values (up to 3)</li>
   <li><strong>First name</strong> &mdash; used only for personalising the app locally</li>
@@ -142,7 +142,7 @@ class LegalHtml {
 
 <h3>1.4 Third-Party Services</h3>
 <ul>
-  <li><strong>SendGrid</strong> &mdash; sends accountability emails (weekly reports, partner invitations, and protection alerts). Processes the recipient email and report content (streak data only, never urge/relapse details).</li>
+  <li><strong>SendGrid</strong> &mdash; sends accountability emails (weekly reports, partner invitations, and protection alerts). Processes the recipient email and report content (streak data only, never urge/lapse details).</li>
   <li><strong>RevenueCat</strong> &mdash; processes subscriptions through Google Play. We receive subscription status but never payment card details.</li>
 </ul>
 
@@ -193,7 +193,7 @@ class LegalHtml {
   <li>Firebase Security Rules restrict data access to authenticated users</li>
   <li>HTTPS encryption for all network communication</li>
   <li>Minimal data collection &mdash; only what is strictly necessary</li>
-  <li>No server-side storage of sensitive personal data (urge logs, relapse logs, reflections)</li>
+  <li>No server-side storage of sensitive personal data (urge logs, lapse logs, reflections)</li>
 </ul>
 
 <h2>8. Children's Privacy</h2>

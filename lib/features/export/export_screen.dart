@@ -244,7 +244,7 @@ class _ExportScreenState extends State<ExportScreen> {
           ),
         ),
         const SizedBox(height: 10),
-        _IncludedItem(label: 'Overview (streak, clean days, intercepts)'),
+        _IncludedItem(label: 'Overview (streak, anchored days, intercepts)'),
         _IncludedItem(label: 'Emotional patterns from intercepts'),
         _IncludedItem(label: 'Urge log entries with triggers'),
         _IncludedItem(label: 'Reflection journal entries'),

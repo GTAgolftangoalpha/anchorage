@@ -25,7 +25,7 @@ class HelpScreen extends StatelessWidget {
     (
       question: 'Is my data private?',
       answer:
-          'Yes. Urge logs, relapse reflections, and journal entries are '
+          'Yes. Urge logs, lapse reflections, and journal entries are '
           'stored locally on your device only. They are never uploaded to '
           'our servers. Streak data is synced to Firebase so it persists '
           'across reinstalls, but no personal content is included.',

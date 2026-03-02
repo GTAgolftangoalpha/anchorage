@@ -308,8 +308,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     const SizedBox(height: 8),
                     _ActionTile(
                       icon: Icons.replay,
-                      title: 'Relapse Log',
-                      subtitle: 'Track setbacks, build awareness',
+                      title: 'Lapse Log',
+                      subtitle: 'Understand what happened, move forward',
                       onTap: () => context.push('/relapse-log'),
                     ),
                     ValueListenableBuilder<bool>(

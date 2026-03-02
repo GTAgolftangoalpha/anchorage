@@ -199,7 +199,7 @@ class PdfGenerator {
       data: [
         ['Current streak', '${streak.currentStreak} days'],
         ['Longest streak', '${streak.longestStreak} days'],
-        ['Total clean days', '${streak.totalCleanDays}'],
+        ['Total anchored days', '${streak.totalCleanDays}'],
         ['Weekly intercepts', '${streak.weeklyIntercepts}'],
         ['Intercepts in period', '$interceptCount'],
       ],
