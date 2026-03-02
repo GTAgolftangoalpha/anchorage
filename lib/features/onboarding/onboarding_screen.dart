@@ -1096,6 +1096,16 @@ class _OnboardingScreenState extends State<OnboardingScreen>
             ),
           ),
           const SizedBox(height: 16),
+          Center(
+            child: Text(
+              'Everything you write stays on your device. We never see it.',
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: AppColors.white.withAlpha(100),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
         ],
       ),
     );

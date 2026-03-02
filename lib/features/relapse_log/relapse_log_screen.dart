@@ -160,6 +160,24 @@ class _RelapseLogScreenState extends State<RelapseLogScreen> {
                         ),
                       ),
                     ] else ...[
+                      // Grounding prompt
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: AppColors.seafoam.withAlpha(15),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          'Take a breath. You are here. You are choosing to reflect.',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: AppColors.textSecondary,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+
                       // Guided prompts
                       Text(
                         'GUIDED REFLECTION',
@@ -226,6 +244,19 @@ class _RelapseLogScreenState extends State<RelapseLogScreen> {
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Center(
+                        child: GestureDetector(
+                          onTap: () => context.push('/sos'),
+                          child: Text(
+                            'Need to talk to someone?',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: AppColors.textMuted,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
                         ),
                       ),
                     ],

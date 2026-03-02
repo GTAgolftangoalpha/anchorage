@@ -270,6 +270,19 @@ class _UrgeLogScreenState extends State<UrgeLogScreen> {
                             ),
                     ),
                   ),
+                  const SizedBox(height: 16),
+                  Center(
+                    child: GestureDetector(
+                      onTap: () => context.push('/sos'),
+                      child: Text(
+                        'Need to talk to someone?',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: AppColors.textMuted,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
 
                 const SizedBox(height: 32),
