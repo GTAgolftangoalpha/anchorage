@@ -231,14 +231,14 @@ class _ReflectScreenState extends State<ReflectScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: AppColors.seafoam.withAlpha(15),
+                  color: const Color(0xFF1A6B72),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  'Take a breath. You are here. You are choosing to reflect.',
+                  'Take a breath. You are safe here. What is on your mind?',
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: AppColors.textSecondary,
-                    fontStyle: FontStyle.italic,
+                    color: AppColors.white,
+                    height: 1.5,
                   ),
                 ),
               ),
@@ -296,10 +296,11 @@ class _ReflectScreenState extends State<ReflectScreen> {
               Center(
                 child: GestureDetector(
                   onTap: () => context.push('/sos'),
-                  child: Text(
+                  child: const Text(
                     'Need to talk to someone?',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: AppColors.textMuted,
+                    style: TextStyle(
+                      color: Color(0xFF1A6B72),
+                      fontSize: 13,
                       decoration: TextDecoration.underline,
                     ),
                   ),

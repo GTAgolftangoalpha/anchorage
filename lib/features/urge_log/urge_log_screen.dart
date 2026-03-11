@@ -274,10 +274,11 @@ class _UrgeLogScreenState extends State<UrgeLogScreen> {
                   Center(
                     child: GestureDetector(
                       onTap: () => context.push('/sos'),
-                      child: Text(
+                      child: const Text(
                         'Need to talk to someone?',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: AppColors.textMuted,
+                        style: TextStyle(
+                          color: Color(0xFF1A6B72),
+                          fontSize: 13,
                           decoration: TextDecoration.underline,
                         ),
                       ),
