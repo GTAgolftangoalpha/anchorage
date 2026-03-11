@@ -1,5 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/constants/app_colors.dart';
@@ -26,6 +30,103 @@ class _SettingsScreenState extends State<SettingsScreen> {
     'Trust',
     'Freedom',
   ];
+
+  bool _deleting = false;
+
+  Future<void> _deleteAllData() async {
+    setState(() => _deleting = true);
+    try {
+      // 1. Clear flutter_secure_storage
+      const secureStorage = FlutterSecureStorage(
+        aOptions: AndroidOptions(encryptedSharedPreferences: true),
+      );
+      await secureStorage.deleteAll();
+
+      // 2. Clear SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.clear();
+
+      // 3. Delete Firestore user document and subcollections
+      final uid = FirebaseAuth.instance.currentUser?.uid;
+      if (uid != null) {
+        final userDoc =
+            FirebaseFirestore.instance.collection('users').doc(uid);
+        const subcollections = [
+          'urge_logs',
+          'reflect_entries',
+          'intercept_events',
+          'lapse_logs',
+          'accountability',
+          'partners',
+          'stats',
+          'heartbeats',
+          'tamper_events',
+        ];
+        for (final sub in subcollections) {
+          final snap = await userDoc.collection(sub).get();
+          for (final doc in snap.docs) {
+            await doc.reference.delete();
+          }
+        }
+        await userDoc.delete();
+      }
+
+      // 4. Sign out of FirebaseAuth
+      await FirebaseAuth.instance.signOut();
+
+      if (!mounted) return;
+      setState(() => _deleting = false);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('All your data has been deleted.'),
+          backgroundColor: AppColors.success,
+        ),
+      );
+
+      // 5. Navigate to onboarding (fresh install state)
+      context.go('/onboarding');
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _deleting = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error deleting data: $e'),
+          backgroundColor: AppColors.danger,
+        ),
+      );
+    }
+  }
+
+  void _confirmDeleteAllData() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete everything?'),
+        content: const Text(
+          'This will permanently delete all your logs, journal entries, '
+          'streak data, and preferences from this device. '
+          'This cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              _deleteAllData();
+            },
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.red.shade700,
+            ),
+            child: const Text('Yes, delete everything'),
+          ),
+        ],
+      ),
+    );
+  }
 
   void _showEditNameDialog(BuildContext context) {
     final controller = TextEditingController(
@@ -141,10 +242,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('SETTINGS')),
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(24),
-          children: [
+      body: Stack(
+        children: [
+          SafeArea(
+            child: ListView(
+              padding: const EdgeInsets.all(24),
+              children: [
             _SectionHeader(title: 'Profile'),
             _SettingsTile(
               icon: Icons.edit,
@@ -250,6 +353,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
               onTap: () => context.push('/help'),
             ),
 
+            const SizedBox(height: 8),
+            _SectionHeader(title: 'Danger Zone'),
+            _SettingsTile(
+              icon: Icons.delete_forever_outlined,
+              title: 'Delete All My Data',
+              subtitle: 'Permanently erase everything from this device',
+              onTap: _deleting ? null : _confirmDeleteAllData,
+              iconColor: Colors.red.shade700,
+              titleColor: Colors.red.shade700,
+            ),
+
             const SizedBox(height: 16),
             Center(
               child: Text(
@@ -257,8 +371,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 style: theme.textTheme.bodySmall,
               ),
             ),
-          ],
-        ),
+              ],
+            ),
+          ),
+          if (_deleting)
+            Container(
+              color: Colors.black.withAlpha(120),
+              child: const Center(
+                child: CircularProgressIndicator(color: AppColors.white),
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -290,12 +413,16 @@ class _SettingsTile extends StatelessWidget {
   final String title;
   final String? subtitle;
   final VoidCallback? onTap;
+  final Color? iconColor;
+  final Color? titleColor;
 
   const _SettingsTile({
     required this.icon,
     required this.title,
     this.subtitle,
     this.onTap,
+    this.iconColor,
+    this.titleColor,
   });
 
   @override
@@ -314,13 +441,13 @@ class _SettingsTile extends StatelessWidget {
             color: AppColors.lightGray,
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Icon(icon, color: AppColors.navy, size: 20),
+          child: Icon(icon, color: iconColor ?? AppColors.navy, size: 20),
         ),
         title: Text(
           title,
           style: theme.textTheme.bodyLarge?.copyWith(
             fontWeight: FontWeight.w500,
-            color: AppColors.textPrimary,
+            color: titleColor ?? AppColors.textPrimary,
           ),
         ),
         subtitle: subtitle != null

@@ -188,6 +188,7 @@ class LegalHtml {
   <li><strong>Rectification</strong> &mdash; correct any inaccurate data</li>
   <li><strong>Withdraw consent</strong> &mdash; stop data processing at any time</li>
 </ul>
+<p>You can delete all your data at any time from Settings > Delete All My Data.</p>
 <p>To exercise any of these rights, email us at the address below. We will respond within 30 days.</p>
 
 <h2>7. Data Security</h2>
