@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -198,6 +199,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       await UserPreferencesService.instance
           .setInstallDate(DateTime.now().millisecondsSinceEpoch);
     }
+
+    FirebaseAnalytics.instance.logEvent(name: 'onboarding_complete');
 
     if (!mounted) return;
     setState(() => _saving = false);
@@ -455,6 +458,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                 Navigator.pop(ctx);
                 final year = dateTime.year;
                 if (_isUnder18(year)) {
+                  FirebaseAnalytics.instance.logEvent(name: 'onboarding_blocked_minor');
                   setState(() => _underageBlocked = true);
                   return;
                 }
@@ -610,6 +614,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                   Center(
                     child: TextButton(
                       onPressed: () {
+                        FirebaseAnalytics.instance.logEvent(name: 'onboarding_skipped_dob');
                         setState(() {
                           _dobSkipped = true;
                           _selectedBirthYear = null;

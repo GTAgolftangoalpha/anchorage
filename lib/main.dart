@@ -1,5 +1,10 @@
+import 'dart:async';
+import 'dart:ui';
+
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -39,7 +44,7 @@ Future<void> main() async {
     ),
   );
 
-  // User preferences (first name, values, onboarding state) — must load
+  // User preferences (first name, values, onboarding state) -- must load
   // before router is created so the redirect can check onboarding status.
   await UserPreferencesService.instance.init();
 
@@ -49,6 +54,13 @@ Future<void> main() async {
   } catch (e) {
     debugPrint('[ANCHORAGE] Firebase init failed: $e');
   }
+
+  // Crashlytics -- forward all Flutter and platform errors
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+  PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    return true;
+  };
 
   // Anonymous sign-in so Firestore always has a valid uid.
   // Separate try/catch so a transient network error doesn't skip auth entirely.
@@ -69,7 +81,13 @@ Future<void> main() async {
   // RevenueCat premium status
   await PremiumService.instance.init();
 
-  // Streak + urge log + reflections + lapse log — secure storage + Firebase sync
+  // Set Crashlytics custom key (non-PII)
+  FirebaseCrashlytics.instance.setCustomKey(
+    'is_premium',
+    PremiumService.instance.isPremium.value.toString(),
+  );
+
+  // Streak + urge log + reflections + lapse log -- secure storage + Firebase sync
   await StreakService.instance.init();
   await UrgeLogService.instance.init();
   await ReflectService.instance.init();
@@ -78,7 +96,7 @@ Future<void> main() async {
   await InterceptEventService.instance.init();
 
   // Sync accountability stats whenever streak or reflect data changes.
-  // Fire-and-forget — updateStats has its own error handling.
+  // Fire-and-forget -- updateStats has its own error handling.
   void syncStats() {
     final streak = StreakService.instance.data.value;
     AccountabilityService.instance.updateStats(
@@ -91,7 +109,7 @@ Future<void> main() async {
   StreakService.instance.data.addListener(syncStats);
   ReflectService.instance.entries.addListener(syncStats);
 
-  // Heartbeat — schedule 4-hour periodic heartbeat + send one now.
+  // Heartbeat -- schedule 4-hour periodic heartbeat + send one now.
   // Fire-and-forget with timeout so a slow channel never blocks startup.
   TamperService.scheduleHeartbeat()
       .timeout(const Duration(seconds: 3), onTimeout: () {})
@@ -100,13 +118,13 @@ Future<void> main() async {
       .timeout(const Duration(seconds: 3), onTimeout: () {})
       .catchError((_) {});
 
-  // Guard service — wire native → Flutter callbacks
+  // Guard service -- wire native -> Flutter callbacks
   GuardService.init();
 
-  // VPN service — wire native → Flutter callbacks
+  // VPN service -- wire native -> Flutter callbacks
   VpnService.init();
 
-  // VPN is always on for all users — auto-start on launch.
+  // VPN is always on for all users -- auto-start on launch.
   // Consent was already granted during onboarding; this is a no-op if already running.
   try {
     final vpnGranted = await VpnService.prepareVpn();
@@ -135,12 +153,16 @@ Future<void> main() async {
         context.push('/blocked-domain', extra: domain);
       }
     }
-    // When app is backgrounded, the native overlay handles the UX —
+    // When app is backgrounded, the native overlay handles the UX --
     // no need to store the domain for later since the overlay is the primary UI.
   };
 
   // Fallback: activity-based intercept shown when overlay permission not granted
   GuardService.onGuardedAppDetected((appName) async {
+    FirebaseAnalytics.instance.logEvent(
+      name: 'intercept_shown',
+      parameters: {'app_name': appName},
+    );
     await _waitForNavigator();
     final context = navigatorKey.currentContext;
     if (context != null && context.mounted) {
@@ -163,6 +185,25 @@ Future<void> main() async {
       outcome: outcome,
       source: 'app_guard',
     );
+
+    // Analytics: log emotion selection and outcome
+    if (emotionKey != null) {
+      FirebaseAnalytics.instance.logEvent(
+        name: 'intercept_state_selected',
+        parameters: {'state': emotionKey},
+      );
+    }
+    if (outcome == 'reflected') {
+      FirebaseAnalytics.instance.logEvent(name: 'intercept_reflect');
+    } else if (outcome == 'stayed') {
+      FirebaseAnalytics.instance.logEvent(name: 'intercept_dismissed');
+    }
+    if (nav.exercise != null) {
+      FirebaseAnalytics.instance.logEvent(
+        name: 'intercept_exercise_started',
+        parameters: {'exercise_name': nav.exercise!},
+      );
+    }
 
     await _waitForNavigator();
     final context = navigatorKey.currentContext;

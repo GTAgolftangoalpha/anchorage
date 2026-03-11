@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -41,6 +42,7 @@ class _UrgeLogScreenState extends State<UrgeLogScreen> {
     final isPremium = PremiumService.instance.isPremium.value;
     if (!isPremium &&
         UrgeLogService.instance.freeLogsRemaining(isPremium: false) <= 0) {
+      FirebaseAnalytics.instance.logEvent(name: 'urge_log_limit_hit');
       return;
     }
     setState(() => _saving = true);
@@ -48,6 +50,7 @@ class _UrgeLogScreenState extends State<UrgeLogScreen> {
       trigger: _selectedTrigger!,
       notes: _notesController.text.trim(),
     );
+    FirebaseAnalytics.instance.logEvent(name: 'urge_logged');
     if (!mounted) return;
     _notesController.clear();
     final name = UserPreferencesService.instance.firstName;

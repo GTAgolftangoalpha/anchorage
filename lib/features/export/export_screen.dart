@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -95,6 +96,7 @@ class _ExportScreenState extends State<ExportScreen> {
       );
       await file.writeAsBytes(pdfBytes);
 
+      FirebaseAnalytics.instance.logEvent(name: 'export_generated');
       if (mounted) {
         await Share.shareXFiles([XFile(file.path)]);
       }

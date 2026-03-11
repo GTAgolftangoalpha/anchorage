@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
@@ -41,6 +42,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
   @override
   void initState() {
     super.initState();
+    FirebaseAnalytics.instance.logEvent(name: 'paywall_view');
     _loadOfferings();
   }
 
@@ -108,6 +110,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
     setState(() => _loading = false);
 
     if (success) {
+      FirebaseAnalytics.instance.logEvent(name: 'paywall_purchase');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Welcome to ANCHORAGE+! You\'re fully anchored.'),
@@ -115,6 +118,8 @@ class _PaywallScreenState extends State<PaywallScreen> {
         ),
       );
       context.pop();
+    } else {
+      FirebaseAnalytics.instance.logEvent(name: 'paywall_cancel');
     }
   }
 

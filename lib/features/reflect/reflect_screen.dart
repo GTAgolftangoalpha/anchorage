@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/constants/app_colors.dart';
@@ -83,6 +84,7 @@ class _ReflectScreenState extends State<ReflectScreen> {
       valuesAlignment: alignment,
       trigger: _selectedTrigger ?? '',
     );
+    FirebaseAnalytics.instance.logEvent(name: 'reflect_completed');
     if (!mounted) return;
     setState(() => _saving = false);
 

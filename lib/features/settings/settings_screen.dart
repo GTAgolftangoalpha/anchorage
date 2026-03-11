@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -34,6 +35,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _deleting = false;
 
   Future<void> _deleteAllData() async {
+    FirebaseAnalytics.instance.logEvent(name: 'delete_all_data');
     setState(() => _deleting = true);
     try {
       // 1. Clear flutter_secure_storage

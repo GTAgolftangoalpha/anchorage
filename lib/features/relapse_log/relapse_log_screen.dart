@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -46,6 +47,7 @@ class _RelapseLogScreenState extends State<RelapseLogScreen> {
       whatLearned: _whatLearnedController.text.trim(),
       nextTime: _nextTimeController.text.trim(),
     );
+    FirebaseAnalytics.instance.logEvent(name: 'lapse_logged');
     if (!mounted) return;
 
     _whatHappenedController.clear();
