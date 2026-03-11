@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
 import 'core/app_globals.dart';
+import 'core/config/app_config.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 import 'models/guardable_app.dart';
@@ -62,7 +63,7 @@ Future<void> main() async {
   // RevenueCat
   await Purchases.setLogLevel(LogLevel.debug);
   await Purchases.configure(
-    PurchasesConfiguration('test_tcrYhxTeUMvQTkeJHipqSHzQqAI'),
+    PurchasesConfiguration(AppConfig.revenueCatKey),
   );
 
   // RevenueCat premium status
