@@ -329,11 +329,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
               icon: Icons.feedback_outlined,
               title: 'Send Feedback',
               subtitle: 'Help us improve ANCHORAGE',
-              onTap: () {
-                launchUrl(
-                  Uri.parse(
-                      'mailto:hello@getanchorage.app?subject=ANCHORAGE%20Feedback%20(v1.0.0)'),
-                );
+              onTap: () async {
+                final uri = Uri.parse(
+                    'mailto:hello@getanchorage.app?subject=ANCHORAGE%20Feedback%20(v1.0.0)');
+                try {
+                  final launched = await launchUrl(uri);
+                  if (!launched && context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content:
+                            Text('Please email us at hello@getanchorage.app'),
+                      ),
+                    );
+                  }
+                } catch (_) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content:
+                            Text('Please email us at hello@getanchorage.app'),
+                      ),
+                    );
+                  }
+                }
               },
             ),
             _SettingsTile(
