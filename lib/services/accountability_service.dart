@@ -77,6 +77,11 @@ class AccountabilityService {
 
   /// Adds a new partner and writes the Firestore document that
   /// triggers the [onPartnerInvited] Cloud Function.
+  // TODO: Ensure SendGrid template includes opt-out instructions per ANCHORAGE privacy policy.
+  // The email must clearly state: what ANCHORAGE is, that they have been nominated as an
+  // accountability partner, that they do NOT have to accept, and include a clear ignore
+  // instruction: "If you did not expect this email or do not wish to take on this role,
+  // please ignore it. No further action is required."
   Future<void> invitePartner({
     required String name,
     required String email,

@@ -39,6 +39,10 @@ class _AccountabilityScreenState extends State<AccountabilityScreen> {
       }
     }
 
+    // Show consent confirmation before sending
+    final confirmed = await _showConsentDialog();
+    if (confirmed != true) return;
+
     setState(() => _sending = true);
     try {
       await AccountabilityService.instance.invitePartner(
@@ -65,6 +69,14 @@ class _AccountabilityScreenState extends State<AccountabilityScreen> {
     } finally {
       if (mounted) setState(() => _sending = false);
     }
+  }
+
+  Future<bool?> _showConsentDialog() {
+    final partnerName = _nameController.text.trim();
+    return showDialog<bool>(
+      context: context,
+      builder: (ctx) => _ConsentDialog(partnerName: partnerName),
+    );
   }
 
   Future<void> _confirmRemove(AccountabilityPartner partner) async {
@@ -382,6 +394,81 @@ class _PartnerTile extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _ConsentDialog extends StatefulWidget {
+  final String partnerName;
+
+  const _ConsentDialog({required this.partnerName});
+
+  @override
+  State<_ConsentDialog> createState() => _ConsentDialogState();
+}
+
+class _ConsentDialogState extends State<_ConsentDialog> {
+  bool _confirmed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return AlertDialog(
+      title: const Text('Before you invite someone'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Your accountability partner will receive an email explaining '
+            'their role. They can choose whether to accept.\n\n'
+            'Only invite someone you have already spoken to about this.',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: AppColors.textSecondary,
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 16),
+          GestureDetector(
+            onTap: () => setState(() => _confirmed = !_confirmed),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: Checkbox(
+                    value: _confirmed,
+                    onChanged: (v) => setState(() => _confirmed = v ?? false),
+                    activeColor: AppColors.navy,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'I have spoken to ${widget.partnerName} and they are expecting this invitation.',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: AppColors.textPrimary,
+                      height: 1.4,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: _confirmed ? () => Navigator.pop(context, true) : null,
+          child: const Text('Send Invitation'),
+        ),
+      ],
     );
   }
 }
