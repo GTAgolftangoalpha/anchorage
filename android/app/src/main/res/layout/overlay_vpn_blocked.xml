@@ -80,7 +80,7 @@
                 android:textSize="13sp" />
         </LinearLayout>
 
-        <!-- Reflect — primary CTA, matches app-guard overlay -->
+        <!-- Reflect, primary CTA, matches app-guard overlay -->
         <Button
             android:id="@+id/btn_vpn_reflect"
             android:layout_width="match_parent"
@@ -104,20 +104,6 @@
             android:textColor="#FFFFFF"
             android:textSize="13sp" />
 
-        <!-- Get Support -->
-        <Button
-            android:id="@+id/btn_vpn_sos"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="20dp"
-            android:drawableStart="@android:drawable/ic_dialog_alert"
-            android:drawablePadding="6dp"
-            android:letterSpacing="0.05"
-            android:text="Get Support"
-            android:textColor="#FFAAAA"
-            android:textSize="13sp" />
 
     </LinearLayout>
 </ScrollView>

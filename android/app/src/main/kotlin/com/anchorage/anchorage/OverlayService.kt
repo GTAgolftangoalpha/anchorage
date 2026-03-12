@@ -398,23 +398,25 @@ class OverlayService : Service() {
 
         windowManager?.addView(dialogView, dialogParams)
 
+        data class ExerciseEntry(val route: String, val key: String)
+
         val exercises = mapOf(
-            R.id.btn_ex_breathing to "breathing",
-            R.id.btn_ex_grounding to "grounding",
-            R.id.btn_ex_body_scan to "body_scan",
-            R.id.btn_ex_urge_surfing to "urge_surfing",
-            R.id.btn_ex_values to "values_checkin"
+            R.id.btn_ex_breathing to ExerciseEntry("exercise/box-breathing", "box_breathing"),
+            R.id.btn_ex_phys_sigh to ExerciseEntry("exercise/physiological-sigh", "physiological_sigh"),
+            R.id.btn_ex_grounding to ExerciseEntry("exercise/grounding", "grounding"),
+            R.id.btn_ex_urge_surfing to ExerciseEntry("exercise/urge-surfing", "urge_surfing"),
+            R.id.btn_ex_body_scan to ExerciseEntry("exercise/body-scan", "body_scan")
         )
 
-        for ((btnId, exercise) in exercises) {
+        for ((btnId, entry) in exercises) {
             dialogView.findViewById<Button>(btnId)?.setOnClickListener {
-                Log.d(TAG, "Exercise selected: $exercise")
+                Log.d(TAG, "Exercise selected: ${entry.key}")
                 try { windowManager?.removeView(dialogView) } catch (_: Exception) {}
                 dismiss()
                 launchAnchorage(
-                    navigateTo = NAVIGATE_EXERCISE,
+                    navigateTo = entry.route,
                     extraEmotion = selectedEmotion,
-                    extraExercise = exercise
+                    extraExercise = entry.key
                 )
             }
         }
@@ -459,12 +461,6 @@ class OverlayService : Service() {
         overlayView?.findViewById<Button>(R.id.btn_vpn_go_back)?.setOnClickListener {
             Log.d(TAG, "btn_vpn_go_back tapped")
             dismissVpn()
-        }
-
-        overlayView?.findViewById<Button>(R.id.btn_vpn_sos)?.setOnClickListener {
-            Log.d(TAG, "btn_vpn_sos tapped")
-            dismissVpn()
-            launchAnchorage(navigateTo = NAVIGATE_SOS)
         }
 
         addOverlayView()
@@ -594,8 +590,6 @@ class OverlayService : Service() {
         const val EXTRA_EXERCISE    = "OVERLAY_EXERCISE"
         const val NAVIGATE_HOME     = "home"
         const val NAVIGATE_REFLECT  = "reflect"
-        const val NAVIGATE_SOS      = "sos"
-        const val NAVIGATE_EXERCISE = "exercise"
 
         private const val AUTO_DISMISS_MS = 120_000L
         private const val TIMER_DURATION_MS = 60_000L

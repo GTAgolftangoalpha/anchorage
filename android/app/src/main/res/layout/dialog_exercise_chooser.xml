@@ -33,7 +33,18 @@
         android:layout_height="48dp"
         android:layout_marginTop="20dp"
         android:backgroundTint="#1AFFFFFF"
-        android:text="Deep Breathing (4-7-8)"
+        android:text="Box Breathing"
+        android:textColor="#DDFFFFFF"
+        android:textSize="13sp"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/btn_ex_phys_sigh"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="#1AFFFFFF"
+        android:text="Physiological Sigh"
         android:textColor="#DDFFFFFF"
         android:textSize="13sp"
         android:textAllCaps="false" />
@@ -50,17 +61,6 @@
         android:textAllCaps="false" />
 
     <Button
-        android:id="@+id/btn_ex_body_scan"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginTop="8dp"
-        android:backgroundTint="#1AFFFFFF"
-        android:text="Quick Body Scan"
-        android:textColor="#DDFFFFFF"
-        android:textSize="13sp"
-        android:textAllCaps="false" />
-
-    <Button
         android:id="@+id/btn_ex_urge_surfing"
         android:layout_width="match_parent"
         android:layout_height="48dp"
@@ -72,12 +72,12 @@
         android:textAllCaps="false" />
 
     <Button
-        android:id="@+id/btn_ex_values"
+        android:id="@+id/btn_ex_body_scan"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_marginTop="8dp"
         android:backgroundTint="#1AFFFFFF"
-        android:text="Values Check-in"
+        android:text="Body Scan"
         android:textColor="#DDFFFFFF"
         android:textSize="13sp"
         android:textAllCaps="false" />
