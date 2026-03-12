@@ -197,8 +197,15 @@ class _UrgeLogScreenState extends State<UrgeLogScreen> {
                     UrgeLogService.instance.freeLogsRemaining(isPremium: false) == 0) ...[
                   _UpgradeCard(onDismiss: () {}),
                   const SizedBox(height: 24),
-                ] else ...[
-                  // ── New entry form ────────────────────────────────
+                ],
+
+                // ── New entry form ────────────────────────────────
+                Builder(builder: (_) {
+                  final limitReached = !isPaid &&
+                      UrgeLogService.instance.freeLogsRemaining(isPremium: false) == 0;
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                   Text(
                     'LOG AN URGE',
                     style: theme.textTheme.bodySmall?.copyWith(
@@ -220,7 +227,9 @@ class _UrgeLogScreenState extends State<UrgeLogScreen> {
                     items: UrgeLogService.triggers
                         .map((t) => DropdownMenuItem(value: t, child: Text(t)))
                         .toList(),
-                    onChanged: (v) => setState(() => _selectedTrigger = v),
+                    onChanged: limitReached
+                        ? null
+                        : (v) => setState(() => _selectedTrigger = v),
                   ),
 
                   const SizedBox(height: 12),
@@ -229,6 +238,7 @@ class _UrgeLogScreenState extends State<UrgeLogScreen> {
                   TextFormField(
                     controller: _notesController,
                     maxLines: 3,
+                    enabled: !limitReached,
                     textCapitalization: TextCapitalization.sentences,
                     decoration: const InputDecoration(
                       labelText: 'Notes (optional)',
@@ -246,9 +256,10 @@ class _UrgeLogScreenState extends State<UrgeLogScreen> {
                   SizedBox(
                     width: double.infinity,
                     child: FilledButton(
-                      onPressed: _saving ? null : _saveEntry,
+                      onPressed: (limitReached || _saving) ? null : _saveEntry,
                       style: FilledButton.styleFrom(
                         backgroundColor: AppColors.navy,
+                        disabledBackgroundColor: AppColors.navy.withAlpha(60),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -263,10 +274,12 @@ class _UrgeLogScreenState extends State<UrgeLogScreen> {
                                 color: AppColors.white,
                               ),
                             )
-                          : const Text(
+                          : Text(
                               'LOG ENTRY',
                               style: TextStyle(
-                                color: AppColors.white,
+                                color: limitReached
+                                    ? AppColors.white.withAlpha(120)
+                                    : AppColors.white,
                                 letterSpacing: 1,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -287,7 +300,9 @@ class _UrgeLogScreenState extends State<UrgeLogScreen> {
                       ),
                     ),
                   ),
-                ],
+                    ],
+                  );
+                }),
 
                 const SizedBox(height: 32),
 
