@@ -380,7 +380,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
 
             const SizedBox(height: 8),
-            _SectionHeader(title: 'Danger Zone'),
+            _SectionHeader(title: 'Your Data'),
             _SettingsTile(
               icon: Icons.delete_forever_outlined,
               title: 'Delete All My Data',
