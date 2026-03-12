@@ -29,6 +29,7 @@ class OverlayService : Service() {
     private val handler = Handler(Looper.getMainLooper())
     private val autoDismissRunner = Runnable {
         Log.w(TAG, "Auto-dismiss: 120s with no interaction, navigating to ANCHORAGE home")
+        bringAnchorageToForeground()
         removeOverlayView()
         if (!isVpnBlockedMode) AppGuardService.overlayDismissed = true
         launchAnchorage(navigateTo = NAVIGATE_HOME)
@@ -429,12 +430,14 @@ class OverlayService : Service() {
     private fun setupActionButtons() {
         overlayView?.findViewById<Button>(R.id.btn_reflect)?.setOnClickListener {
             Log.d(TAG, "btn_reflect tapped")
+            bringAnchorageToForeground()
             dismiss()
             launchAnchorage(navigateTo = NAVIGATE_REFLECT, extraEmotion = selectedEmotion)
         }
 
         overlayView?.findViewById<Button>(R.id.btn_stay_anchored)?.setOnClickListener {
             Log.d(TAG, "btn_stay_anchored tapped")
+            bringAnchorageToForeground()
             dismiss()
             launchAnchorage(navigateTo = null, extraEmotion = selectedEmotion)
         }
@@ -473,6 +476,18 @@ class OverlayService : Service() {
     }
 
     // ── Shared helpers ────────────────────────────────────────────────────────
+
+    private fun bringAnchorageToForeground() {
+        val intent = packageManager.getLaunchIntentForPackage(packageName)?.apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+        }
+        if (intent != null) {
+            startActivity(intent)
+            Log.d(TAG, "bringAnchorageToForeground: launched ANCHORAGE to prevent guarded app re-entry")
+        } else {
+            Log.w(TAG, "bringAnchorageToForeground: getLaunchIntentForPackage returned null")
+        }
+    }
 
     private fun addOverlayView() {
         val params = buildLayoutParams()

@@ -116,6 +116,7 @@ class AppGuardService : Service() {
             overlayShowingSince = 0L
             // Reset so we re-detect the foreground app cleanly after dismiss
             lastForegroundPkg = ""
+            Log.d(TAG, "POST_DISMISS: launching ANCHORAGE to foreground to prevent guarded app re-entry")
         }
 
         var foregroundPkg = ""
@@ -162,6 +163,11 @@ class AppGuardService : Service() {
                     interceptedPkg = ""
                     overlayShowingSince = 0L
                     OverlayService.isBeingAutoDismissed = true
+                    // Bring ANCHORAGE to foreground before dismissing overlay
+                    val launchIntent = packageManager.getLaunchIntentForPackage(packageName)?.apply {
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+                    }
+                    if (launchIntent != null) startActivity(launchIntent)
                     stopService(Intent(this, OverlayService::class.java))
                 }
                 Log.v(TAG, "checkForeground: no foreground app detected (state=$guardState)")
@@ -492,7 +498,7 @@ class AppGuardService : Service() {
          */
         private const val STATS_CONFIRM_THRESHOLD = 2
 
-        private const val POST_DISMISS_COOLDOWN_MS = 2_000L
+        private const val POST_DISMISS_COOLDOWN_MS = 5_000L
 
         /** Auto-dismiss overlay if we can't detect any foreground app for this long (Samsung doze). */
         private const val OVERLAY_TIMEOUT_MS = 15_000L
