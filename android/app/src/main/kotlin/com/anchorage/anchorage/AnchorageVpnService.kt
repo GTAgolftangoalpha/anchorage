@@ -324,7 +324,9 @@ class AnchorageVpnService : VpnService() {
     /** Returns true if the domain matches the permanent whitelist and must always resolve normally. */
     private fun isWhitelisted(domain: String): Boolean {
         val d = domain.lowercase().trimEnd('.')
-        return WHITELIST_SUFFIXES.any { suffix -> d == suffix || d.endsWith(".$suffix") }
+        val result = WHITELIST_SUFFIXES.any { suffix -> d == suffix || d.endsWith(".$suffix") }
+        Log.d("ANCHORAGE_WHITELIST", "Checking $domain against whitelist: $result")
+        return result
     }
 
     private fun isBlocked(domain: String): Boolean {
