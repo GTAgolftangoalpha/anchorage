@@ -168,9 +168,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
     // Save email
     final email = _emailController.text.trim();
-    if (email.isNotEmpty) {
-      await UserPreferencesService.instance.setEmail(email);
-    }
+    await UserPreferencesService.instance.setEmail(email);
 
     // Save guarded apps and start guard
     final packages = _selectedApps.toList();
@@ -323,6 +321,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
             style: const TextStyle(color: AppColors.white, fontSize: 18),
             textCapitalization: TextCapitalization.words,
             maxLength: 20,
+            onChanged: (_) => setState(() {}),
             decoration: InputDecoration(
               filled: true,
               fillColor: AppColors.white.withAlpha(15),
@@ -354,15 +353,16 @@ class _OnboardingScreenState extends State<OnboardingScreen>
             cursorColor: AppColors.white,
             style: const TextStyle(color: AppColors.white, fontSize: 16),
             keyboardType: TextInputType.emailAddress,
+            onChanged: (_) => setState(() {}),
             decoration: InputDecoration(
               filled: true,
               fillColor: AppColors.white.withAlpha(15),
-              labelText: 'Email (optional)',
+              labelText: 'Email',
               labelStyle:
                   TextStyle(color: AppColors.white.withAlpha(140)),
               floatingLabelStyle:
                   const TextStyle(color: AppColors.seafoam),
-              hintText: 'For account recovery and tips',
+              hintText: 'your@email.com',
               hintStyle:
                   TextStyle(color: AppColors.white.withAlpha(80)),
               enabledBorder: OutlineInputBorder(
@@ -381,48 +381,54 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               ),
             ),
           ),
+          const SizedBox(height: 8),
+          Text(
+            'Used to recover your account if you reinstall or get a new phone. We never send marketing emails.',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: AppColors.white.withAlpha(120),
+              height: 1.4,
+            ),
+          ),
           const SizedBox(height: 24),
           SizedBox(
             width: double.infinity,
-            child: FilledButton(
-              onPressed: () {
-                final name = _nameController.text.trim();
-                if (name.isEmpty) {
-                  _showSnack('Please enter your first name.');
-                  return;
-                }
-                if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(name)) {
-                  _showSnack('Letters only, please.');
-                  return;
-                }
-                final email = _emailController.text.trim();
-                if (email.isNotEmpty && !email.contains('@')) {
-                  _showSnack('Please enter a valid email address.');
-                  return;
-                }
-                UserPreferencesService.instance.setFirstName(name);
-                if (email.isNotEmpty) {
-                  UserPreferencesService.instance.setEmail(email);
-                }
-                FocusScope.of(context).unfocus();
-                _nextPage();
-              },
-              style: FilledButton.styleFrom(
-                backgroundColor: AppColors.white,
-                foregroundColor: AppColors.navy,
-                padding: const EdgeInsets.symmetric(vertical: 18),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+            child: Builder(builder: (context) {
+              final name = _nameController.text.trim();
+              final email = _emailController.text.trim();
+              final nameValid = name.isNotEmpty && RegExp(r'^[a-zA-Z\s]+$').hasMatch(name);
+              final emailValid = email.contains('@') && email.contains('.', email.indexOf('@'));
+              final canContinue = nameValid && emailValid;
+
+              return FilledButton(
+                onPressed: canContinue
+                    ? () {
+                        UserPreferencesService.instance.setFirstName(name);
+                        UserPreferencesService.instance.setEmail(email);
+                        FocusScope.of(context).unfocus();
+                        _nextPage();
+                      }
+                    : null,
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.white,
+                  foregroundColor: AppColors.navy,
+                  disabledBackgroundColor: AppColors.white.withAlpha(40),
+                  disabledForegroundColor: AppColors.navy.withAlpha(100),
+                  padding: const EdgeInsets.symmetric(vertical: 18),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                 ),
-              ),
-              child: Text(
-                'CONTINUE',
-                style: theme.textTheme.labelLarge?.copyWith(
-                  color: AppColors.navy,
-                  letterSpacing: 2,
+                child: Text(
+                  'CONTINUE',
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    color: canContinue
+                        ? AppColors.navy
+                        : AppColors.navy.withAlpha(100),
+                    letterSpacing: 2,
+                  ),
                 ),
-              ),
-            ),
+              );
+            }),
           ),
           const SizedBox(height: 16),
         ],
