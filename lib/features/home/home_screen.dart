@@ -134,44 +134,42 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       values[dayOfYear % values.length];
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 16),
-                    child: GestureDetector(
-                      onTap: () => context.push('/reflect'),
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: AppColors.white,
-                          borderRadius: BorderRadius.circular(14),
-                          border: const Border(
-                            left: BorderSide(
-                              color: AppColors.seafoam,
-                              width: 4,
-                            ),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: AppColors.navy,
+                        borderRadius: BorderRadius.circular(16),
+                        border: const Border(
+                          left: BorderSide(
+                            color: AppColors.seafoam,
+                            width: 4,
                           ),
                         ),
-                        child: Column(
-                          crossAxisAlignment:
-                              CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              todayValue,
-                              style: theme.textTheme.titleSmall
-                                  ?.copyWith(
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.navy,
-                              ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'YOUR ANCHOR',
+                            style: theme.textTheme.labelSmall
+                                ?.copyWith(
+                              color: AppColors.seafoam,
+                              letterSpacing: 2,
+                              fontWeight: FontWeight.w600,
                             ),
-                            const SizedBox(height: 4),
-                            Text(
-                              "What's one thing you can do today that honours this?",
-                              style: theme.textTheme.bodySmall
-                                  ?.copyWith(
-                                color: AppColors.textSecondary,
-                                height: 1.4,
-                              ),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            todayValue,
+                            style: theme.textTheme.headlineMedium
+                                ?.copyWith(
+                              color: AppColors.white,
+                              fontWeight: FontWeight.w700,
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   );
