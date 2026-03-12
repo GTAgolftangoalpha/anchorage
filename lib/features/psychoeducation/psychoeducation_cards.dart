@@ -10,14 +10,11 @@ class PsychoeducationData {
   final String summary;
   final String body;
   final IconData icon;
-  final String citation;
-
   const PsychoeducationData({
     required this.title,
     required this.summary,
     required this.body,
     required this.icon,
-    required this.citation,
   });
 
   static const cards = [
@@ -30,9 +27,6 @@ class PsychoeducationData {
           'give in to it. You just need to ride it out. Every time you do, '
           'the next wave gets a little smaller.',
       icon: Icons.waves,
-      citation:
-          'Marlatt & Gordon, "Relapse Prevention" (1985); '
-          'Bowen et al., "Mindfulness-Based Relapse Prevention" (2011)',
     ),
     PsychoeducationData(
       title: 'Not a Character Flaw',
@@ -44,9 +38,6 @@ class PsychoeducationData {
           'rewiring it. You are not broken. Your brain is doing exactly '
           'what it was trained to do.',
       icon: Icons.psychology,
-      citation:
-          'Duhigg, "The Power of Habit" (2012); '
-          'Koob & Volkow, "Neurobiology of Addiction" (2016)',
     ),
     PsychoeducationData(
       title: 'Shame vs Guilt',
@@ -58,9 +49,6 @@ class PsychoeducationData {
           'behaviour. When you slip, practice guilt without shame. '
           'Acknowledge what happened, learn from it, and move forward.',
       icon: Icons.balance,
-      citation:
-          'Brown, "I Thought It Was Just Me" (2007); '
-          'Tangney & Dearing, "Shame and Guilt" (2002)',
     ),
     PsychoeducationData(
       title: 'Why Willpower Is Not Enough',
@@ -72,9 +60,6 @@ class PsychoeducationData {
           'It is building systems, blockers, and habits that protect you '
           'when willpower runs low. That is what ANCHORAGE is for.',
       icon: Icons.battery_alert,
-      citation:
-          'Baumeister & Tierney, "Willpower" (2011); '
-          'Clear, "Atomic Habits" (2018)',
     ),
     PsychoeducationData(
       title: 'What Aroused Means Here',
@@ -87,9 +72,6 @@ class PsychoeducationData {
           'Then choose what you do next. The feeling is not the problem. '
           'The automatic reaction is.',
       icon: Icons.lightbulb_outline,
-      citation:
-          'Nagoski, "Come as You Are" (2015); '
-          'Harris, "ACT Made Simple" (2009)',
     ),
   ];
 }
@@ -189,15 +171,6 @@ class _PsychoeducationCardState extends State<PsychoeducationCard> {
                       data.body,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         height: 1.6,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      data.citation,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: AppColors.textMuted,
-                        fontStyle: FontStyle.italic,
-                        height: 1.4,
                       ),
                     ),
                   ],
