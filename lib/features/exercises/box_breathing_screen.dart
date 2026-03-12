@@ -3,7 +3,8 @@ import '../../core/constants/app_colors.dart';
 import '../../theme.dart';
 
 /// Box Breathing: 4 seconds inhale, 4 hold, 4 exhale, 4 hold.
-/// A square animation traces the breathing pattern.
+/// A square animation traces the breathing pattern with pauses at corners
+/// during hold phases.
 class BoxBreathingScreen extends StatefulWidget {
   const BoxBreathingScreen({super.key});
 
@@ -15,10 +16,12 @@ class _BoxBreathingScreenState extends State<BoxBreathingScreen>
     with SingleTickerProviderStateMixin {
   static const _cycleDuration = Duration(seconds: 16);
   static const _phases = ['Inhale', 'Hold', 'Exhale', 'Hold'];
+  static const _totalCycles = 2;
 
   late final AnimationController _controller;
   int _completedCycles = 0;
   bool _isRunning = false;
+  bool _isComplete = false;
 
   @override
   void initState() {
@@ -28,8 +31,15 @@ class _BoxBreathingScreenState extends State<BoxBreathingScreen>
       duration: _cycleDuration,
     )..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
-          _completedCycles++;
-          _controller.forward(from: 0);
+          setState(() {
+            _completedCycles++;
+            if (_completedCycles >= _totalCycles) {
+              _isRunning = false;
+              _isComplete = true;
+            } else {
+              _controller.forward(from: 0);
+            }
+          });
         }
       });
   }
@@ -40,17 +50,28 @@ class _BoxBreathingScreenState extends State<BoxBreathingScreen>
     super.dispose();
   }
 
+  int get _currentPhaseIndex {
+    final progress = _controller.value * 4;
+    return progress.floor().clamp(0, 3);
+  }
+
   String get _currentPhase {
     if (!_isRunning) return 'Ready';
-    final progress = _controller.value * 4;
-    final index = progress.floor().clamp(0, 3);
-    return _phases[index];
+    return _phases[_currentPhaseIndex];
   }
+
+  bool get _isHoldPhase =>
+      _isRunning && (_currentPhaseIndex == 1 || _currentPhaseIndex == 3);
 
   int get _phaseSeconds {
     if (!_isRunning) return 4;
     final progress = _controller.value * 4;
     final phaseProgress = progress - progress.floor();
+    if (_isHoldPhase) {
+      // Count up: 1, 2, 3, 4
+      return (phaseProgress * 4).floor() + 1;
+    }
+    // Count down: 4, 3, 2, 1
     return (4 - (phaseProgress * 4)).ceil().clamp(1, 4);
   }
 
@@ -70,12 +91,116 @@ class _BoxBreathingScreenState extends State<BoxBreathingScreen>
     setState(() {
       _controller.reset();
       _isRunning = false;
+      _isComplete = false;
       _completedCycles = 0;
+    });
+  }
+
+  void _restart() {
+    setState(() {
+      _controller.reset();
+      _completedCycles = 0;
+      _isComplete = false;
+      _isRunning = true;
+      _controller.forward(from: 0);
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isComplete) return _buildCompletionScreen();
+    return _buildExerciseScreen();
+  }
+
+  Widget _buildCompletionScreen() {
+    final theme = Theme.of(context);
+
+    return Scaffold(
+      backgroundColor: AppColors.navy,
+      appBar: AppBar(
+        backgroundColor: AppColors.navy,
+        foregroundColor: AppColors.white,
+        title: const Text('BOX BREATHING'),
+        titleTextStyle: theme.appBarTheme.titleTextStyle?.copyWith(
+          color: AppColors.white,
+        ),
+      ),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32),
+          child: Column(
+            children: [
+              const Spacer(),
+              Text(
+                'Exercise complete.',
+                style: theme.textTheme.headlineMedium?.copyWith(
+                  color: AppColors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Notice how you feel right now compared to two minutes ago. That difference is real.',
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: AppColors.white.withAlpha(180),
+                  height: 1.6,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const Spacer(),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  onPressed: _restart,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: Anchorage.accent,
+                    foregroundColor: AppColors.white,
+                    minimumSize: const Size(0, 52),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    'GO AGAIN',
+                    style: TextStyle(
+                      letterSpacing: 1,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.white,
+                    side: BorderSide(color: AppColors.white.withAlpha(60)),
+                    minimumSize: const Size(0, 52),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    "I'M DONE",
+                    style: TextStyle(
+                      letterSpacing: 1,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 48),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildExerciseScreen() {
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -127,7 +252,9 @@ class _BoxBreathingScreenState extends State<BoxBreathingScreen>
                           Text(
                             '$_phaseSeconds',
                             style: theme.textTheme.displayLarge?.copyWith(
-                              color: Anchorage.accent,
+                              color: _isHoldPhase
+                                  ? AppColors.white
+                                  : Anchorage.accent,
                               fontSize: 48,
                             ),
                           ),
@@ -141,6 +268,7 @@ class _BoxBreathingScreenState extends State<BoxBreathingScreen>
                             painter: _BoxPainter(
                               progress: _controller.value,
                               isRunning: _isRunning,
+                              cycle: _completedCycles,
                             ),
                           ),
                         ),
@@ -149,7 +277,7 @@ class _BoxBreathingScreenState extends State<BoxBreathingScreen>
 
                         // Cycle counter
                         Text(
-                          '$_completedCycles cycle${_completedCycles == 1 ? '' : 's'} completed',
+                          '$_completedCycles of $_totalCycles cycle${_totalCycles == 1 ? '' : 's'} completed',
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: AppColors.white.withAlpha(120),
                           ),
@@ -204,8 +332,13 @@ class _BoxBreathingScreenState extends State<BoxBreathingScreen>
 class _BoxPainter extends CustomPainter {
   final double progress;
   final bool isRunning;
+  final int cycle;
 
-  _BoxPainter({required this.progress, required this.isRunning});
+  _BoxPainter({
+    required this.progress,
+    required this.isRunning,
+    required this.cycle,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -235,77 +368,97 @@ class _BoxPainter extends CustomPainter {
     // Draw the box outline
     canvas.drawRect(rect, boxPaint);
 
-    // Draw phase labels at corners
-    final labelStyle = TextStyle(
-      color: const Color(0xFFFFFFFF).withAlpha(80),
-      fontSize: 10,
-      fontWeight: FontWeight.w500,
-    );
-    final labels = ['Inhale', 'Hold', 'Exhale', 'Hold'];
-    final labelPositions = [
-      Offset(rect.left, rect.bottom + 12), // bottom-left: Inhale (going up)
-      Offset(rect.left, rect.top - 20), // top-left: Hold (going right)
-      Offset(rect.right, rect.top - 20), // top-right: Exhale (going down)
-      Offset(rect.right, rect.bottom + 12), // bottom-right: Hold (going left)
-    ];
-
-    for (var i = 0; i < 4; i++) {
-      final tp = TextPainter(
-        text: TextSpan(text: labels[i], style: labelStyle),
-        textDirection: TextDirection.ltr,
-      )..layout();
-      final offset = i >= 2
-          ? Offset(labelPositions[i].dx - tp.width, labelPositions[i].dy)
-          : labelPositions[i];
-      tp.paint(canvas, offset);
-    }
-
     if (!isRunning) return;
 
-    // Compute dot position along the square path
-    // Phase 0: bottom-left to top-left (inhale - up)
-    // Phase 1: top-left to top-right (hold - right)
-    // Phase 2: top-right to bottom-right (exhale - down)
-    // Phase 3: bottom-right to bottom-left (hold - left)
+    // Corner positions
+    final bl = Offset(rect.left, rect.bottom);
+    final tl = Offset(rect.left, rect.top);
+    final tr = Offset(rect.right, rect.top);
+    final br = Offset(rect.right, rect.bottom);
+
     final totalProgress = progress * 4;
     final phase = totalProgress.floor().clamp(0, 3);
     final t = totalProgress - phase;
 
+    final isEvenCycle = cycle % 2 == 0;
+
+    // Dot position: movement during Inhale/Exhale, pause during Hold
     Offset dot;
-    switch (phase) {
-      case 0: // up left side
-        dot = Offset(rect.left, rect.bottom - t * rect.height);
-      case 1: // across top
-        dot = Offset(rect.left + t * rect.width, rect.top);
-      case 2: // down right side
-        dot = Offset(rect.right, rect.top + t * rect.height);
-      case 3: // across bottom (right to left)
-        dot = Offset(rect.right - t * rect.width, rect.bottom);
-      default:
-        dot = Offset(rect.left, rect.bottom);
+    if (isEvenCycle) {
+      // Even: Inhale BL->TL, Hold@TL, Exhale TL->TR, Hold@TR
+      switch (phase) {
+        case 0:
+          dot = Offset.lerp(bl, tl, t)!;
+        case 1:
+          dot = tl;
+        case 2:
+          dot = Offset.lerp(tl, tr, t)!;
+        case 3:
+          dot = tr;
+        default:
+          dot = bl;
+      }
+    } else {
+      // Odd: Inhale TR->BR, Hold@BR, Exhale BR->BL, Hold@BL
+      switch (phase) {
+        case 0:
+          dot = Offset.lerp(tr, br, t)!;
+        case 1:
+          dot = br;
+        case 2:
+          dot = Offset.lerp(br, bl, t)!;
+        case 3:
+          dot = bl;
+        default:
+          dot = tr;
+      }
     }
 
-    // Draw the traced path for current phase
+    // Draw the traced path
     final path = Path();
-    switch (phase) {
-      case 0:
-        path.moveTo(rect.left, rect.bottom);
-        path.lineTo(rect.left, rect.bottom - t * rect.height);
-      case 1:
-        path.moveTo(rect.left, rect.bottom);
-        path.lineTo(rect.left, rect.top);
-        path.lineTo(rect.left + t * rect.width, rect.top);
-      case 2:
-        path.moveTo(rect.left, rect.bottom);
-        path.lineTo(rect.left, rect.top);
-        path.lineTo(rect.right, rect.top);
-        path.lineTo(rect.right, rect.top + t * rect.height);
-      case 3:
-        path.moveTo(rect.left, rect.bottom);
-        path.lineTo(rect.left, rect.top);
-        path.lineTo(rect.right, rect.top);
-        path.lineTo(rect.right, rect.bottom);
-        path.lineTo(rect.right - t * rect.width, rect.bottom);
+    if (isEvenCycle) {
+      switch (phase) {
+        case 0:
+          path.moveTo(bl.dx, bl.dy);
+          path.lineTo(dot.dx, dot.dy);
+        case 1:
+          path.moveTo(bl.dx, bl.dy);
+          path.lineTo(tl.dx, tl.dy);
+        case 2:
+          path.moveTo(bl.dx, bl.dy);
+          path.lineTo(tl.dx, tl.dy);
+          path.lineTo(dot.dx, dot.dy);
+        case 3:
+          path.moveTo(bl.dx, bl.dy);
+          path.lineTo(tl.dx, tl.dy);
+          path.lineTo(tr.dx, tr.dy);
+      }
+    } else {
+      // Odd cycle: include previous cycle trace (left + top)
+      switch (phase) {
+        case 0:
+          path.moveTo(bl.dx, bl.dy);
+          path.lineTo(tl.dx, tl.dy);
+          path.lineTo(tr.dx, tr.dy);
+          path.lineTo(dot.dx, dot.dy);
+        case 1:
+          path.moveTo(bl.dx, bl.dy);
+          path.lineTo(tl.dx, tl.dy);
+          path.lineTo(tr.dx, tr.dy);
+          path.lineTo(br.dx, br.dy);
+        case 2:
+          path.moveTo(bl.dx, bl.dy);
+          path.lineTo(tl.dx, tl.dy);
+          path.lineTo(tr.dx, tr.dy);
+          path.lineTo(br.dx, br.dy);
+          path.lineTo(dot.dx, dot.dy);
+        case 3:
+          path.moveTo(bl.dx, bl.dy);
+          path.lineTo(tl.dx, tl.dy);
+          path.lineTo(tr.dx, tr.dy);
+          path.lineTo(br.dx, br.dy);
+          path.lineTo(bl.dx, bl.dy);
+      }
     }
     canvas.drawPath(path, activePaint);
 
@@ -322,5 +475,7 @@ class _BoxPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_BoxPainter oldDelegate) =>
-      oldDelegate.progress != progress || oldDelegate.isRunning != isRunning;
+      oldDelegate.progress != progress ||
+      oldDelegate.isRunning != isRunning ||
+      oldDelegate.cycle != cycle;
 }
