@@ -316,11 +316,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
             const SizedBox(height: 8),
             _SectionHeader(title: 'Data'),
-            _SettingsTile(
-              icon: Icons.picture_as_pdf,
-              title: 'Export My Data',
-              subtitle: 'Generate a PDF report for your therapist',
-              onTap: () => context.push('/export'),
+            ValueListenableBuilder<bool>(
+              valueListenable: PremiumService.instance.isPremium,
+              builder: (context, isPremium, _) {
+                if (!isPremium) return const SizedBox.shrink();
+                return _SettingsTile(
+                  icon: Icons.picture_as_pdf,
+                  title: 'Export My Data',
+                  subtitle: 'Generate a PDF report for your therapist',
+                  onTap: () => context.push('/export'),
+                );
+              },
             ),
 
             const SizedBox(height: 8),

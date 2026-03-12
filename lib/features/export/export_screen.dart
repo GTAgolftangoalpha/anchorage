@@ -9,8 +9,10 @@ import '../../core/constants/app_colors.dart';
 import '../../services/intercept_event_service.dart';
 import '../../services/premium_service.dart';
 import '../../services/reflect_service.dart';
+import '../../services/relapse_service.dart';
 import '../../services/streak_service.dart';
 import '../../services/urge_log_service.dart';
+import '../../services/user_preferences_service.dart';
 import 'pdf_generator.dart';
 
 class ExportScreen extends StatefulWidget {
@@ -66,11 +68,16 @@ class _ExportScreenState extends State<ExportScreen> {
 
     try {
       final streak = StreakService.instance.data.value;
+      final userName = UserPreferencesService.instance.firstName;
       final urges = UrgeLogService.instance.entries.value
           .where((e) =>
               !e.timestamp.isBefore(_from) && !e.timestamp.isAfter(_to))
           .toList();
       final reflections = ReflectService.instance.entries.value
+          .where((e) =>
+              !e.timestamp.isBefore(_from) && !e.timestamp.isAfter(_to))
+          .toList();
+      final lapses = RelapseService.instance.entries.value
           .where((e) =>
               !e.timestamp.isBefore(_from) && !e.timestamp.isAfter(_to))
           .toList();
@@ -82,10 +89,12 @@ class _ExportScreenState extends State<ExportScreen> {
       final pdfBytes = await PdfGenerator.generate(
         from: _from,
         to: _to,
+        userName: userName,
         streakData: streak,
         urges: urges,
         reflections: reflections,
         intercepts: intercepts,
+        lapses: lapses,
         emotionCounts: emotionCounts,
         notes: _notesController.text.trim(),
       );
