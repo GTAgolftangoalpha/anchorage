@@ -106,7 +106,7 @@ class _RelapseLogScreenState extends State<RelapseLogScreen> {
                           const SizedBox(height: 8),
                           Text(
                             'Reflecting on what happened builds self-awareness. '
-                            'This stays on your device only — completely private.',
+                            'This stays on your device only. Completely private.',
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: AppColors.white.withAlpha(180),
                               height: 1.5,

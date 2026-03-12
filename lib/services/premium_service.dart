@@ -43,7 +43,7 @@ class PremiumService {
       isPremium.value = info.entitlements.all['premium']?.isActive ?? false;
       return isPremium.value;
     } on PlatformException catch (e) {
-      // Error code 1 = user cancelled — not a real error
+      // Error code 1 = user cancelled, not a real error
       if (e.code != '1') {
         debugPrint('[PremiumService] purchase error: $e');
       }

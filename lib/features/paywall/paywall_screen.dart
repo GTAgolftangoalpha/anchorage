@@ -35,7 +35,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
       price: r'$199',
       period: '/year',
       badge: 'SAVE 17%',
-      subtitle: r'$16.58/month — save $40 vs monthly',
+      subtitle: r'$16.58/month, save $40 vs monthly',
     ),
   ];
 
@@ -54,7 +54,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
   /// Find a package from the offering by searching availablePackages.
   /// Typed accessors (offering.monthly / offering.annual) only match
   /// packages with RC standard identifiers ($rc_monthly, $rc_annual).
-  /// Dashboard packages named "monthly" / "yearly" are custom — search by id.
+  /// Dashboard packages named "monthly" / "yearly" are custom. Search by id.
   Package? _findPackage(Offering offering, {required bool monthly}) {
     final packages = offering.availablePackages;
     if (monthly) {

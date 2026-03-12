@@ -129,7 +129,7 @@ class _GuardedAppsScreenState extends State<GuardedAppsScreen>
       debugPrint('[GuardedApps] No usage permission, opening Settings');
       _waitingForPermission = true;
       await GuardService.requestUsagePermission();
-      // Don't check here — user is still in Settings app
+      // Don't check here -- user is still in Settings app
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

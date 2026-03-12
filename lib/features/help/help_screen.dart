@@ -11,7 +11,7 @@ class HelpScreen extends StatelessWidget {
       question: 'How does ANCHORAGE block content?',
       answer:
           'ANCHORAGE uses a local VPN to intercept DNS queries and block '
-          'known explicit domains. No traffic leaves your device — everything '
+          'known explicit domains. No traffic leaves your device. Everything '
           'is filtered locally. The app also monitors guarded apps using '
           'Android\'s UsageStats API and shows an overlay when they\'re opened.',
     ),
@@ -34,8 +34,8 @@ class HelpScreen extends StatelessWidget {
     (
       question: 'What is an accountability partner?',
       answer:
-          'An accountability partner is someone you trust — a friend, '
-          'mentor, or counsellor — who receives a brief weekly email '
+          'An accountability partner is someone you trust: a friend, '
+          'mentor, or counsellor who receives a brief weekly email '
           'summary of your streak and progress. They don\'t see any '
           'personal logs or details.',
     ),

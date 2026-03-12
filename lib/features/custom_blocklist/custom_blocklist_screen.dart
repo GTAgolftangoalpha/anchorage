@@ -127,7 +127,7 @@ class _CustomBlocklistScreenState extends State<CustomBlocklistScreen> {
                           Text(
                             'Add domains that the built-in blocklist doesn\'t '
                             'catch. These are blocked instantly via the VPN '
-                            'filter — no restart needed.',
+                            'filter. No restart needed.',
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: AppColors.white.withAlpha(180),
                               height: 1.5,

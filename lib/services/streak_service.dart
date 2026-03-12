@@ -83,7 +83,7 @@ class StreakService {
 
       final diff = today.difference(lastDate).inDays;
       if (diff == 1) {
-        // Consecutive day — increment streak
+        // Consecutive day -- increment streak
         final newStreak = current.currentStreak + 1;
         final newLongest =
             newStreak > current.longestStreak ? newStreak : current.longestStreak;
@@ -95,7 +95,7 @@ class StreakService {
           weeklyCheckIns: _addCheckIn(current.weeklyCheckIns, today),
         ));
       } else {
-        // Missed day(s) — reset streak
+        // Missed day(s) -- reset streak
         if (current.currentStreak > 1) {
           streakResetDetected = true;
         }

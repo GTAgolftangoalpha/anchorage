@@ -9,7 +9,7 @@ import '../../services/premium_service.dart';
 
 /// Shown as a full-height modal bottom sheet when a guarded app is
 /// detected in the foreground. The user must actively choose to reflect
-/// or navigate away — there is no passive dismiss.
+/// or navigate away. There is no passive dismiss.
 class InterceptBottomSheet extends StatelessWidget {
   final String appName;
   final InterceptPrompt prompt;

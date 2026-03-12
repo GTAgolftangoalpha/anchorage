@@ -60,7 +60,7 @@ class AboutScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                "Most apps try to build a wall between you and content. Walls can be climbed. ANCHORAGE works differently \u2014 it uses the moments of temptation as opportunities to practise the psychological skills that create lasting change.",
+                "Most apps try to build a wall between you and content. Walls can be climbed. ANCHORAGE works differently. It uses the moments of temptation as opportunities to practise the psychological skills that create lasting change.",
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: AppColors.textSecondary,
                   height: 1.7,
@@ -112,7 +112,7 @@ class AboutScreen extends StatelessWidget {
               _SectionTitle(title: 'What We Believe'),
               const SizedBox(height: 12),
               Text(
-                "We believe pornography use exists on a spectrum \u2014 and that many people want to change their relationship with it without being labelled or shamed.",
+                "We believe pornography use exists on a spectrum, and that many people want to change their relationship with it without being labelled or shamed.",
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: AppColors.textSecondary,
                   height: 1.7,
@@ -128,7 +128,7 @@ class AboutScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                "We give you tools, accountability, and the psychological strategies to make different choices \u2014 one moment at a time.",
+                "We give you tools, accountability, and the psychological strategies to make different choices, one moment at a time.",
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: AppColors.textSecondary,
                   height: 1.7,
@@ -143,7 +143,7 @@ class AboutScreen extends StatelessWidget {
               _SectionTitle(title: 'Your Privacy'),
               const SizedBox(height: 12),
               Text(
-                "Your values, reflections, urge logs, and personal data never leave your device. Accountability emails contain only streak and progress data \u2014 never what you tried to access. You're in control.",
+                "Your values, reflections, urge logs, and personal data never leave your device. Accountability emails contain only streak and progress data, never what you tried to access. You're in control.",
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: AppColors.textSecondary,
                   height: 1.7,

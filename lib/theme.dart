@@ -24,7 +24,7 @@ class Anchorage {
   static const Color borderLight = Color(0xFFE1E8ED);
   static const Color borderMid = Color(0xFFC4D0D8);
 
-  // Accent — deep teal
+  // Accent -- deep teal
   static const Color accent = Color(0xFF1A6B72);
   static const Color accentLight = Color(0xFFE5F0F1);
 
@@ -37,7 +37,7 @@ class Anchorage {
 class AnchorageType {
   AnchorageType._();
 
-  // Headings — DM Serif Display
+  // Headings -- DM Serif Display
   static TextStyle displayLarge({Color? color}) => GoogleFonts.dmSerifDisplay(
         fontSize: 36,
         fontWeight: FontWeight.w400,
@@ -56,7 +56,7 @@ class AnchorageType {
         color: color ?? Anchorage.textPrimary,
       );
 
-  // Body — DM Sans
+  // Body -- DM Sans
   static TextStyle bodyLarge({Color? color}) => GoogleFonts.dmSans(
         fontSize: 16,
         fontWeight: FontWeight.w400,
@@ -394,7 +394,7 @@ class AnchorageCard extends StatelessWidget {
   }
 }
 
-/// Status badge widget (ON/OFF display — no toggle).
+/// Status badge widget (ON/OFF display, no toggle).
 class StatusBadge extends StatelessWidget {
   const StatusBadge({super.key, required this.active});
 
@@ -473,7 +473,7 @@ class AnchorageSectionHeader extends StatelessWidget {
   }
 }
 
-/// Settings-style row with icon, title, optional subtitle — no chevron.
+/// Settings-style row with icon, title, optional subtitle. No chevron.
 class AnchorageSettingsRow extends StatelessWidget {
   const AnchorageSettingsRow({
     super.key,

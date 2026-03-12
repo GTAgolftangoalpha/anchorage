@@ -91,7 +91,7 @@ class _StreakDashboardScreenState extends State<StreakDashboardScreen>
                   ),
                   const SizedBox(height: 24),
                   Text(
-                    "$n, a setback is not a failure. Your values haven't changed. $valuesText Every moment is a new chance to choose differently.\n\nThe fact that you're here, in this app, right now \u2014 that matters.",
+                    "$n, a setback is not a failure. Your values haven't changed. $valuesText Every moment is a new chance to choose differently.\n\nThe fact that you're here, in this app, right now. That matters.",
                     textAlign: TextAlign.center,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       color: AppColors.white.withAlpha(200),
@@ -226,7 +226,7 @@ class _StreakDashboardScreenState extends State<StreakDashboardScreen>
             : "3 anchored days, $n. Your commitment is taking root.";
       case 7:
         return v2.isNotEmpty
-            ? "A full week, $n. $v2 is becoming more than a word \u2014 it's how you live."
+            ? "A full week, $n. $v2 is becoming more than a word. It's how you live."
             : "A full week, $n. Your values are becoming how you live.";
       case 14:
         return "Two weeks anchored. $n, you're building something real.";
@@ -234,15 +234,15 @@ class _StreakDashboardScreenState extends State<StreakDashboardScreen>
         return "$n, 30 days. The science says new neural pathways are forming. Your values are becoming habits.";
       case 60:
         return v3.isNotEmpty
-            ? "60 anchored days. $n, $v3 isn't just something you believe \u2014 it's something you practise."
-            : "60 anchored days. $n, your values aren't just beliefs \u2014 they're practice.";
+            ? "60 anchored days. $n, $v3 isn't just something you believe. It's something you practise."
+            : "60 anchored days. $n, your values aren't just beliefs. They're practice.";
       case 90:
         return "$n, 90 days anchored. Most people never get here. You did.";
       case 180:
         return "Half a year, $n. You've proven that change is possible.";
       case 365:
         return v1.isNotEmpty && v2.isNotEmpty && v3.isNotEmpty
-            ? "One year anchored, $n. Your values \u2014 $v1, $v2, $v3 \u2014 carried you here. Extraordinary."
+            ? "One year anchored, $n. Your values ($v1, $v2, $v3) carried you here. Extraordinary."
             : "One year anchored, $n. Your values carried you here. Extraordinary.";
       default:
         return "$n, you've reached $days anchored days. Stay anchored.";
@@ -269,8 +269,8 @@ class _StreakDashboardScreenState extends State<StreakDashboardScreen>
             if (isPremium) {
               final name = UserPreferencesService.instance.firstName;
               return name.isNotEmpty
-                  ? '$name, keep going \u2014 ${milestone.days - currentStreak} more days to unlock this milestone.'
-                  : 'Keep going \u2014 ${milestone.days - currentStreak} more days to unlock this milestone.';
+                  ? '$name, keep going! ${milestone.days - currentStreak} more days to unlock this milestone.'
+                  : 'Keep going! ${milestone.days - currentStreak} more days to unlock this milestone.';
             }
             return 'Upgrade to ANCHORAGE+ to unlock milestone badges and detailed progress.';
           }(),

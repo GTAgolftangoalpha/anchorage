@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../theme.dart';
 
-/// Backwards-compatible alias — delegates to Anchorage palette.
+/// Backwards-compatible alias. Delegates to Anchorage palette.
 class AppColors {
   AppColors._();
 

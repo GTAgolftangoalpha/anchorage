@@ -160,7 +160,7 @@ class _UrgeLogScreenState extends State<UrgeLogScreen> {
                       const SizedBox(height: 8),
                       Text(
                         'Logging urges helps you understand patterns. '
-                        'This data stays on your device — it\'s never '
+                        'This data stays on your device. It\'s never '
                         'shared or uploaded.',
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: AppColors.white.withAlpha(180),
@@ -344,7 +344,7 @@ class _UrgeLogScreenState extends State<UrgeLogScreen> {
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              '${allEntries.length - 7} more entries — '
+                              '${allEntries.length - 7} more entries. '
                               'upgrade to view full history',
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: AppColors.textSecondary,

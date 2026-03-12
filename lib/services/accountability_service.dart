@@ -56,7 +56,7 @@ class AccountabilityService {
   /// Returns a live stream of the current user's partners.
   Stream<List<AccountabilityPartner>> watchPartners() {
     if (_uid == null) {
-      // Auth not ready yet — sign in then switch to the real stream.
+      // Auth not ready yet -- sign in then switch to the real stream.
       return Stream.fromFuture(_ensureAuth())
           .asyncExpand((_) => _partnersRef
               .orderBy('invitedAt', descending: true)

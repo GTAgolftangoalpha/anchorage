@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 /// Flutter bridge for [AnchorageVpnService].
 ///
 /// Call [init] once in main() to wire native → Flutter callbacks.
-/// Call [prepareVpn] first — it shows the system VPN consent dialog if needed
+/// Call [prepareVpn] first. It shows the system VPN consent dialog if needed
 /// and returns `true` when permission is already granted or just granted.
 /// Only call [startVpn] after [prepareVpn] returns `true`.
 class VpnService {

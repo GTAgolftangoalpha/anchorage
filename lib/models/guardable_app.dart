@@ -14,7 +14,7 @@ class GuardableApp {
 
   /// Apps available for UsageStats-based guard interception.
   ///
-  /// Browsers (Chrome, Firefox, Brave, Opera) are intentionally excluded —
+  /// Browsers (Chrome, Firefox, Brave, Opera) are intentionally excluded.
   /// browser content is handled exclusively by the VPN DNS filter, not by
   /// UsageStatsManager. Adding a browser here would cause the overlay to fire
   /// on every browser launch, fighting with the VPN blocked-domain overlay.

@@ -161,7 +161,7 @@ class _AccountabilityScreenState extends State<AccountabilityScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Add someone you trust — a friend, mentor, or counsellor. '
+                    'Add someone you trust: a friend, mentor, or counsellor. '
                     'They\'ll receive a brief weekly email with your progress. '
                     'No shame, just support.',
                     style: theme.textTheme.bodySmall?.copyWith(

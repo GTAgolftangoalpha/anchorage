@@ -36,7 +36,7 @@ class EmergencySosScreen extends StatelessWidget {
         return const [
           _CrisisResource(
             name: '988 Suicide & Crisis Lifeline',
-            description: 'Free, confidential 24/7 support — call or text 988',
+            description: 'Free, confidential 24/7 support. Call or text 988',
             number: '988',
             dialNumber: '988',
           ),
