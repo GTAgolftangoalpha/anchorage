@@ -279,7 +279,7 @@ class LegalHtml {
 <div class="warning-box">
   <p><strong>Important:</strong> ANCHORAGE is a self-help tool designed to support your personal goals. It is <strong>not</strong> a substitute for professional mental health treatment, therapy, counselling, or medical advice.</p>
 </div>
-<p>If you are experiencing a mental health crisis, please contact a qualified professional or call a crisis helpline immediately. We do not make any claims that ANCHORAGE will cure, treat, or prevent any condition.</p>
+<p>If you are in crisis, please visit <strong>findahelpline.com</strong> for support in your country. We do not make any claims that ANCHORAGE will cure, treat, or prevent any condition.</p>
 
 <h2>3. Content Filtering Disclaimer</h2>
 <p>ANCHORAGE uses DNS-based filtering and app interception to help block access to explicit content. However:</p>

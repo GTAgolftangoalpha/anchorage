@@ -136,9 +136,21 @@ class EmergencySosScreen extends StatelessWidget {
               const SizedBox(height: 12),
 
               Text(
-                'Reaching out is strength.\nThese services are free, confidential,\nand available 24 hours a day.',
+                'Visit findahelpline.com for support in your country.',
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyLarge?.copyWith(
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.w600,
+                  height: 1.6,
+                ),
+              ),
+
+              const SizedBox(height: 12),
+
+              Text(
+                'Reaching out is strength.\nThese services are free, confidential,\nand available 24 hours a day.',
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyMedium?.copyWith(
                   color: AppColors.textSecondary,
                   height: 1.6,
                 ),
