@@ -515,7 +515,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'This helps us personalise your experience. Everything is optional.',
+                    'This helps us personalise your experience. Both are optional.',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: AppColors.textSecondary,
                       height: 1.5,
