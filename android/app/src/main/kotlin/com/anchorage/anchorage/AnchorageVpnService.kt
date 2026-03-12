@@ -741,12 +741,17 @@ class AnchorageVpnService : VpnService() {
             // Tag management and analytics
             "tiqcdn.com", "tealiumiq.com",
             "demdex.net", "omtrdc.net", "2o7.net",
+            "adobedtm.com", "omniture.com", "ensighten.com",
             // Error tracking and analytics
             "sentry.io",
             "amplitude.com",
             "segment.io", "segment.com",
             "mixpanel.com",
+            "heap.io", "hotjar.com", "fullstory.com",
             "braze.com", "branch.io",
+            // Push and engagement
+            "moengage.com", "onesignal.com",
+            "appboycdn.com", "survicate.com", "singular.net",
             // Social SDKs (ad attribution, not content)
             "facebook.com", "fbcdn.net",
             "appsflyer.com", "adjust.com", "kochava.com",
