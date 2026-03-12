@@ -6,7 +6,6 @@ import '../../services/guard_service.dart';
 import '../../services/premium_service.dart';
 import '../../services/user_preferences_service.dart';
 import '../../shared/widgets/anchor_logo.dart';
-import '../psychoeducation/psychoeducation_cards.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -53,15 +52,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   List<GuardableApp> get _guardedApps => GuardableApp.predefined
       .where((a) => _guardedPackages.contains(a.packageName))
       .toList();
-
-  // (icon, label, duration, route)
-  static const _exercises = [
-    (Icons.square_outlined, 'Box Breathing', '4 min', '/exercise/box-breathing'),
-    (Icons.air, 'Physiological Sigh', '3 min', '/exercise/physiological-sigh'),
-    (Icons.visibility, '5-4-3-2-1', '5 min', '/exercise/grounding'),
-    (Icons.waves, 'Urge Surfing', '4 min', '/exercise/urge-surfing'),
-    (Icons.accessibility_new, 'Body Scan', '5 min', '/exercise/body-scan'),
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -186,58 +176,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     ),
                   );
                 }),
-
-                // Exercises
-                Text('Exercises', style: theme.textTheme.titleMedium),
-                const SizedBox(height: 6),
-                Text(
-                  'Practice anytime, not just during intercepts.',
-                  style: theme.textTheme.bodySmall,
-                ),
-                const SizedBox(height: 10),
-                SizedBox(
-                  height: 100,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: _exercises.map((ex) {
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 12),
-                        child: _ExerciseMiniCard(
-                          icon: ex.$1,
-                          label: ex.$2,
-                          duration: ex.$3,
-                          onTap: () => context.push(ex.$4),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () => context.push('/exercises'),
-                    child: Text(
-                      'See all exercises',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: AppColors.seafoam,
-                      ),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 8),
-
-                // Learn
-                Text('Learn', style: theme.textTheme.titleMedium),
-                const SizedBox(height: 6),
-                Text(
-                  'Understanding the science behind urges.',
-                  style: theme.textTheme.bodySmall,
-                ),
-                const SizedBox(height: 10),
-                const PsychoeducationSection(),
-
-                const SizedBox(height: 8),
 
                 // Quick Actions
                 Text('Quick Actions', style: theme.textTheme.titleMedium),
@@ -583,62 +521,3 @@ class _QuickActionCard extends StatelessWidget {
   }
 }
 
-class _ExerciseMiniCard extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String duration;
-  final VoidCallback onTap;
-
-  const _ExerciseMiniCard({
-    required this.icon,
-    required this.label,
-    required this.duration,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(14),
-      child: Container(
-        width: 110,
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: AppColors.lightGray,
-          borderRadius: BorderRadius.circular(14),
-          border: const Border.fromBorderSide(
-            BorderSide(color: AppColors.midGray),
-          ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: AppColors.navy, size: 24),
-            const SizedBox(height: 6),
-            Text(
-              label,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: AppColors.navy,
-                fontWeight: FontWeight.w600,
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 2),
-            Text(
-              duration,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: AppColors.slate,
-                fontSize: 10,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
