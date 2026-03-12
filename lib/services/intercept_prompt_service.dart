@@ -30,19 +30,14 @@ class InterceptPromptService {
     'bored': [PromptCategory.urgeSurfing, PromptCategory.valuesPrompt],
     'stressed': [PromptCategory.presentMoment, PromptCategory.defusion],
     'lonely': [PromptCategory.valuesPrompt, PromptCategory.presentMoment],
-    'tired': [PromptCategory.presentMoment, PromptCategory.urgeSurfing],
+    'tired': [PromptCategory.defusion, PromptCategory.valuesPrompt],
     'anxious': [PromptCategory.presentMoment, PromptCategory.defusion],
     'down': [PromptCategory.valuesPrompt, PromptCategory.urgeSurfing],
     'angry': [PromptCategory.defusion, PromptCategory.presentMoment],
     'aroused': [PromptCategory.urgeSurfing, PromptCategory.defusion],
     'numb': [PromptCategory.presentMoment, PromptCategory.valuesPrompt],
     'rewarding': [PromptCategory.valuesPrompt, PromptCategory.defusion],
-    'not_sure': [
-      PromptCategory.valuesPrompt,
-      PromptCategory.presentMoment,
-      PromptCategory.urgeSurfing,
-      PromptCategory.defusion,
-    ],
+    'not_sure': [PromptCategory.presentMoment, PromptCategory.valuesPrompt],
   };
 
   /// Get a prompt matched to the given emotional state.
