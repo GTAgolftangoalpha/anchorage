@@ -736,6 +736,9 @@ class AnchorageVpnService : VpnService() {
             "akamai.com", "akamaized.net", "akamaihd.net",
             "fastly.net", "fastlylb.net",
             "cloudfront.net", "amazonaws.com",
+            // Tag management and analytics
+            "tiqcdn.com", "tealiumiq.com",
+            "demdex.net", "omtrdc.net", "2o7.net",
             // Error tracking and analytics
             "sentry.io",
             "amplitude.com",
@@ -756,6 +759,8 @@ class AnchorageVpnService : VpnService() {
             "twilio.com", "sendgrid.net",
             "pusher.com", "intercom.io",
             "zendesk.com",
+            // jQuery
+            "jquery.com",
         )
 
         /**
