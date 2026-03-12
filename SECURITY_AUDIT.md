@@ -1,6 +1,6 @@
 # ANCHORAGE Security Audit
 
-Audit date: 2 March 2026
+Audit date: 12 March 2026
 Status: Pre-launch V1
 
 ## 1. Data Storage Summary
@@ -51,7 +51,7 @@ Status: Pre-launch V1
 
 | Key | Location | Risk Level | Notes |
 |---|---|---|---|
-| RevenueCat public API key | `lib/main.dart` | Low | Public key by design; identifies the app to RevenueCat |
+| RevenueCat public API key | `lib/core/config/app_config.dart` | Low | Public key by design; identifies the app to RevenueCat |
 | Firebase config | `google-services.json` | Low | Standard Firebase config; security enforced server-side |
 | SendGrid API key | `functions/.env` (Cloud Functions only) | Medium | Never in client code; loaded as Firebase secret at runtime |
 
