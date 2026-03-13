@@ -24,7 +24,7 @@ class ExerciseChooserScreen extends StatelessWidget {
       icon: Icons.visibility,
       title: '5-4-3-2-1 Grounding',
       subtitle: 'Use your senses to anchor yourself in the present',
-      duration: '5 min',
+      duration: '3 min',
       route: '/exercise/grounding',
     ),
     _ExerciseInfo(
