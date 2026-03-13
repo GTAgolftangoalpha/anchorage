@@ -105,18 +105,6 @@ class _BodyScanScreenState extends State<BodyScanScreen> {
     });
   }
 
-  void _skip() {
-    _timer?.cancel();
-    if (_currentRegion < _regions.length - 1) {
-      setState(() {
-        _currentRegion++;
-        _startRegionTimer();
-      });
-    } else {
-      setState(() => _completed = true);
-    }
-  }
-
   void _reset() {
     _timer?.cancel();
     setState(() {
@@ -133,6 +121,11 @@ class _BodyScanScreenState extends State<BodyScanScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_completed) return _buildCompletionScreen();
+    return _buildExerciseScreen();
+  }
+
+  Widget _buildExerciseScreen() {
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -150,11 +143,9 @@ class _BodyScanScreenState extends State<BodyScanScreen> {
         ),
       ),
       body: SafeArea(
-        child: _completed
-            ? _buildCompleted(theme)
-            : _currentRegion < 0
-                ? _buildIntro(theme)
-                : _buildRegion(theme),
+        child: _currentRegion < 0
+            ? _buildIntro(theme)
+            : _buildRegion(theme),
       ),
     );
   }
@@ -187,7 +178,7 @@ class _BodyScanScreenState extends State<BodyScanScreen> {
           ),
           const SizedBox(height: 12),
           Text(
-            '7 regions. About 2 and a half minutes.',
+            '7 regions. About 2 minutes.',
             style: theme.textTheme.bodySmall?.copyWith(
               color: AppColors.white.withAlpha(100),
             ),
@@ -296,7 +287,7 @@ class _BodyScanScreenState extends State<BodyScanScreen> {
 
           const Spacer(flex: 2),
 
-          // Timer and skip
+          // Timer
           Text(
             '$_secondsLeft',
             style: theme.textTheme.displayLarge?.copyWith(
@@ -304,64 +295,100 @@ class _BodyScanScreenState extends State<BodyScanScreen> {
               fontSize: 28,
             ),
           ),
-          const SizedBox(height: 12),
-          TextButton(
-            onPressed: _skip,
-            style: TextButton.styleFrom(
-              foregroundColor: AppColors.white.withAlpha(120),
-            ),
-            child: const Text('Skip'),
-          ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
         ],
       ),
     );
   }
 
-  Widget _buildCompleted(ThemeData theme) {
-    return Padding(
-      padding: const EdgeInsets.all(32),
-      child: Column(
-        children: [
-          const Spacer(),
-          Icon(
-            Icons.check_circle_outline,
-            size: 64,
-            color: Anchorage.accent.withAlpha(180),
+  Widget _buildCompletionScreen() {
+    final theme = Theme.of(context);
+
+    return Scaffold(
+      backgroundColor: AppColors.navy,
+      appBar: AppBar(
+        backgroundColor: AppColors.navy,
+        foregroundColor: AppColors.white,
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: const Text('BODY SCAN'),
+        titleTextStyle: theme.appBarTheme.titleTextStyle?.copyWith(
+          color: AppColors.white,
+        ),
+      ),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32),
+          child: Column(
+            children: [
+              const Spacer(),
+              Text(
+                'Exercise complete.',
+                style: theme.textTheme.headlineMedium?.copyWith(
+                  color: AppColors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'You just moved your attention through your entire body. Notice how you feel now compared to when you started. Your body is a resource you always have access to.',
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: AppColors.white.withAlpha(180),
+                  height: 1.6,
+                ),
+              ),
+              const Spacer(),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  onPressed: _reset,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: Anchorage.accent,
+                    foregroundColor: AppColors.white,
+                    minimumSize: const Size(0, 52),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    'GO AGAIN',
+                    style: TextStyle(
+                      letterSpacing: 1,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.white,
+                    side: BorderSide(color: AppColors.white.withAlpha(60)),
+                    minimumSize: const Size(0, 52),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    "I'M DONE",
+                    style: TextStyle(
+                      letterSpacing: 1,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 48),
+            ],
           ),
-          const SizedBox(height: 24),
-          Text(
-            'Scan complete.',
-            style: theme.textTheme.headlineMedium?.copyWith(
-              color: AppColors.white,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'You just moved your attention through your entire body. Notice how you feel now compared to when you started. Your body is a resource you always have access to.',
-            textAlign: TextAlign.center,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: AppColors.white.withAlpha(200),
-            ),
-          ),
-          const Spacer(),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(),
-            style: FilledButton.styleFrom(
-              minimumSize: const Size(double.infinity, 52),
-            ),
-            child: const Text('Done'),
-          ),
-          const SizedBox(height: 12),
-          TextButton(
-            onPressed: _reset,
-            style: TextButton.styleFrom(
-              foregroundColor: AppColors.white.withAlpha(150),
-            ),
-            child: const Text('Do it again'),
-          ),
-          const SizedBox(height: 16),
-        ],
+        ),
       ),
     );
   }

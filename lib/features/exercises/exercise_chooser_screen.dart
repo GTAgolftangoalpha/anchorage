@@ -38,7 +38,7 @@ class ExerciseChooserScreen extends StatelessWidget {
       icon: Icons.accessibility_new,
       title: 'Body Scan',
       subtitle: 'Progressive relaxation from head to toe',
-      duration: '5 min',
+      duration: '2 min',
       route: '/exercise/body-scan',
     ),
   ];
