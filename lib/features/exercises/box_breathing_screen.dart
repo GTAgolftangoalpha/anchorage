@@ -16,7 +16,7 @@ class _BoxBreathingScreenState extends State<BoxBreathingScreen>
     with SingleTickerProviderStateMixin {
   static const _cycleDuration = Duration(seconds: 16);
   static const _phases = ['Inhale', 'Hold', 'Exhale', 'Hold'];
-  static const _totalCycles = 2;
+  static const _totalCycles = 4;
 
   late final AnimationController _controller;
   int _completedCycles = 0;
@@ -283,9 +283,9 @@ class _BoxBreathingScreenState extends State<BoxBreathingScreen>
 
                         const SizedBox(height: 24),
 
-                        // Cycle counter
+                        // Cycle counter (2 animation cycles = 1 full square)
                         Text(
-                          '$_completedCycles of $_totalCycles cycle${_totalCycles == 1 ? '' : 's'} completed',
+                          '${(_completedCycles / 2).floor()} of ${_totalCycles ~/ 2} cycles completed',
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: AppColors.white.withAlpha(120),
                           ),

@@ -10,7 +10,7 @@ class ExerciseChooserScreen extends StatelessWidget {
       icon: Icons.square_outlined,
       title: 'Box Breathing',
       subtitle: 'A timed breathing pattern designed to calm your nervous system',
-      duration: '4 min',
+      duration: '2 min',
       route: '/exercise/box-breathing',
     ),
     _ExerciseInfo(
