@@ -31,7 +31,7 @@ class ExerciseChooserScreen extends StatelessWidget {
       icon: Icons.waves,
       title: 'Urge Surfing',
       subtitle: 'Observe the urge like a wave. It rises, peaks, and passes.',
-      duration: '4 min',
+      duration: '3 min',
       route: '/exercise/urge-surfing',
     ),
     _ExerciseInfo(

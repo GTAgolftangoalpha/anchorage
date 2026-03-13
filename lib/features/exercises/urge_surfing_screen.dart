@@ -17,32 +17,32 @@ class _UrgeSurfingScreenState extends State<UrgeSurfingScreen>
     with SingleTickerProviderStateMixin {
   static const _phases = [
     _UrgeSurfPhase(
-      duration: Duration(seconds: 15),
+      duration: Duration(seconds: 10),
       title: 'Notice the urge',
       body: 'Close your eyes or soften your gaze. Bring your attention to the urge you are feeling right now. Where do you feel it in your body? Is it in your chest, your stomach, your throat?',
     ),
     _UrgeSurfPhase(
-      duration: Duration(seconds: 20),
+      duration: Duration(seconds: 10),
       title: 'Observe without judging',
       body: 'Do not try to fight the urge or push it away. Just notice it. What does it feel like? Is it warm or cold? Is it tight or loose? Does it pulse or stay steady?',
     ),
     _UrgeSurfPhase(
-      duration: Duration(seconds: 20),
+      duration: Duration(seconds: 12),
       title: 'Breathe into it',
       body: 'Take a slow breath in through your nose. Imagine you are breathing directly into the sensation. Let the breath soften the edges. You do not need to change anything.',
     ),
     _UrgeSurfPhase(
-      duration: Duration(seconds: 20),
+      duration: Duration(seconds: 15),
       title: 'Watch the wave',
       body: 'Like a wave in the ocean, the urge has already started to shift. It may feel stronger for a moment, but it will crest and begin to fall. You are riding it, not fighting it.',
     ),
     _UrgeSurfPhase(
-      duration: Duration(seconds: 20),
+      duration: Duration(seconds: 10),
       title: 'Let it pass',
       body: 'The wave is moving through you now. Notice how the intensity has changed since you started. You did not act on it. You simply watched it arrive, peak, and begin to fade.',
     ),
     _UrgeSurfPhase(
-      duration: Duration(seconds: 15),
+      duration: Duration(seconds: 8),
       title: 'Return to yourself',
       body: 'Take one more deep breath. Open your eyes. You just proved that you can feel an urge without acting on it. That is real strength.',
     ),
@@ -173,7 +173,7 @@ class _UrgeSurfingScreenState extends State<UrgeSurfingScreen>
           ),
           const SizedBox(height: 12),
           Text(
-            'This exercise takes about 2 minutes.',
+            'This exercise takes about 1 minute.',
             style: theme.textTheme.bodySmall?.copyWith(
               color: AppColors.white.withAlpha(100),
             ),
@@ -288,55 +288,72 @@ class _UrgeSurfingScreenState extends State<UrgeSurfingScreen>
 
   Widget _buildCompleted(ThemeData theme) {
     return Padding(
-      padding: const EdgeInsets.all(32),
+      padding: const EdgeInsets.symmetric(horizontal: 32),
       child: Column(
         children: [
           const Spacer(),
-          SizedBox(
-            height: 80,
-            child: AnimatedBuilder(
-              animation: _waveController,
-              builder: (context, _) => CustomPaint(
-                size: const Size(double.infinity, 80),
-                painter: _WavePainter(
-                  progress: _waveController.value,
-                  amplitude: 0.15,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 32),
           Text(
-            'The wave has passed.',
+            'Exercise complete.',
             style: theme.textTheme.headlineMedium?.copyWith(
               color: AppColors.white,
+              fontWeight: FontWeight.w700,
             ),
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
           Text(
             'You rode the urge without acting on it. Each time you do this, you build a stronger ability to choose your response.',
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyLarge?.copyWith(
-              color: AppColors.white.withAlpha(200),
+              color: AppColors.white.withAlpha(180),
+              height: 1.6,
             ),
           ),
           const Spacer(),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(),
-            style: FilledButton.styleFrom(
-              minimumSize: const Size(double.infinity, 52),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton(
+              onPressed: _reset,
+              style: FilledButton.styleFrom(
+                backgroundColor: Anchorage.accent,
+                foregroundColor: AppColors.white,
+                minimumSize: const Size(0, 52),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Text(
+                'GO AGAIN',
+                style: TextStyle(
+                  letterSpacing: 1,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
             ),
-            child: const Text('Done'),
           ),
           const SizedBox(height: 12),
-          TextButton(
-            onPressed: _reset,
-            style: TextButton.styleFrom(
-              foregroundColor: AppColors.white.withAlpha(150),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton(
+              onPressed: () => Navigator.of(context).pop(),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.white,
+                side: BorderSide(color: AppColors.white.withAlpha(60)),
+                minimumSize: const Size(0, 52),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Text(
+                "I'M DONE",
+                style: TextStyle(
+                  letterSpacing: 1,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
             ),
-            child: const Text('Do it again'),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 48),
         ],
       ),
     );
