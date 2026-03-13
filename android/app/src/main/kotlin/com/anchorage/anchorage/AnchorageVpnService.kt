@@ -504,15 +504,6 @@ class AnchorageVpnService : VpnService() {
             return
         }
 
-        // Suppress overlay for known infrastructure/analytics domains that appear in the
-        // Steven Black list for ad-network reasons but are not actual porn content.
-        // Only real porn domains should produce a user-visible intercept overlay.
-        if (isInfrastructureDomain(domain)) {
-            Log.d(TAG, "notifyDomainBlocked: infrastructure domain '$domain' blocked silently")
-            blockedDomainListener?.invoke(domain)
-            return
-        }
-
         // Post to main thread — startService from VPN packet-loop background thread
         // is silently dropped on Samsung Android 14.
         mainHandler.post {
@@ -531,16 +522,6 @@ class AnchorageVpnService : VpnService() {
         }
 
         blockedDomainListener?.invoke(domain)
-    }
-
-    /**
-     * Returns true for known infrastructure/analytics domains that appear in the Steven Black
-     * blocklist for ad-network reasons but are not porn content — these are blocked silently
-     * (DNS blocked, TCP RST'd) without showing a user-visible overlay.
-     */
-    private fun isInfrastructureDomain(domain: String): Boolean {
-        val d = domain.lowercase().trimEnd('.')
-        return INFRASTRUCTURE_SUFFIXES.any { suffix -> d == suffix || d.endsWith(".$suffix") }
     }
 
     // ── TCP RST ───────────────────────────────────────────────────────────────
@@ -591,10 +572,25 @@ class AnchorageVpnService : VpnService() {
         "${ip[0].toInt() and 0xFF}.${ip[1].toInt() and 0xFF}.${ip[2].toInt() and 0xFF}.${ip[3].toInt() and 0xFF}"
 
     // ── Blocklist ─────────────────────────────────────────────────────────────
+    // Porn-only blocklist — deliberately excludes ads, trackers, and analytics
+    // to prevent over-blocking legitimate apps and sites.
 
     private fun loadBlocklist() {
         val start = System.currentTimeMillis()
         val updated = File(filesDir, "blocklist.txt")
+
+        // If the cached file predates the porn-only migration, delete it so
+        // the fresh bundled asset is used until BlocklistUpdateWorker fetches
+        // the new porn-only list.
+        if (updated.exists()) {
+            val marker = File(filesDir, "blocklist_porn_only.marker")
+            if (!marker.exists()) {
+                Log.d(TAG, "loadBlocklist: deleting stale cached blocklist from previous broad list")
+                updated.delete()
+                marker.createNewFile()
+            }
+        }
+
         val stream = if (updated.exists()) {
             Log.d(TAG, "loadBlocklist: loading updated list (${updated.length()} bytes)")
             updated.inputStream()
@@ -715,16 +711,17 @@ class AnchorageVpnService : VpnService() {
         }
 
         /**
-         * Permanent DNS whitelist — these domains always resolve normally, regardless of whether
-         * they appear in the Steven Black blocklist. Use for critical infrastructure that must
-         * never be blocked (Google services, Firebase, Apple, key analytics SDKs).
+         * Permanent DNS whitelist — these domains always resolve normally, even if they
+         * somehow appear in the porn-only blocklist. Covers critical infrastructure that
+         * the app depends on (Google services, Firebase, CDNs, payment providers).
+         *
+         * Porn-only blocklist — deliberately excludes ads, trackers, and analytics
+         * to prevent over-blocking legitimate apps and sites.
          */
         private val WHITELIST_SUFFIXES = setOf(
             // Google ecosystem
             "google.com", "googleapis.com", "gstatic.com", "googlevideo.com",
-            "googleusercontent.com", "googletagmanager.com",
-            "google-analytics.com", "googleadservices.com",
-            "googlesyndication.com", "doubleclick.net", "2mdn.net",
+            "googleusercontent.com",
             "goog", // Google's own TLD
             // Firebase
             "firebase.com", "firebaseapp.com", "firebaseio.com",
@@ -734,70 +731,18 @@ class AnchorageVpnService : VpnService() {
             // Apple
             "apple.com", "icloud.com", "mzstatic.com",
             // CDN providers
-            "optimizely.com", "cloudflare.com", "cloudflare-dns.com",
+            "cloudflare.com", "cloudflare-dns.com",
             "akamai.com", "akamaized.net", "akamaihd.net",
             "fastly.net", "fastlylb.net",
             "cloudfront.net", "amazonaws.com",
-            // Tag management and analytics
-            "tiqcdn.com", "tealiumiq.com",
-            "demdex.net", "omtrdc.net", "2o7.net",
-            "adobedtm.com", "omniture.com", "ensighten.com",
-            // Error tracking and analytics
-            "sentry.io",
-            "amplitude.com",
-            "segment.io", "segment.com",
-            "mixpanel.com",
-            "heap.io", "hotjar.com", "fullstory.com",
-            "braze.com", "branch.io",
-            // Push and engagement
-            "moengage.com", "onesignal.com",
-            "appboycdn.com", "survicate.com", "singular.net",
-            // Social SDKs (ad attribution, not content)
+            // Social (not content)
             "facebook.com", "fbcdn.net",
-            "appsflyer.com", "adjust.com", "kochava.com",
             // Microsoft / LinkedIn
             "microsoft.com", "msn.com", "live.com", "outlook.com",
             "linkedin.com",
             // Payment and auth providers
             "stripe.com", "paypal.com",
             "auth0.com", "okta.com",
-            // Common app infrastructure
-            "algolia.com", "algolianet.com",
-            "twilio.com", "sendgrid.net",
-            "pusher.com", "intercom.io",
-            "zendesk.com",
-            // jQuery
-            "jquery.com",
-        )
-
-        /**
-         * Domain suffixes that should be blocked silently (no overlay).
-         * These appear in the Steven Black list due to ad-network associations, not porn content.
-         * Any domain whose root matches one of these will be DNS-blocked without showing
-         * the user a visible interception overlay.
-         */
-        private val INFRASTRUCTURE_SUFFIXES = setOf(
-            // Google / Firebase
-            "googleapis.com", "gstatic.com", "google.com", "googlevideo.com",
-            "googleusercontent.com", "googletagmanager.com",
-            "firebase.com", "firebaseapp.com", "firebaseio.com",
-            "crashlytics.com", "app-measurement.com",
-            "doubleclick.net", "google-analytics.com",
-            "googleadservices.com", "googlesyndication.com", "2mdn.net",
-            // CDN providers
-            "optimizely.com", "cloudflare.com", "cloudflare-dns.com",
-            "akamai.com", "akamaized.net", "akamaihd.net",
-            "fastly.net", "fastlylb.net",
-            "cloudfront.net", "amazonaws.com",
-            // Error tracking and analytics
-            "sentry.io",
-            "braze.com", "branch.io",
-            "facebook.com", "fbcdn.net",
-            "appsflyer.com", "adjust.com", "kochava.com",
-            "mixpanel.com", "amplitude.com", "segment.io", "segment.com",
-            // Microsoft / LinkedIn
-            "microsoft.com", "msn.com", "live.com", "outlook.com",
-            "linkedin.com",
         )
     }
 }

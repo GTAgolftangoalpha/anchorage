@@ -9,8 +9,11 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 /**
- * Downloads the latest Steven Black porn blocklist every 14 days and
+ * Downloads the latest Steven Black porn-only blocklist every 14 days and
  * stores it in [Context.getFilesDir]/blocklist.txt.
+ *
+ * Porn-only blocklist — deliberately excludes ads, trackers, and analytics
+ * to prevent over-blocking legitimate apps and sites.
  *
  * [AnchorageVpnService] prefers this updated file over the bundled asset.
  */
@@ -62,7 +65,9 @@ class BlocklistUpdateWorker(
 
     companion object {
         private const val TAG = "BlocklistWorker"
+        // Porn-only blocklist — deliberately excludes ads, trackers, and analytics
+        // to prevent over-blocking legitimate apps and sites.
         private const val BLOCKLIST_URL =
-            "https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/porn/hosts"
+            "https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/porn-only/hosts"
     }
 }
