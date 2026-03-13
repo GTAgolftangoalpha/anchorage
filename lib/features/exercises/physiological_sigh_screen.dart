@@ -129,6 +129,10 @@ class _PhysiologicalSighScreenState extends State<PhysiologicalSighScreen>
       appBar: AppBar(
         backgroundColor: AppColors.navy,
         foregroundColor: AppColors.white,
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         title: const Text('PHYSIOLOGICAL SIGH'),
         titleTextStyle: theme.appBarTheme.titleTextStyle?.copyWith(
           color: AppColors.white,

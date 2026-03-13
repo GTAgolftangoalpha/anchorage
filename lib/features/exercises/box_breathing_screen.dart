@@ -120,6 +120,10 @@ class _BoxBreathingScreenState extends State<BoxBreathingScreen>
       appBar: AppBar(
         backgroundColor: AppColors.navy,
         foregroundColor: AppColors.white,
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         title: const Text('BOX BREATHING'),
         titleTextStyle: theme.appBarTheme.titleTextStyle?.copyWith(
           color: AppColors.white,
@@ -208,6 +212,10 @@ class _BoxBreathingScreenState extends State<BoxBreathingScreen>
       appBar: AppBar(
         backgroundColor: AppColors.navy,
         foregroundColor: AppColors.white,
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         title: const Text('BOX BREATHING'),
         titleTextStyle: theme.appBarTheme.titleTextStyle?.copyWith(
           color: AppColors.white,

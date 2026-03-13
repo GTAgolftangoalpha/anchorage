@@ -140,6 +140,10 @@ class _BodyScanScreenState extends State<BodyScanScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.navy,
         foregroundColor: AppColors.white,
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         title: const Text('BODY SCAN'),
         titleTextStyle: theme.appBarTheme.titleTextStyle?.copyWith(
           color: AppColors.white,

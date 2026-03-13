@@ -91,7 +91,13 @@ class _GroundingScreenState extends State<GroundingScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: AppBar(title: const Text('5-4-3-2-1 GROUNDING')),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: const Text('5-4-3-2-1 GROUNDING'),
+      ),
       body: SafeArea(
         child: _completed ? _buildCompleted(theme) : _buildStep(theme),
       ),
