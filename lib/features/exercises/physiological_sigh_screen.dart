@@ -21,12 +21,14 @@ class _PhysiologicalSighScreenState extends State<PhysiologicalSighScreen>
   static const _exhaleMs = 6000;
   static const _pauseMs = 1000;
   static const _totalMs = _inhale1Ms + _inhale2Ms + _exhaleMs + _pauseMs;
+  static const _totalCycles = 5;
 
   late final AnimationController _breathController;
   late final AnimationController _scaleController;
 
   int _completedCycles = 0;
   bool _isRunning = false;
+  bool _isComplete = false;
   String _phase = 'Ready';
   Timer? _phaseTimer;
 
@@ -38,8 +40,15 @@ class _PhysiologicalSighScreenState extends State<PhysiologicalSighScreen>
       duration: const Duration(milliseconds: _totalMs),
     )..addStatusListener((status) {
         if (status == AnimationStatus.completed && _isRunning) {
-          _completedCycles++;
-          _breathController.forward(from: 0);
+          setState(() {
+            _completedCycles++;
+            if (_completedCycles >= _totalCycles) {
+              _isRunning = false;
+              _isComplete = true;
+            } else {
+              _breathController.forward(from: 0);
+            }
+          });
         }
       });
 
@@ -73,18 +82,14 @@ class _PhysiologicalSighScreenState extends State<PhysiologicalSighScreen>
     if (!_isRunning) return 0.6;
     final ms = (_breathController.value * _totalMs).round();
     if (ms < _inhale1Ms) {
-      // First inhale: 0.6 -> 0.8
       return 0.6 + 0.2 * (ms / _inhale1Ms);
     } else if (ms < _inhale1Ms + _inhale2Ms) {
-      // Second inhale: 0.8 -> 1.0
       final t = (ms - _inhale1Ms) / _inhale2Ms;
       return 0.8 + 0.2 * t;
     } else if (ms < _inhale1Ms + _inhale2Ms + _exhaleMs) {
-      // Exhale: 1.0 -> 0.5
       final t = (ms - _inhale1Ms - _inhale2Ms) / _exhaleMs;
       return 1.0 - 0.5 * t;
     } else {
-      // Pause at 0.5 -> 0.6
       final t = (ms - _inhale1Ms - _inhale2Ms - _exhaleMs) / _pauseMs;
       return 0.5 + 0.1 * t;
     }
@@ -107,8 +112,20 @@ class _PhysiologicalSighScreenState extends State<PhysiologicalSighScreen>
     setState(() {
       _breathController.reset();
       _isRunning = false;
+      _isComplete = false;
       _completedCycles = 0;
       _phase = 'Ready';
+    });
+  }
+
+  void _restart() {
+    setState(() {
+      _breathController.reset();
+      _completedCycles = 0;
+      _isComplete = false;
+      _isRunning = true;
+      _phase = 'Ready';
+      _breathController.forward(from: 0);
     });
   }
 
@@ -122,6 +139,103 @@ class _PhysiologicalSighScreenState extends State<PhysiologicalSighScreen>
 
   @override
   Widget build(BuildContext context) {
+    if (_isComplete) return _buildCompletionScreen();
+    return _buildExerciseScreen();
+  }
+
+  Widget _buildCompletionScreen() {
+    final theme = Theme.of(context);
+
+    return Scaffold(
+      backgroundColor: AppColors.navy,
+      appBar: AppBar(
+        backgroundColor: AppColors.navy,
+        foregroundColor: AppColors.white,
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: const Text('PHYSIOLOGICAL SIGH'),
+        titleTextStyle: theme.appBarTheme.titleTextStyle?.copyWith(
+          color: AppColors.white,
+        ),
+      ),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32),
+          child: Column(
+            children: [
+              const Spacer(),
+              Text(
+                'Exercise complete.',
+                style: theme.textTheme.headlineMedium?.copyWith(
+                  color: AppColors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Your nervous system just shifted. The double inhale opens collapsed air sacs in your lungs, and the long exhale activates your parasympathetic response.',
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: AppColors.white.withAlpha(180),
+                  height: 1.6,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const Spacer(),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  onPressed: _restart,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: Anchorage.accent,
+                    foregroundColor: AppColors.white,
+                    minimumSize: const Size(0, 52),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    'GO AGAIN',
+                    style: TextStyle(
+                      letterSpacing: 1,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.white,
+                    side: BorderSide(color: AppColors.white.withAlpha(60)),
+                    minimumSize: const Size(0, 52),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    "I'M DONE",
+                    style: TextStyle(
+                      letterSpacing: 1,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 48),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildExerciseScreen() {
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -242,7 +356,7 @@ class _PhysiologicalSighScreenState extends State<PhysiologicalSighScreen>
 
                         const SizedBox(height: 20),
                         Text(
-                          '$_completedCycles cycle${_completedCycles == 1 ? '' : 's'} completed',
+                          '$_completedCycles of $_totalCycles cycles completed',
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: AppColors.white.withAlpha(120),
                           ),

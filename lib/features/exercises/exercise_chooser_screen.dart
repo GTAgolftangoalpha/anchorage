@@ -17,7 +17,7 @@ class ExerciseChooserScreen extends StatelessWidget {
       icon: Icons.air,
       title: 'Physiological Sigh',
       subtitle: 'A rapid stress-reduction breathing technique supported by recent neuroscience research',
-      duration: '3 min',
+      duration: '2 min',
       route: '/exercise/physiological-sigh',
     ),
     _ExerciseInfo(
