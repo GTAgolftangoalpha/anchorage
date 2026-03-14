@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import '../../features/about/about_screen.dart';
 // HIDDEN: Accountability partner UI hidden until Cloud Function backend is built. Do not delete.
 // import '../../features/accountability/accountability_screen.dart';
+// REMOVED: Storm Mode removed from V1. Do not re-add without safety review.
+// REMOVED: Partner-held PIN lockout removed from V1. Do not re-add without safety review.
 import '../../features/blocked_domain/blocked_domain_screen.dart';
 import '../../features/custom_blocklist/custom_blocklist_screen.dart';
 import '../../features/exercises/body_scan_screen.dart';

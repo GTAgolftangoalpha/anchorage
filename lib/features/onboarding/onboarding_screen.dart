@@ -13,6 +13,10 @@ import '../../services/user_preferences_service.dart';
 import '../../services/vpn_service.dart';
 import '../../shared/widgets/anchor_logo.dart';
 
+// REMOVED: Storm Mode removed from V1. Do not re-add without safety review.
+// REMOVED: Partner-held PIN lockout removed from V1. Do not re-add without safety review.
+// Only Harbour (free) and Anchor (paid) blocking modes are available.
+
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
 

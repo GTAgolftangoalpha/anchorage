@@ -292,6 +292,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             //   subtitle: 'Share your progress with someone',
             //   onTap: () => context.push('/accountability'),
             // ),
+            // REMOVED: Storm Mode removed from V1. Do not re-add without safety review.
+            // REMOVED: Partner-held PIN lockout removed from V1. Do not re-add without safety review.
 
             const SizedBox(height: 8),
             _SectionHeader(title: 'Subscription'),
