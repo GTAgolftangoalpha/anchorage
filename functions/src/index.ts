@@ -9,7 +9,7 @@ const db = admin.firestore();
 //   firebase functions:secrets:set SENDGRID_API_KEY
 // Then deploy — Functions runtime injects it at startup.
 const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY ?? "";
-const FROM_EMAIL = "gtagolftangoalpha@gmail.com";
+const FROM_EMAIL = "hello@getanchorage.app";
 const FROM_NAME = "ANCHORAGE";
 const APP_URL = "https://anchorage.app";
 
@@ -807,7 +807,7 @@ function missingHeartbeatHtml(partnerName: string, userName: string): string {
             <div style="background:#FFF8F0;border-left:4px solid #D4AF37;padding:16px 20px;
                         border-radius:0 8px 8px 0;margin:0 0 24px;">
               <p style="margin:0;font-size:15px;color:#4A6080;line-height:1.6;">
-                You may want to <strong>check in with them</strong> &mdash;
+                You may want to <strong>check in with them</strong> --
                 not with judgment, but with care. Everyone's journey has ups and downs.
               </p>
             </div>

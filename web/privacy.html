@@ -52,22 +52,22 @@
 <h3>1.1 Data Stored Locally on Your Device</h3>
 <p>The following data is stored exclusively on your device using local storage and is <strong>never</strong> transmitted to our servers:</p>
 <ul>
-  <li><strong>Urge logs</strong> &mdash; trigger categories, timestamps, and optional notes</li>
-  <li><strong>Lapse logs</strong> &mdash; guided reflection responses (what happened, what triggered it, what you learned, what to do next time)</li>
-  <li><strong>Reflection entries</strong> &mdash; mood ratings and free-text journal entries</li>
-  <li><strong>Personal values</strong> &mdash; your selected core values (up to 3)</li>
-  <li><strong>First name</strong> &mdash; used only for personalising the app locally</li>
-  <li><strong>App preferences</strong> &mdash; guarded app selections and settings</li>
-  <li><strong>Date of birth and gender (optional)</strong> &mdash; provided during onboarding for age verification and app personalisation. Stored locally on your device only.</li>
+  <li><strong>Urge logs</strong> -- trigger categories, timestamps, and optional notes</li>
+  <li><strong>Lapse logs</strong> -- guided reflection responses (what happened, what triggered it, what you learned, what to do next time)</li>
+  <li><strong>Reflection entries</strong> -- mood ratings and free-text journal entries</li>
+  <li><strong>Personal values</strong> -- your selected core values (up to 3)</li>
+  <li><strong>First name</strong> -- used only for personalising the app locally</li>
+  <li><strong>App preferences</strong> -- guarded app selections and settings</li>
+  <li><strong>Date of birth and gender (optional)</strong> -- provided during onboarding for age verification and app personalisation. Stored locally on your device only.</li>
 </ul>
 <p>This data remains on your device and is deleted when you clear app data or uninstall ANCHORAGE.</p>
 
 <h3>1.2 Data Synced via Firebase</h3>
 <p>We use Firebase Authentication (anonymous sign-in) and Cloud Firestore to sync minimal data:</p>
 <ul>
-  <li><strong>Anonymous user ID (UUID)</strong> &mdash; a randomly generated identifier with no connection to your real identity</li>
-  <li><strong>Streak data</strong> &mdash; your current streak count and start date</li>
-  <li><strong>Accountability partner details</strong> &mdash; if you add a partner, their name and email are stored in Firestore to enable weekly progress reports</li>
+  <li><strong>Anonymous user ID (UUID)</strong> -- a randomly generated identifier with no connection to your real identity</li>
+  <li><strong>Streak data</strong> -- your current streak count and start date</li>
+  <li><strong>Accountability partner details</strong> -- if you add a partner, their name and email are stored in Firestore to enable weekly progress reports</li>
 </ul>
 <p>We do not collect your real name, phone number, physical address, or any other personally identifiable information through Firebase.</p>
 
@@ -76,15 +76,15 @@
 <ul>
   <li><strong>Anonymous user ID (UUID)</strong></li>
   <li><strong>Timestamp</strong></li>
-  <li><strong>VPN active status</strong> (boolean &mdash; whether the content filter is running)</li>
-  <li><strong>Guard service active status</strong> (boolean &mdash; whether the app guard is running)</li>
+  <li><strong>VPN active status</strong> (boolean -- whether the content filter is running)</li>
+  <li><strong>Guard service active status</strong> (boolean -- whether the app guard is running)</li>
 </ul>
 <p>The heartbeat does <strong>not</strong> contain browsing data, blocked domains, app usage details, or any personal content. It is used solely to detect if ANCHORAGE has been uninstalled or become inactive, so your accountability partner can be notified to check in with you.</p>
 
 <h3>1.4 Third-Party Services</h3>
 <ul>
-  <li><strong>SendGrid</strong> &mdash; sends accountability emails (weekly reports, partner invitations, and protection alerts). Processes the recipient email and report content (streak data only, never urge/lapse details).</li>
-  <li><strong>RevenueCat</strong> &mdash; processes subscriptions through Google Play. We receive subscription status but never payment card details.</li>
+  <li><strong>SendGrid</strong> -- sends accountability emails (weekly reports, partner invitations, and protection alerts). Processes the recipient email and report content (streak data only, never urge/lapse details).</li>
+  <li><strong>RevenueCat</strong> -- processes subscriptions through Google Play. We receive subscription status but never payment card details.</li>
 </ul>
 
 <h2>2. How We Use Your Data</h2>
@@ -92,7 +92,7 @@
   <li>Provide and personalise the ANCHORAGE app experience</li>
   <li>Track and display your streak progress</li>
   <li>Send accountability reports to your chosen partner</li>
-  <li>Send accountability alerts when protection is interrupted (warm, non-shaming check-in prompts &mdash; never details about what was accessed)</li>
+  <li>Send accountability alerts when protection is interrupted (warm, non-shaming check-in prompts -- never details about what was accessed)</li>
   <li>Process subscription payments</li>
   <li>Improve app stability (anonymous crash data only)</li>
 </ul>
@@ -104,28 +104,29 @@
   <li>We do <strong>not</strong> log which domains are blocked by the VPN filter</li>
   <li>We do <strong>not</strong> use advertising SDKs or fingerprinting</li>
   <li>We do <strong>not</strong> sell, rent, or share your data with third parties for marketing</li>
+  <li>We do <strong>not</strong> have access to anything you write in free-text fields within the app. Journal entries, urge log notes, and reflection entries are stored locally on your device and are never transmitted to our servers.</li>
 </ul>
 
 <h2>4. VPN and Content Filtering</h2>
-<p>ANCHORAGE uses a local VPN service to filter DNS requests entirely on your device. No browsing data, DNS queries, or network traffic is transmitted to our servers. Your actual internet traffic is not intercepted or proxied. The VPN only routes DNS queries through a local resolver &mdash; all other traffic bypasses the VPN entirely.</p>
+<p>ANCHORAGE uses a local VPN service to filter DNS requests entirely on your device. No browsing data, DNS queries, or network traffic is transmitted to our servers. Your actual internet traffic is not intercepted or proxied. The VPN only routes DNS queries through a local resolver -- all other traffic bypasses the VPN entirely.</p>
 
 <h2>5. Data Retention</h2>
 <ul>
-  <li><strong>Local data</strong> &mdash; retained until you clear app data, uninstall, or sign out</li>
-  <li><strong>Firebase data</strong> &mdash; retained while your anonymous account exists; deleted within 30 days upon request</li>
-  <li><strong>Heartbeat data</strong> &mdash; only the most recent heartbeat is stored; older heartbeats are overwritten</li>
-  <li><strong>SendGrid</strong> &mdash; email delivery logs retained per SendGrid policy (typically 30 days)</li>
-  <li><strong>RevenueCat</strong> &mdash; subscription records retained per RevenueCat policy and Google Play requirements</li>
+  <li><strong>Local data</strong> -- retained until you clear app data, uninstall, or sign out</li>
+  <li><strong>Firebase data</strong> -- retained while your anonymous account exists; deleted within 30 days upon request</li>
+  <li><strong>Heartbeat data</strong> -- only the most recent heartbeat is stored; older heartbeats are overwritten</li>
+  <li><strong>SendGrid</strong> -- email delivery logs retained per SendGrid policy (typically 30 days)</li>
+  <li><strong>RevenueCat</strong> -- subscription records retained per RevenueCat policy and Google Play requirements</li>
 </ul>
 
 <h2>6. Your Rights (GDPR &amp; Australian Privacy Act)</h2>
 <p>Under both the EU General Data Protection Regulation (GDPR) and the Australian Privacy Act 1988, you have the right to:</p>
 <ul>
-  <li><strong>Access</strong> &mdash; request a copy of all data we hold about you</li>
-  <li><strong>Deletion</strong> &mdash; request deletion of all your data</li>
-  <li><strong>Portability</strong> &mdash; receive your data in a structured, machine-readable format</li>
-  <li><strong>Rectification</strong> &mdash; correct any inaccurate data</li>
-  <li><strong>Withdraw consent</strong> &mdash; stop data processing at any time</li>
+  <li><strong>Access</strong> -- request a copy of all data we hold about you</li>
+  <li><strong>Deletion</strong> -- request deletion of all your data</li>
+  <li><strong>Portability</strong> -- receive your data in a structured, machine-readable format</li>
+  <li><strong>Rectification</strong> -- correct any inaccurate data</li>
+  <li><strong>Withdraw consent</strong> -- stop data processing at any time</li>
 </ul>
 <p>To exercise any of these rights, email us at the address below. We will respond within 30 days.</p>
 
@@ -133,7 +134,7 @@
 <ul>
   <li>Firebase Security Rules restrict data access to authenticated users</li>
   <li>HTTPS encryption for all network communication</li>
-  <li>Minimal data collection &mdash; only what is strictly necessary</li>
+  <li>Minimal data collection -- only what is strictly necessary</li>
   <li>No server-side storage of sensitive personal data (urge logs, lapse logs, reflections)</li>
 </ul>
 
