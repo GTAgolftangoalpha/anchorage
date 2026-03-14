@@ -1,7 +1,8 @@
 # ANCHORAGE Security Audit
 
-Audit date: 12 March 2026
+Audit date: 14 March 2026
 Status: Pre-launch V1
+Last verified: 14 March 2026
 
 ## 1. Data Storage Summary
 
@@ -28,6 +29,8 @@ Status: Pre-launch V1
 | Tamper events | Firestore `users/{uid}/tamper_events` | Auth UID match required |
 | Intercept events | Firestore `users/{uid}/intercept_events` | Auth UID match required |
 | Stats (for accountability) | Firestore `users/{uid}/stats` | Auth UID match required |
+| Email send records (rate limiting) | Firestore `users/{uid}/email_sends` | Auth UID match required |
+| Heartbeat alert records | Firestore `users/{uid}/heartbeat_alerts` | Auth UID match required |
 
 ### Data Processed by Third Parties
 
@@ -43,7 +46,7 @@ Status: Pre-launch V1
 
 - Every document under `users/{userId}` requires `request.auth.uid == userId`
 - All subcollections inherit the same UID-scoped rule
-- `partnerInvites` collection: read requires authentication; write is denied (Cloud Functions only)
+- `partnerInvites` collection: read and write both denied (Cloud Functions use admin SDK, bypassing rules)
 - Default catch-all rule denies all other access
 - No public read or write access to any collection
 
