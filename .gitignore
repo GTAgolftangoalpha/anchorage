@@ -49,4 +49,9 @@ functions/.env
 functions/.env.local
 *.env
 
+# Release keystore and credentials
+KEYSTORE_CREDENTIALS.txt
+*.keystore
+*.jks
+
 # Claude Code local state

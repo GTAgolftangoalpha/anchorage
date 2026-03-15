@@ -116,7 +116,7 @@ Last verified: 14 March 2026
 ## 10. Outstanding Items
 
 - [ ] Replace RevenueCat test API key with production key before Play Store release
-- [ ] Configure proper release signing config (replace debug keystore)
-- [ ] Update `FROM_EMAIL` in Cloud Functions to `hello@getanchorage.app`
+- [x] Configure proper release signing config (replace debug keystore) -- done 2026-03-15
+- [x] Update `FROM_EMAIL` in Cloud Functions to `hello@getanchorage.app` -- done 2026-03-15
 - [ ] Deploy updated Firestore rules via `firebase deploy --only firestore:rules`
 - [ ] Deploy updated Cloud Functions via `firebase deploy --only functions`

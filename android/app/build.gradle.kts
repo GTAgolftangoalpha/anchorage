@@ -21,6 +21,15 @@ android {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("anchorage-release.keystore")
+            storePassword = System.getenv("ANCHORAGE_STORE_PASSWORD") ?: "anchorage2026release"
+            keyAlias = "anchorage-release"
+            keyPassword = System.getenv("ANCHORAGE_KEY_PASSWORD") ?: "anchorage2026release"
+        }
+    }
+
     defaultConfig {
         applicationId = "com.anchorage.app"
         minSdk = maxOf(flutter.minSdkVersion, 23)
@@ -38,8 +47,7 @@ android {
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
