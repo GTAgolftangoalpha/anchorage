@@ -4,6 +4,7 @@ import '../../services/reflect_service.dart';
 import '../../services/streak_service.dart';
 import '../../services/urge_log_service.dart';
 import '../../services/user_preferences_service.dart';
+import '../../services/white_flag_service.dart';
 
 class JourneyScreen extends StatelessWidget {
   const JourneyScreen({super.key});
@@ -28,6 +29,7 @@ class JourneyScreen extends StatelessWidget {
                 : 0;
             final reflections = ReflectService.instance.entries.value.length;
             final urgesLogged = UrgeLogService.instance.entries.value.length;
+            final whiteFlags = WhiteFlagService.instance.events.value.length;
 
             return SingleChildScrollView(
               padding: const EdgeInsets.all(24),
@@ -100,6 +102,13 @@ class JourneyScreen extends StatelessWidget {
                     label: 'Urges logged',
                     value: '$urgesLogged',
                     color: AppColors.rope,
+                  ),
+                  const SizedBox(height: 12),
+                  _JourneyStat(
+                    icon: Icons.flag_outlined,
+                    label: 'White Flags raised',
+                    value: '$whiteFlags',
+                    color: AppColors.slate,
                   ),
                   const SizedBox(height: 12),
                   _JourneyStat(

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/constants/app_colors.dart';
 import '../../services/intercept_prompt_service.dart';
 import '../../shared/widgets/anchor_logo.dart';
+import '../../shared/widgets/white_flag_dialog.dart';
 
 class BlockedDomainScreen extends StatefulWidget {
   final String domain;
@@ -121,6 +122,24 @@ class _BlockedDomainScreenState extends State<BlockedDomainScreen> {
                 ),
               ),
               const SizedBox(height: 12),
+              TextButton.icon(
+                onPressed: () async {
+                  final confirmed = await showWhiteFlagConfirmation(
+                    context,
+                    blockedTarget: widget.domain,
+                  );
+                  if (confirmed && context.mounted) context.pop();
+                },
+                icon: const Text('\u{1F3F3}', style: TextStyle(fontSize: 16)),
+                label: Text(
+                  'White Flag',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: AppColors.white.withAlpha(140),
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 4),
               TextButton.icon(
                 onPressed: () => context.push('/sos'),
                 icon: const Icon(

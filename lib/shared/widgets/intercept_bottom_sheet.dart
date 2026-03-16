@@ -6,6 +6,7 @@ import '../../core/constants/app_colors.dart';
 import '../../services/intercept_event_service.dart';
 import '../../services/intercept_prompt_service.dart';
 import '../../services/premium_service.dart';
+import 'white_flag_dialog.dart';
 
 /// Shown as a full-height modal bottom sheet when a guarded app is
 /// detected in the foreground. The user must actively choose to reflect
@@ -188,6 +189,27 @@ class InterceptBottomSheet extends StatelessWidget {
                           color: AppColors.white,
                           letterSpacing: 1.5,
                         ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 8),
+                  TextButton.icon(
+                    onPressed: () async {
+                      final confirmed = await showWhiteFlagConfirmation(
+                        context,
+                        blockedTarget: appName,
+                      );
+                      if (confirmed && context.mounted) {
+                        Navigator.of(context).pop();
+                      }
+                    },
+                    icon: const Text('\u{1F3F3}',
+                        style: TextStyle(fontSize: 16)),
+                    label: Text(
+                      'White Flag',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: AppColors.white.withAlpha(140),
                       ),
                     ),
                   ),

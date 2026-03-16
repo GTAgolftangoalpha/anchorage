@@ -441,6 +441,11 @@ class OverlayService : Service() {
             dismiss()
             launchAnchorage(navigateTo = null, extraEmotion = selectedEmotion)
         }
+
+        overlayView?.findViewById<Button>(R.id.btn_white_flag)?.setOnClickListener {
+            Log.d(TAG, "btn_white_flag tapped")
+            dismiss()
+        }
     }
 
     // ── VPN-blocked overlay (unchanged flow, no emotion selection) ─────────

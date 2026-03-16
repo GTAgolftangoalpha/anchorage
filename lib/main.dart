@@ -27,6 +27,7 @@ import 'services/urge_log_service.dart';
 import 'services/user_preferences_service.dart';
 import 'services/tamper_service.dart';
 import 'services/vpn_service.dart';
+import 'services/white_flag_service.dart';
 import 'shared/widgets/intercept_bottom_sheet.dart';
 
 Future<void> main() async {
@@ -94,6 +95,7 @@ Future<void> main() async {
   await RelapseService.instance.init();
   await CustomBlocklistService.instance.init();
   await InterceptEventService.instance.init();
+  await WhiteFlagService.instance.init();
 
   // Sync accountability stats whenever streak or reflect data changes.
   // Fire-and-forget -- updateStats has its own error handling.

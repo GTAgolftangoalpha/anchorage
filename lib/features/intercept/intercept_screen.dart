@@ -7,6 +7,7 @@ import '../../services/intercept_event_service.dart';
 import '../../services/intercept_prompt_service.dart';
 import '../../services/premium_service.dart';
 import '../../shared/widgets/anchor_logo.dart';
+import '../../shared/widgets/white_flag_dialog.dart';
 
 /// Full-screen overlay shown when a blocked site/app is intercepted.
 class InterceptScreen extends StatefulWidget {
@@ -171,6 +172,23 @@ class _InterceptScreenState extends State<InterceptScreen> {
                     side: BorderSide(color: AppColors.white.withAlpha(80)),
                   ),
                   child: const Text('GO BACK TO SAFETY'),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextButton.icon(
+                onPressed: () async {
+                  final confirmed = await showWhiteFlagConfirmation(
+                    context,
+                    blockedTarget: 'blocked content',
+                  );
+                  if (confirmed && context.mounted) context.pop();
+                },
+                icon: const Text('\u{1F3F3}', style: TextStyle(fontSize: 16)),
+                label: Text(
+                  'White Flag',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: AppColors.white.withAlpha(140),
+                  ),
                 ),
               ),
 
