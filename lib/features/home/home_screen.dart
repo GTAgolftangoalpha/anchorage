@@ -126,12 +126,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 Builder(builder: (context) {
                   final values =
                       UserPreferencesService.instance.values;
-                  if (values.isEmpty) return const SizedBox.shrink();
-                  final dayOfYear = DateTime.now()
-                      .difference(DateTime(DateTime.now().year))
-                      .inDays;
-                  final todayValue =
-                      values[dayOfYear % values.length];
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 16),
                     child: Container(
@@ -152,7 +146,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'YOUR ANCHOR',
+                            'YOUR VALUES ANCHOR',
                             style: theme.textTheme.labelSmall
                                 ?.copyWith(
                               color: AppColors.seafoam,
@@ -160,15 +154,36 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 4),
                           Text(
-                            todayValue,
-                            style: theme.textTheme.headlineMedium
+                            'What matters most to you',
+                            style: theme.textTheme.bodySmall
                                 ?.copyWith(
-                              color: AppColors.white,
-                              fontWeight: FontWeight.w700,
+                              color: AppColors.white.withAlpha(120),
                             ),
                           ),
+                          const SizedBox(height: 12),
+                          if (values.isEmpty)
+                            Text(
+                              'Set your values in Settings to see them here.',
+                              style: theme.textTheme.bodyMedium
+                                  ?.copyWith(
+                                color: AppColors.white.withAlpha(140),
+                                fontStyle: FontStyle.italic,
+                              ),
+                            )
+                          else
+                            ...values.map((v) => Padding(
+                              padding: const EdgeInsets.only(bottom: 4),
+                              child: Text(
+                                v,
+                                style: theme.textTheme.headlineSmall
+                                    ?.copyWith(
+                                  color: AppColors.white,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            )),
                         ],
                       ),
                     ),
@@ -218,38 +233,40 @@ class _StatusCard extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
       decoration: BoxDecoration(
         color: AppColors.navy,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
         children: [
+          const AnchorLogo(size: 56, color: AppColors.white),
+          const SizedBox(height: 20),
+
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                width: 8,
-                height: 8,
+                width: 12,
+                height: 12,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: isActive ? AppColors.seafoam : AppColors.slate,
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 10),
               Text(
                 isActive ? 'PROTECTION ACTIVE' : 'PROTECTION INACTIVE',
-                style: theme.textTheme.titleSmall?.copyWith(
+                style: theme.textTheme.titleMedium?.copyWith(
                   color: isActive ? AppColors.seafoam : AppColors.slate,
                   letterSpacing: 2.5,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ],
           ),
 
-          const SizedBox(height: 14),
-          const AnchorLogo(size: 40, color: AppColors.white),
-          const SizedBox(height: 10),
+          const SizedBox(height: 16),
 
           Builder(builder: (context) {
             final name = UserPreferencesService.instance.firstName;
@@ -274,32 +291,8 @@ class _StatusCard extends StatelessWidget {
             );
           }),
 
-          const SizedBox(height: 8),
-
-          if (isActive && guardedApps.isNotEmpty)
-            Wrap(
-              spacing: 6,
-              runSpacing: 6,
-              alignment: WrapAlignment.center,
-              children: guardedApps.map((app) {
-                return Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: AppColors.white.withAlpha(15),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: AppColors.white.withAlpha(30)),
-                  ),
-                  child: Text(
-                    '${app.emoji} ${app.displayName}',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: AppColors.white.withAlpha(220),
-                    ),
-                  ),
-                );
-              }).toList(),
-            )
-          else
+          if (!isActive && guardedApps.isEmpty) ...[
+            const SizedBox(height: 8),
             TextButton(
               onPressed: onSetupTap,
               style: TextButton.styleFrom(
@@ -307,6 +300,7 @@ class _StatusCard extends StatelessWidget {
               ),
               child: const Text('TAP TO SET UP GUARD'),
             ),
+          ],
         ],
       ),
     );
@@ -399,7 +393,7 @@ class _UpgradeBanner extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Hard blocking, White Flag, unlimited apps, journal, and more.',
+                    'Unlimited apps, White Flag, journal, and more.',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: AppColors.white.withAlpha(160),
                       height: 1.4,

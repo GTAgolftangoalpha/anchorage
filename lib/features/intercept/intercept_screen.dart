@@ -204,8 +204,8 @@ class _InterceptScreenState extends State<InterceptScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'ANCHORAGE+ adds hard blocking, unlimited guarded apps, '
-                        'and a journal to track your patterns.',
+                        'ANCHORAGE+ adds unlimited guarded apps, '
+                        'accountability reports, and a journal to track your patterns.',
                         textAlign: TextAlign.center,
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: AppColors.white.withAlpha(160),

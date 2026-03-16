@@ -1071,11 +1071,11 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                   },
                 ),
 
-                // Optional hardening (shown after core permissions)
+                // Advanced Protection (shown after core permissions)
                 if (_vpnReady) ...[
                   const SizedBox(height: 20),
                   Text(
-                    'OPTIONAL HARDENING',
+                    'ADVANCED PROTECTION',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: AppColors.white.withAlpha(100),
                       letterSpacing: 1.5,
@@ -1084,7 +1084,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'These make ANCHORAGE harder to bypass.',
+                    'Recommended for stronger protection.',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: AppColors.white.withAlpha(80),
                     ),

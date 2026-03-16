@@ -56,7 +56,7 @@ class PsychoeducationData {
       body:
           'Willpower is a limited resource. It depletes under stress, '
           'fatigue, and hunger. That is why you are most vulnerable late '
-          'at night or after a hard day. The solution is not more willpower. '
+          'at night or after a tough day. The solution is not more willpower. '
           'It is building systems, blockers, and habits that protect you '
           'when willpower runs low. That is what ANCHORAGE is for.',
       icon: Icons.battery_alert,
