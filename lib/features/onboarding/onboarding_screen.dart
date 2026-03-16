@@ -1093,7 +1093,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                   _PermissionRow(
                     icon: Icons.admin_panel_settings,
                     title: 'Device Admin',
-                    subtitle: 'Prevents impulsive uninstall',
+                    subtitle: 'Prevents ANCHORAGE from being uninstalled without deactivating first. Recommended.',
                     granted: _deviceAdminActive,
                     onGrant: () async {
                       _waitingForDeviceAdmin = true;
@@ -1732,7 +1732,7 @@ class _AlwaysOnVpnRow extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'Tap to open VPN settings, then toggle "Always-on VPN" for ANCHORAGE',
+                    'Keeps content filtering active at all times, even after a device restart. Recommended.',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: AppColors.white.withAlpha(140),
                     ),
