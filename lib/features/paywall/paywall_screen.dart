@@ -16,28 +16,8 @@ class PaywallScreen extends StatefulWidget {
 }
 
 class _PaywallScreenState extends State<PaywallScreen> {
-  int _selectedPlan = 1; // default: annual
   bool _loading = false;
   Offerings? _offerings;
-
-  static const _plans = [
-    _Plan(
-      id: 0,
-      label: 'Monthly',
-      price: r'$19.99',
-      period: '/month',
-      badge: null,
-      subtitle: null,
-    ),
-    _Plan(
-      id: 1,
-      label: 'Annual',
-      price: r'$199',
-      period: '/year',
-      badge: 'SAVE 17%',
-      subtitle: r'$16.58/month, save $40 vs monthly',
-    ),
-  ];
 
   @override
   void initState() {
@@ -51,26 +31,26 @@ class _PaywallScreenState extends State<PaywallScreen> {
     if (mounted) setState(() => _offerings = offerings);
   }
 
-  /// Find a package from the offering by searching availablePackages.
-  /// Typed accessors (offering.monthly / offering.annual) only match
-  /// packages with RC standard identifiers ($rc_monthly, $rc_annual).
-  /// Dashboard packages named "monthly" / "yearly" are custom. Search by id.
-  Package? _findPackage(Offering offering, {required bool monthly}) {
+  /// Find the monthly package from the offering.
+  Package? _findMonthlyPackage(Offering offering) {
     final packages = offering.availablePackages;
-    if (monthly) {
-      return offering.monthly ??
-          packages.cast<Package?>().firstWhere(
-            (p) => p!.identifier.toLowerCase().contains('month'),
-            orElse: () => null,
-          );
-    }
-    return offering.annual ??
+    return offering.monthly ??
         packages.cast<Package?>().firstWhere(
-          (p) =>
-              p!.identifier.toLowerCase().contains('annual') ||
-              p.identifier.toLowerCase().contains('year'),
+          (p) => p!.identifier.toLowerCase().contains('month'),
           orElse: () => null,
         );
+  }
+
+  /// Display price from RevenueCat if available, otherwise fallback.
+  String get _displayPrice {
+    final offering = _offerings?.current;
+    if (offering != null) {
+      final pkg = _findMonthlyPackage(offering);
+      if (pkg != null) {
+        return '${pkg.storeProduct.priceString}/month';
+      }
+    }
+    return r'$9.99/month';
   }
 
   Future<void> _purchase() async {
@@ -87,10 +67,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
       return;
     }
 
-    debugPrint('[Paywall] Available packages: '
-        '${offering.availablePackages.map((p) => '${p.identifier}(${p.packageType})').join(', ')}');
-
-    final package = _findPackage(offering, monthly: _selectedPlan == 0);
+    final package = _findMonthlyPackage(offering);
     if (package == null) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -198,149 +175,78 @@ class _PaywallScreenState extends State<PaywallScreen> {
 
                     const SizedBox(height: 32),
 
-                    // Plan selector
-                    ...List.generate(_plans.length, (i) {
-                      final plan = _plans[i];
-                      final selected = _selectedPlan == i;
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: GestureDetector(
-                          onTap: () => setState(() => _selectedPlan = i),
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            padding: const EdgeInsets.all(16),
+                    // Founding member pricing card
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: AppColors.white,
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: AppColors.white,
+                          width: 2,
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
-                              color: selected
-                                  ? AppColors.white
-                                  : AppColors.white.withAlpha(10),
-                              borderRadius: BorderRadius.circular(14),
-                              border: Border.all(
-                                color: selected
-                                    ? AppColors.white
-                                    : AppColors.white.withAlpha(40),
-                                width: selected ? 2 : 1,
+                              color: AppColors.gold,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: const Text(
+                              'FOUNDING MEMBER',
+                              style: TextStyle(
+                                fontSize: 9,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.navy,
+                                letterSpacing: 0.5,
                               ),
                             ),
-                            child: Row(
-                              children: [
-                                // Custom radio dot
-                                Container(
-                                  width: 20,
-                                  height: 20,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: selected
-                                          ? AppColors.navy
-                                          : AppColors.white.withAlpha(180),
-                                      width: 2,
-                                    ),
-                                    color: selected
-                                        ? AppColors.navy
-                                        : AppColors.transparent,
-                                  ),
-                                  child: selected
-                                      ? const Icon(
-                                          Icons.check,
-                                          size: 12,
-                                          color: AppColors.white,
-                                        )
-                                      : null,
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Text(
-                                            plan.label,
-                                            style: theme.textTheme.titleSmall
-                                                ?.copyWith(
-                                              color: selected
-                                                  ? AppColors.navy
-                                                  : AppColors.white,
-                                            ),
-                                          ),
-                                          if (plan.badge != null) ...[
-                                            const SizedBox(width: 8),
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                horizontal: 8,
-                                                vertical: 2,
-                                              ),
-                                              decoration: BoxDecoration(
-                                                color: AppColors.gold,
-                                                borderRadius:
-                                                    BorderRadius.circular(20),
-                                              ),
-                                              child: Text(
-                                                plan.badge!,
-                                                style: const TextStyle(
-                                                  fontSize: 9,
-                                                  fontWeight: FontWeight.w700,
-                                                  color: AppColors.navy,
-                                                  letterSpacing: 0.5,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ],
-                                      ),
-                                      if (plan.subtitle != null) ...[
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          plan.subtitle!,
-                                          style: theme.textTheme.bodySmall
-                                              ?.copyWith(
-                                            color: selected
-                                                ? AppColors.textMuted
-                                                : AppColors.white.withAlpha(120),
-                                            fontSize: 11,
-                                          ),
-                                        ),
-                                      ],
-                                    ],
-                                  ),
-                                ),
-                                RichText(
-                                  text: TextSpan(
-                                    children: [
-                                      TextSpan(
-                                        text: plan.price,
-                                        style: theme.textTheme.titleMedium
-                                            ?.copyWith(
-                                          color: selected
-                                              ? AppColors.navy
-                                              : AppColors.white,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                      TextSpan(
-                                        text: ' ${plan.period}',
-                                        style: theme.textTheme.bodySmall
-                                            ?.copyWith(
-                                          color: selected
-                                              ? AppColors.textSecondary
-                                              : AppColors.white.withAlpha(160),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            _displayPrice,
+                            style: theme.textTheme.headlineMedium?.copyWith(
+                              color: AppColors.navy,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
-                        ),
-                      );
-                    }),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Founding Member pricing -- locked in forever.',
+                            textAlign: TextAlign.center,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'One of our first 100 members.',
+                            textAlign: TextAlign.center,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: AppColors.textMuted,
+                              fontSize: 11,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
 
+                    const SizedBox(height: 12),
+                    Text(
+                      'Cancel anytime. No lock-in.',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: AppColors.white.withAlpha(120),
+                        fontSize: 11,
+                      ),
+                    ),
                     const SizedBox(height: 4),
                     Text(
-                      'Cancel anytime.',
+                      r'Price increases to $14.99 for new members after our first 100.',
+                      textAlign: TextAlign.center,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: AppColors.white.withAlpha(100),
                         fontSize: 11,
@@ -445,12 +351,12 @@ class _PaywallScreenState extends State<PaywallScreen> {
   }
 
   static const _features = [
-    ('📱', 'Unlimited app blocking & monitoring'),
-    ('🧭', 'Accountability partner reports'),
-    ('🔒', 'Custom domain blocklist'),
-    ('📊', 'Full urge log history & export'),
-    ('📓', 'Lapse log & guided reflection'),
-    ('🏆', 'Milestone badges & progress'),
+    ('\u{1F4F1}', 'Unlimited app blocking & monitoring'),
+    ('\u{1F9ED}', 'Accountability partner reports'),
+    ('\u{1F512}', 'Custom domain blocklist'),
+    ('\u{1F4CA}', 'Full urge log history & export'),
+    ('\u{1F4D3}', 'Lapse log & guided reflection'),
+    ('\u{1F3C6}', 'Milestone badges & progress'),
   ];
 }
 
@@ -477,22 +383,4 @@ class _FeatureRow extends StatelessWidget {
       ),
     );
   }
-}
-
-class _Plan {
-  final int id;
-  final String label;
-  final String price;
-  final String period;
-  final String? badge;
-  final String? subtitle;
-
-  const _Plan({
-    required this.id,
-    required this.label,
-    required this.price,
-    required this.period,
-    required this.badge,
-    required this.subtitle,
-  });
 }

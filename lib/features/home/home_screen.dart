@@ -398,6 +398,14 @@ class _UpgradeBanner extends StatelessWidget {
                 height: 1.5,
               ),
             ),
+            const SizedBox(height: 10),
+            Text(
+              r'Founding Member pricing -- $9.99/month, locked in forever.',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: AppColors.gold,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
             const SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.symmetric(
