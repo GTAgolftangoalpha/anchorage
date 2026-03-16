@@ -105,7 +105,7 @@ class LegalHtml {
 
 <div class="content">
 
-<p>ANCHORAGE is published by <strong>Temporal Psychology</strong>. We ("we", "us", "our") are committed to protecting your privacy. This Privacy Policy explains what data we collect, how we use it, and your rights regarding that data.</p>
+<p>ANCHORAGE is published by <strong>Golf Tango Alpha Pty Ltd</strong>. We ("we", "us", "our") are committed to protecting your privacy. This Privacy Policy explains what data we collect, how we use it, and your rights regarding that data.</p>
 
 <h2>1. Data We Collect</h2>
 
@@ -209,12 +209,12 @@ class LegalHtml {
 <div class="contact-box">
   <p><strong>Privacy requests and questions:</strong></p>
   <p>Email: <a href="mailto:hello@getanchorage.app">hello@getanchorage.app</a></p>
-  <p>Published by Temporal Psychology</p>
+  <p>Published by Golf Tango Alpha Pty Ltd</p>
 </div>
 
 </div>
 
-<div class="footer">&copy; 2026 Temporal Psychology. All rights reserved.</div>
+<div class="footer">&copy; 2026 Golf Tango Alpha Pty Ltd. All rights reserved.</div>
 
 </body>
 </html>
@@ -270,7 +270,7 @@ class LegalHtml {
 
 <div class="content">
 
-<p>ANCHORAGE is published by <strong>Temporal Psychology</strong>. By downloading, installing, or using ANCHORAGE ("the App"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree, do not use the App.</p>
+<p>ANCHORAGE is published by <strong>Golf Tango Alpha Pty Ltd</strong>. By downloading, installing, or using ANCHORAGE ("the App"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree, do not use the App.</p>
 
 <h2>1. Age Requirement</h2>
 <p>You must be at least <strong>18 years of age</strong> to use ANCHORAGE. By using the App, you confirm that you are 18 or older.</p>
@@ -334,7 +334,7 @@ class LegalHtml {
 <p>Refund requests are handled by Google Play per their refund policy.</p>
 
 <h2>8. Intellectual Property</h2>
-<p>All content, design, code, and branding of ANCHORAGE are the property of Temporal Psychology and protected by applicable intellectual property laws.</p>
+<p>All content, design, code, and branding of ANCHORAGE are the property of Golf Tango Alpha Pty Ltd and protected by applicable intellectual property laws.</p>
 
 <h2>9. Limitation of Liability</h2>
 <p>To the maximum extent permitted by law:</p>
@@ -346,7 +346,7 @@ class LegalHtml {
 </ul>
 
 <h2>10. Indemnification</h2>
-<p>You agree to indemnify and hold harmless Temporal Psychology and ANCHORAGE from any claims, damages, losses, or expenses arising from your use of the App or violation of these Terms.</p>
+<p>You agree to indemnify and hold harmless Golf Tango Alpha Pty Ltd and ANCHORAGE from any claims, damages, losses, or expenses arising from your use of the App or violation of these Terms.</p>
 
 <h2>11. Termination</h2>
 <p>We may suspend or terminate your access at any time. You may stop using the App by uninstalling it.</p>
@@ -361,12 +361,12 @@ class LegalHtml {
 <div class="contact-box">
   <p><strong>Questions about these Terms:</strong></p>
   <p>Email: <a href="mailto:hello@getanchorage.app">hello@getanchorage.app</a></p>
-  <p>Published by Temporal Psychology</p>
+  <p>Published by Golf Tango Alpha Pty Ltd</p>
 </div>
 
 </div>
 
-<div class="footer">&copy; 2026 Temporal Psychology. All rights reserved.</div>
+<div class="footer">&copy; 2026 Golf Tango Alpha Pty Ltd. All rights reserved.</div>
 
 </body>
 </html>
