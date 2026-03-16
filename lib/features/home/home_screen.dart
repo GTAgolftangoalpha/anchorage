@@ -369,7 +369,7 @@ class _UpgradeBanner extends StatelessWidget {
       onTap: onTap,
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             begin: Alignment.topLeft,
@@ -378,49 +378,43 @@ class _UpgradeBanner extends StatelessWidget {
           ),
           borderRadius: BorderRadius.circular(16),
         ),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Unlock ANCHORAGE+',
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      color: AppColors.white,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Unlimited apps, White Flag, journal, and more.',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: AppColors.white.withAlpha(160),
-                      height: 1.4,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: AppColors.seafoam,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      'SEE PLANS',
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: AppColors.navy,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 1,
-                      ),
-                    ),
-                  ),
-                ],
+            Text(
+              'You are doing the work.',
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: AppColors.white,
+                fontWeight: FontWeight.w700,
               ),
             ),
-            const SizedBox(width: 12),
-            Icon(Icons.star, color: AppColors.gold, size: 36),
+            const SizedBox(height: 8),
+            Text(
+              'ANCHORAGE+ gives you unlimited guarded apps, unlimited urge logging, '
+              'your Reflect journal, therapist-ready data export, and accountability '
+              'partner reports. Everything you need to go deeper.',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: AppColors.white.withAlpha(180),
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 20, vertical: 10),
+              decoration: BoxDecoration(
+                color: AppColors.seafoam,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                'Explore ANCHORAGE+',
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: AppColors.navy,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1,
+                ),
+              ),
+            ),
           ],
         ),
       ),
