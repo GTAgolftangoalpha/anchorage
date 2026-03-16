@@ -120,7 +120,7 @@ class AboutScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                "We don't use the word \u2018addiction\u2019. We don't promise a cure. We don't track or judge your behaviour.",
+                "ANCHORAGE doesn't surveil or judge you. The streak counter, urge logs, and reflection tools are yours -- private instruments for your own self-awareness. We never see them. They exist to help you understand your own patterns, not to report to us.",
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: AppColors.textSecondary,
                   height: 1.7,
