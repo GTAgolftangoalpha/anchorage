@@ -168,7 +168,7 @@ class _GroundingScreenState extends State<GroundingScreen> {
                           style: theme.textTheme.labelSmall?.copyWith(
                             color: Anchorage.accent,
                             letterSpacing: 3,
-                            fontSize: 13,
+                            fontSize: 15,
                             fontWeight: FontWeight.w700,
                           ),
                         ),

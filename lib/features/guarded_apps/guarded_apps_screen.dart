@@ -399,7 +399,7 @@ class _AppCard extends StatelessWidget {
                   child: Center(
                     child: Text(
                       app.emoji,
-                      style: const TextStyle(fontSize: 24),
+                      style: const TextStyle(fontSize: 26),
                     ),
                   ),
                 ),
@@ -424,7 +424,7 @@ class _AppCard extends StatelessWidget {
                           color: isSelected
                               ? AppColors.white.withAlpha(160)
                               : AppColors.textMuted,
-                          fontSize: 11,
+                          fontSize: 13,
                         ),
                       ),
                     ],

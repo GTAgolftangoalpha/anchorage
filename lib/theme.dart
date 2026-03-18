@@ -45,48 +45,48 @@ class AnchorageType {
       );
 
   static TextStyle headingMedium({Color? color}) => GoogleFonts.dmSerifDisplay(
-        fontSize: 24,
+        fontSize: 26,
         fontWeight: FontWeight.w400,
         color: color ?? Anchorage.textPrimary,
       );
 
   static TextStyle headingSmall({Color? color}) => GoogleFonts.dmSerifDisplay(
-        fontSize: 20,
+        fontSize: 22,
         fontWeight: FontWeight.w400,
         color: color ?? Anchorage.textPrimary,
       );
 
   // Body -- DM Sans
   static TextStyle bodyLarge({Color? color}) => GoogleFonts.dmSans(
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: FontWeight.w400,
         color: color ?? Anchorage.textSecond,
         height: 1.6,
       );
 
   static TextStyle bodyMedium({Color? color}) => GoogleFonts.dmSans(
-        fontSize: 14,
+        fontSize: 16,
         fontWeight: FontWeight.w400,
         color: color ?? Anchorage.textSecond,
         height: 1.5,
       );
 
   static TextStyle bodySmall({Color? color}) => GoogleFonts.dmSans(
-        fontSize: 12,
+        fontSize: 14,
         fontWeight: FontWeight.w400,
         color: color ?? Anchorage.textHint,
       );
 
   // Labels
   static TextStyle label({Color? color}) => GoogleFonts.dmSans(
-        fontSize: 11,
+        fontSize: 13,
         fontWeight: FontWeight.w600,
         color: color ?? Anchorage.textHint,
         letterSpacing: 1.5,
       );
 
   static TextStyle labelMedium({Color? color}) => GoogleFonts.dmSans(
-        fontSize: 13,
+        fontSize: 15,
         fontWeight: FontWeight.w600,
         color: color ?? Anchorage.textSecond,
         letterSpacing: 0.5,
@@ -94,7 +94,7 @@ class AnchorageType {
 
   // Buttons
   static TextStyle button({Color? color}) => GoogleFonts.dmSans(
-        fontSize: 15,
+        fontSize: 17,
         fontWeight: FontWeight.w600,
         color: color ?? Anchorage.textPrimary,
         letterSpacing: 0.5,
@@ -141,24 +141,24 @@ class AnchorageTheme {
         color: Anchorage.textPrimary,
       ),
       headlineLarge: GoogleFonts.dmSerifDisplay(
-        fontSize: 24,
+        fontSize: 26,
         fontWeight: FontWeight.w400,
         color: Anchorage.textPrimary,
       ),
       headlineMedium: AnchorageType.headingMedium(),
       headlineSmall: AnchorageType.headingSmall(),
       titleLarge: GoogleFonts.dmSans(
-        fontSize: 18,
+        fontSize: 20,
         fontWeight: FontWeight.w600,
         color: Anchorage.textPrimary,
       ),
       titleMedium: GoogleFonts.dmSans(
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: FontWeight.w500,
         color: Anchorage.textPrimary,
       ),
       titleSmall: GoogleFonts.dmSans(
-        fontSize: 14,
+        fontSize: 16,
         fontWeight: FontWeight.w500,
         color: Anchorage.textSecond,
         letterSpacing: 0.5,
@@ -167,7 +167,7 @@ class AnchorageTheme {
       bodyMedium: AnchorageType.bodyMedium(),
       bodySmall: AnchorageType.bodySmall(),
       labelLarge: GoogleFonts.dmSans(
-        fontSize: 14,
+        fontSize: 16,
         fontWeight: FontWeight.w600,
         letterSpacing: 0.5,
       ),
@@ -186,7 +186,7 @@ class AnchorageTheme {
         scrolledUnderElevation: 0,
         centerTitle: true,
         titleTextStyle: GoogleFonts.dmSans(
-          fontSize: 13,
+          fontSize: 15,
           fontWeight: FontWeight.w600,
           color: Anchorage.textPrimary,
           letterSpacing: 2.0,
@@ -205,7 +205,7 @@ class AnchorageTheme {
             borderRadius: BorderRadius.circular(14),
           ),
           textStyle: GoogleFonts.dmSans(
-            fontSize: 15,
+            fontSize: 17,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.5,
           ),
@@ -223,7 +223,7 @@ class AnchorageTheme {
             borderRadius: BorderRadius.circular(14),
           ),
           textStyle: GoogleFonts.dmSans(
-            fontSize: 15,
+            fontSize: 17,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.5,
           ),
@@ -240,7 +240,7 @@ class AnchorageTheme {
             borderRadius: BorderRadius.circular(14),
           ),
           textStyle: GoogleFonts.dmSans(
-            fontSize: 15,
+            fontSize: 17,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.5,
           ),
@@ -252,7 +252,7 @@ class AnchorageTheme {
         style: TextButton.styleFrom(
           foregroundColor: Anchorage.accent,
           textStyle: GoogleFonts.dmSans(
-            fontSize: 14,
+            fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -289,7 +289,7 @@ class AnchorageTheme {
             const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         hintStyle: GoogleFonts.dmSans(
           color: Anchorage.textHint,
-          fontSize: 14,
+          fontSize: 16,
         ),
       ),
 
@@ -411,7 +411,7 @@ class StatusBadge extends StatelessWidget {
       child: Text(
         active ? 'ON' : 'OFF',
         style: GoogleFonts.dmSans(
-          fontSize: 11,
+          fontSize: 13,
           fontWeight: FontWeight.w700,
           color: active ? const Color(0xFFFFFFFF) : Anchorage.textHint,
           letterSpacing: 1.0,
@@ -435,7 +435,7 @@ class AnchorageFooter extends StatelessWidget {
           Text(
             'ANCHORAGE',
             style: GoogleFonts.dmSans(
-              fontSize: 13,
+              fontSize: 15,
               fontWeight: FontWeight.w600,
               color: Anchorage.textHint,
               letterSpacing: 2.0,
@@ -445,7 +445,7 @@ class AnchorageFooter extends StatelessWidget {
           Text(
             'Stay anchored. Stay free.',
             style: GoogleFonts.dmSans(
-              fontSize: 11,
+              fontSize: 13,
               color: Anchorage.textHint,
             ),
           ),

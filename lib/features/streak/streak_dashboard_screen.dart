@@ -618,7 +618,7 @@ class _MilestoneCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(emoji, style: const TextStyle(fontSize: 24)),
+            Text(emoji, style: const TextStyle(fontSize: 26)),
             const SizedBox(height: 8),
             Text(value, style: theme.textTheme.titleLarge),
             Text(label, style: theme.textTheme.bodySmall),
@@ -725,7 +725,7 @@ class _MilestoneRow extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Text(milestone.emoji, style: const TextStyle(fontSize: 24)),
+            Text(milestone.emoji, style: const TextStyle(fontSize: 26)),
             const SizedBox(width: 14),
             Expanded(
               child: Text(

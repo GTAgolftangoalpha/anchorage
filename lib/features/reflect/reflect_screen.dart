@@ -199,7 +199,7 @@ class _ReflectScreenState extends State<ReflectScreen> {
                         children: [
                           Text(
                             mood.$1,
-                            style: const TextStyle(fontSize: 18),
+                            style: const TextStyle(fontSize: 20),
                           ),
                           const SizedBox(width: 6),
                           Text(
@@ -302,7 +302,7 @@ class _ReflectScreenState extends State<ReflectScreen> {
                     'Need to talk to someone?',
                     style: TextStyle(
                       color: Color(0xFF1A6B72),
-                      fontSize: 13,
+                      fontSize: 15,
                       decoration: TextDecoration.underline,
                     ),
                   ),

@@ -405,7 +405,7 @@ class _BlockedDomainScreenState extends State<BlockedDomainScreen> {
               if (confirmed && context.mounted) context.pop();
             },
             icon:
-                const Text('\u{1F3F3}', style: TextStyle(fontSize: 16)),
+                const Text('\u{1F3F3}', style: TextStyle(fontSize: 18)),
             label: Text(
               'White Flag',
               style: theme.textTheme.bodySmall?.copyWith(

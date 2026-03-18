@@ -319,7 +319,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
             controller: _nameController,
             autofocus: false,
             cursorColor: AppColors.white,
-            style: const TextStyle(color: AppColors.white, fontSize: 18),
+            style: const TextStyle(color: AppColors.white, fontSize: 20),
             textCapitalization: TextCapitalization.words,
             maxLength: 20,
             onChanged: (_) => setState(() {}),
@@ -352,7 +352,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
             controller: _emailController,
             autofocus: false,
             cursorColor: AppColors.white,
-            style: const TextStyle(color: AppColors.white, fontSize: 16),
+            style: const TextStyle(color: AppColors.white, fontSize: 18),
             keyboardType: TextInputType.emailAddress,
             onChanged: (_) => setState(() {}),
             decoration: InputDecoration(
@@ -438,7 +438,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
             style: theme.textTheme.bodySmall?.copyWith(
               color: AppColors.white.withAlpha(90),
               height: 1.5,
-              fontSize: 11,
+              fontSize: 13,
             ),
           ),
           const SizedBox(height: 16),
@@ -1209,7 +1209,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
             autofocus: false,
             cursorColor: AppColors.white,
             style: const TextStyle(
-                color: AppColors.white, fontSize: 16),
+                color: AppColors.white, fontSize: 18),
             textCapitalization: TextCapitalization.words,
             decoration: InputDecoration(
               filled: true,
@@ -1243,7 +1243,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
             autofocus: false,
             cursorColor: AppColors.white,
             style: const TextStyle(
-                color: AppColors.white, fontSize: 16),
+                color: AppColors.white, fontSize: 18),
             keyboardType: TextInputType.emailAddress,
             decoration: InputDecoration(
               filled: true,
@@ -1515,7 +1515,7 @@ class _PermissionRow extends StatelessWidget {
               ),
               child: const Text(
                 'Grant',
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
               ),
             ),
         ],

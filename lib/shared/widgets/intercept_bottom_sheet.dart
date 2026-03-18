@@ -205,7 +205,7 @@ class InterceptBottomSheet extends StatelessWidget {
                       }
                     },
                     icon: const Text('\u{1F3F3}',
-                        style: TextStyle(fontSize: 16)),
+                        style: TextStyle(fontSize: 18)),
                     label: Text(
                       'White Flag',
                       style: theme.textTheme.bodySmall?.copyWith(

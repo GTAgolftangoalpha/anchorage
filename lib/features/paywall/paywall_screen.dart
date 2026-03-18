@@ -199,7 +199,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
                             child: const Text(
                               'FOUNDING MEMBER',
                               style: TextStyle(
-                                fontSize: 9,
+                                fontSize: 11,
                                 fontWeight: FontWeight.w700,
                                 color: AppColors.navy,
                                 letterSpacing: 0.5,
@@ -228,7 +228,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
                             textAlign: TextAlign.center,
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: AppColors.textMuted,
-                              fontSize: 11,
+                              fontSize: 13,
                             ),
                           ),
                         ],
@@ -240,7 +240,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
                       'Cancel anytime. No lock-in.',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: AppColors.white.withAlpha(120),
-                        fontSize: 11,
+                        fontSize: 13,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -249,7 +249,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
                       textAlign: TextAlign.center,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: AppColors.white.withAlpha(100),
-                        fontSize: 11,
+                        fontSize: 13,
                       ),
                     ),
                   ],
@@ -371,7 +371,7 @@ class _FeatureRow extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
         children: [
-          Text(feature.$1, style: const TextStyle(fontSize: 20)),
+          Text(feature.$1, style: const TextStyle(fontSize: 22)),
           const SizedBox(width: 14),
           Text(
             feature.$2,

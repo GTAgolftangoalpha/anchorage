@@ -294,7 +294,7 @@ class _UrgeLogScreenState extends State<UrgeLogScreen> {
                         'Need to talk to someone?',
                         style: TextStyle(
                           color: Color(0xFF1A6B72),
-                          fontSize: 13,
+                          fontSize: 15,
                           decoration: TextDecoration.underline,
                         ),
                       ),

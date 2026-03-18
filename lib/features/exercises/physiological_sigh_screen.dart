@@ -439,7 +439,7 @@ class _PatternStep extends StatelessWidget {
             label,
             style: TextStyle(
               color: active ? Anchorage.accent : AppColors.white.withAlpha(150),
-              fontSize: 12,
+              fontSize: 14,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -447,7 +447,7 @@ class _PatternStep extends StatelessWidget {
             seconds,
             style: TextStyle(
               color: AppColors.white.withAlpha(80),
-              fontSize: 10,
+              fontSize: 12,
             ),
           ),
         ],
