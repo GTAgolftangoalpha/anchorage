@@ -30,6 +30,16 @@ class GuardableApp {
       emoji: '🐦',
     ),
     GuardableApp(
+      packageName: 'com.twitter.android.lite',
+      displayName: 'Twitter / X Lite',
+      emoji: '🐦',
+    ),
+    GuardableApp(
+      packageName: 'com.X.android',
+      displayName: 'X',
+      emoji: '🐦',
+    ),
+    GuardableApp(
       packageName: 'org.telegram.messenger',
       displayName: 'Telegram',
       emoji: '✈️',

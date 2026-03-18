@@ -339,6 +339,18 @@ class AppGuardService : Service() {
 
         Log.w(TAG, "INTERCEPT LAUNCHED: app='$appName' pkg='$pkg' guardedApps=$guardedApps")
 
+        // Immediately bring ANCHORAGE to foreground to prevent the guarded app
+        // from flashing through while the overlay renders. This is critical for
+        // fast-launching apps like X/Twitter that can display content in the
+        // brief window before the overlay view is added to WindowManager.
+        val bringToFrontIntent = packageManager.getLaunchIntentForPackage(packageName)?.apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+        }
+        if (bringToFrontIntent != null) {
+            startActivity(bringToFrontIntent)
+            Log.d(TAG, "launchIntercept: brought ANCHORAGE to foreground to prevent flash-through")
+        }
+
         if (Settings.canDrawOverlays(this)) {
             Log.d(TAG, "launchIntercept: using OverlayService")
             val intent = Intent(this, OverlayService::class.java).apply {
