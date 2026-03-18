@@ -177,7 +177,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                               padding: const EdgeInsets.only(bottom: 4),
                               child: Text(
                                 v,
-                                style: theme.textTheme.headlineSmall
+                                style: theme.textTheme.titleLarge
                                     ?.copyWith(
                                   color: AppColors.white,
                                   fontWeight: FontWeight.w700,
