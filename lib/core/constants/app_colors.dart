@@ -29,6 +29,9 @@ class AppColors {
   static const Color warning = Color(0xFFD4A03A);
   static const Color danger = Anchorage.danger;
 
+  // Teal for dark backgrounds (readable on navy)
+  static const Color darkBackgroundTeal = Color(0xFF4ECDC4);
+
   // Utility
   static const Color transparent = Color(0x00000000);
 

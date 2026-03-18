@@ -2,7 +2,7 @@ name: anchorage
 description: "ANCHORAGE — Block pornography using VPN filtering with a nautical theme."
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 1.0.0+2002
 
 environment:
   sdk: ^3.10.4
