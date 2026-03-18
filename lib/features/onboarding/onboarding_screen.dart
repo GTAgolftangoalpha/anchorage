@@ -435,6 +435,16 @@ class _OnboardingScreenState extends State<OnboardingScreen>
             }),
           ),
           const SizedBox(height: 16),
+          Text(
+            'ANCHORAGE is a self-help tool, not a mental health service. It does not provide therapy or establish a therapeutic relationship. If you are experiencing significant distress, please seek support from a registered professional.',
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: AppColors.white.withAlpha(90),
+              height: 1.5,
+              fontSize: 11,
+            ),
+          ),
+          const SizedBox(height: 16),
         ],
       ),
     );
