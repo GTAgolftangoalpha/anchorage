@@ -387,7 +387,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
           ),
           const SizedBox(height: 8),
           Text(
-            'Used to recover your account if you reinstall or get a new phone. We never send marketing emails.',
+            'Used to restore your account if you reinstall or get a new phone. We may send you occasional support emails. No spam, ever.',
             style: theme.textTheme.bodySmall?.copyWith(
               color: AppColors.white.withAlpha(120),
               height: 1.4,
