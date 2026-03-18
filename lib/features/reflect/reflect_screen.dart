@@ -237,7 +237,7 @@ class _ReflectScreenState extends State<ReflectScreen> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  'Take a breath. You are safe here. What is on your mind?',
+                  'Take a breath before you write. Notice where you are right now. There is no right or wrong thing to say here.',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: AppColors.white,
                     height: 1.5,
