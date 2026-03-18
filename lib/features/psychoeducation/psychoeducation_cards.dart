@@ -70,9 +70,9 @@ class PsychoeducationData {
           'notice it, name it without judgement: "I am feeling aroused." '
           'Then choose what you do next. The feeling is not the problem. '
           'The automatic reaction is.\n\n'
-          'Note: If unwanted arousal is linked to past trauma, that is '
-          'not something to work through alone. Please consider reaching '
-          'out to a trauma-informed therapist or counsellor.',
+          'Note: For some people, unwanted arousal is connected to past '
+          'trauma. If this resonates with you, speaking with a '
+          'trauma-informed therapist can help.',
       icon: Icons.lightbulb_outline,
     ),
   ];
