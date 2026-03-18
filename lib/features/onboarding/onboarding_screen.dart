@@ -384,7 +384,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
           ),
           const SizedBox(height: 8),
           Text(
-            'Used to restore your account if you reinstall or get a new phone. We may send you occasional support emails. No spam, ever.',
+            'Used to restore your account and keep you updated with tips, new features, and offers from the Anchorage team.',
             style: theme.textTheme.bodySmall?.copyWith(
               color: AppColors.white.withAlpha(120),
               height: 1.4,
