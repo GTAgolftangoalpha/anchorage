@@ -158,140 +158,44 @@ class OverlayService : Service() {
 
     private data class ActPrompt(val title: String, val body: String)
 
-    private fun getPromptForEmotion(emotion: String): ActPrompt {
-        val prefs = getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
-        val name = prefs.getString("flutter.user_first_name", null) ?: ""
-        val values: List<String> = try {
-            val raw = prefs.getString("flutter.user_values", null)
-            if (raw != null) {
-                val listPrefix = "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBhIGxpc3Qu!"
-                val json = if (raw.startsWith(listPrefix)) raw.substring(listPrefix.length) else raw
-                val arr = org.json.JSONArray(json)
-                (0 until arr.length()).map { arr.getString(it) }
-            } else emptyList()
-        } catch (e: Exception) {
-            emptyList()
-        }
-        val hasName = name.isNotEmpty()
-        val v1 = if (values.isNotEmpty()) values[0].lowercase() else "what matters"
-        val v2 = if (values.size > 1) values[1].lowercase() else "your goals"
+    private val fullPhrasePool = listOf(
+        "You can choose what happens next.",
+        "Notice it. You don't have to follow it.",
+        "This feeling will pass. What matters to you right now?",
+        "There is space between this feeling and what you do next.",
+        "You don't have to act on it."
+    )
 
-        val prompts = when (emotion) {
-            "Bored" -> listOf(
-                ActPrompt("Your mind is looking for stimulation.",
-                    "Boredom feels uncomfortable, but it is not dangerous. This urge is your brain reaching for the easiest dopamine hit. You can choose something better."),
-                ActPrompt("This is a pattern, not a need.",
-                    if (hasName) "$name, you have been here before. Boredom leads to scrolling, scrolling leads here. Break the chain."
-                    else "You have been here before. Boredom leads to scrolling, scrolling leads here. Break the chain."),
-                ActPrompt("Boredom is not an emergency.",
-                    "You do not need to fill every quiet moment. Sit with it for 60 seconds. It will pass on its own.")
-            )
-            "Stressed" -> listOf(
-                ActPrompt("Stress is looking for an escape.",
-                    "When you are overwhelmed, your brain wants relief. This is not relief. It will add guilt to the stress you already feel."),
-                ActPrompt("You deserve real comfort.",
-                    if (hasName) "$name, stress needs care, not numbing. What would actually help right now?"
-                    else "Stress needs care, not numbing. What would actually help right now?"),
-                ActPrompt("This will not solve the problem.",
-                    "The thing stressing you will still be there afterwards. Deal with the stress directly.")
-            )
-            "Lonely" -> listOf(
-                ActPrompt("Loneliness is reaching for connection.",
-                    "What you are feeling is a need for real human connection. This will only deepen the isolation."),
-                ActPrompt("You are not alone in this.",
-                    if (hasName) "$name, reach out to someone. A text, a call. Real connection is what you need right now."
-                    else "Reach out to someone. A text, a call. Real connection is what you need right now."),
-                ActPrompt("Intimacy is not what you are looking for.",
-                    "Your brain is confusing physical stimulation with the emotional connection you actually want.")
-            )
-            "Tired" -> listOf(
-                ActPrompt("Your defences are down.",
-                    "Tiredness makes everything harder to resist. Your brain is taking advantage of low willpower. Rest is the real answer."),
-                ActPrompt("You are too tired to make good choices.",
-                    if (hasName) "$name, when you are exhausted, your impulse control drops. Recognise this and go to bed."
-                    else "When you are exhausted, your impulse control drops. Recognise this and go to bed."),
-                ActPrompt("Sleep, not screens.",
-                    "Put the phone down and close your eyes. You will feel better in the morning.")
-            )
-            "Anxious" -> listOf(
-                ActPrompt("Anxiety wants a distraction.",
-                    "Your brain is trying to escape the anxious feeling. This will give you 5 minutes of numbness and then the anxiety comes back, plus shame."),
-                ActPrompt("Name what you are anxious about.",
-                    if (hasName) "$name, what is the actual worry? Name it. Writing it down takes away some of its power."
-                    else "What is the actual worry? Name it. Writing it down takes away some of its power."),
-                ActPrompt("This is avoidance, not coping.",
-                    "Real coping means facing the feeling. This is running from it. You are stronger than that.")
-            )
-            "Down" -> listOf(
-                ActPrompt("Sadness is pulling you toward numbness.",
-                    "When you feel low, your brain looks for anything to feel different. This will not lift you up. It will pull you further down."),
-                ActPrompt("Be gentle with yourself.",
-                    if (hasName) "$name, feeling down is hard enough. Do not add regret to it. You deserve better than this."
-                    else "Feeling down is hard enough. Do not add regret to it. You deserve better than this."),
-                ActPrompt("Small steps, not escape.",
-                    "You do not need a big fix. Just do one small good thing for yourself right now.")
-            )
-            "Angry" -> listOf(
-                ActPrompt("Anger needs an outlet, not a screen.",
-                    "You are looking for something to do with this energy. This is not it. Move your body. Burn it off physically."),
-                ActPrompt("Do not let anger make your choices.",
-                    if (hasName) "$name, you are reacting, not choosing. Pause. The anger will fade. The regret will not."
-                    else "You are reacting, not choosing. Pause. The anger will fade. The regret will not."),
-                ActPrompt("Channel it somewhere useful.",
-                    "This energy is powerful. Use it. Exercise, clean, write. Anything physical.")
-            )
-            "Aroused" -> listOf(
-                ActPrompt("This feeling will pass.",
-                    "Arousal peaks and fades in 15 to 20 minutes. You do not have to act on it. Ride it out."),
-                ActPrompt("Your body is reacting. Your mind can choose.",
-                    if (hasName) "$name, a physical sensation is not a command. You have felt this before and it passed."
-                    else "A physical sensation is not a command. You have felt this before and it passed."),
-                ActPrompt("Change your environment right now.",
-                    "Get up. Move to a different room. Go outside. Physical change disrupts the cycle.")
-            )
-            "Numb" -> listOf(
-                ActPrompt("Numbness is asking to feel something.",
-                    "When you feel nothing, your brain reaches for the most intense stimulus it knows. But this will leave you feeling more empty, not less."),
-                ActPrompt("Start small. Feel something real.",
-                    if (hasName) "$name, hold something cold. Step outside. Feel the air. You do not need a screen to feel alive."
-                    else "Hold something cold. Step outside. Feel the air. You do not need a screen to feel alive."),
-                ActPrompt("You are not broken.",
-                    "Numbness is your brain protecting itself. Feeling will return. Give it time, not this.")
-            )
-            "Rewarding Myself" -> listOf(
-                ActPrompt("You earned something better than this.",
-                    "A good day deserves a reward that makes tomorrow good too. This is not that reward."),
-                ActPrompt("Protect what you have built.",
-                    if (hasName) "$name, you had a great day. Do not trade that feeling for 5 minutes of regret."
-                    else "You had a great day. Do not trade that feeling for 5 minutes of regret."),
-                ActPrompt("Celebrate in a way you will be proud of.",
-                    if (values.isNotEmpty()) "You said $v1 matters to you. Reward yourself in a way that honours that."
-                    else "Reward yourself in a way that honours your values. You have earned it.")
-            )
-            "Not sure" -> listOf(
-                ActPrompt("You do not need to have all the answers.",
-                    if (hasName) "$name, not knowing how you feel is okay. What matters is that you paused."
-                    else "Not knowing how you feel is okay. What matters is that you paused."),
-                ActPrompt("Just pause.",
-                    "You are here. That means something. Take a moment before you decide what to do next."),
-                ActPrompt("Check in with yourself.",
-                    if (values.isNotEmpty()) "You said $v1 and $v2 matter to you. Would continuing bring you closer to those?"
-                    else "Ask yourself: will this make the next hour better or worse?")
-            )
-            else -> listOf(
-                ActPrompt("Pause.", "Take a breath. You do not have to act on this urge."),
-            )
-        }
-        return prompts[Random.nextInt(prompts.size)]
+    private val notSurePhrasePool = listOf(
+        "You can choose what happens next.",
+        "This feeling will pass. What matters to you right now?"
+    )
+
+    private val emotionOpenings = mapOf(
+        "Bored" to "Boredom brought you here.",
+        "Stressed" to "Stress brought you here.",
+        "Lonely" to "Loneliness brought you here.",
+        "Tired" to "Being tired brought you here.",
+        "Anxious" to "Anxiety brought you here.",
+        "Down" to "Feeling down brought you here.",
+        "Angry" to "Anger brought you here.",
+        "Aroused" to "You noticed feeling aroused.",
+        "Numb" to "You noticed feeling numb.",
+        "Rewarding Myself" to "You noticed the desire to reward yourself.",
+        "Not sure" to "You paused to check in. That matters."
+    )
+
+    private fun getPromptForEmotion(emotion: String): ActPrompt {
+        val opening = emotionOpenings[emotion] ?: "You paused to check in. That matters."
+        val isNotSure = emotion == "Not sure"
+        val pool = if (isNotSure) notSurePhrasePool else fullPhrasePool
+        val phrase = pool[Random.nextInt(pool.size)]
+        return ActPrompt(opening, phrase)
     }
 
     private fun getVpnPrompt(): ActPrompt {
-        val prompts = listOf(
-            ActPrompt("Stay the course.", "The urge is temporary. You are stronger than this moment. Let it pass."),
-            ActPrompt("You chose this.", "You set up ANCHORAGE to protect yourself. Trust that decision."),
-            ActPrompt("This will pass.", "Every time you ride out an urge, you get stronger. This is one of those times.")
-        )
-        return prompts[Random.nextInt(prompts.size)]
+        val phrase = fullPhrasePool[Random.nextInt(fullPhrasePool.size)]
+        return ActPrompt("You paused to check in. That matters.", phrase)
     }
 
     // ── App-guard overlay (with emotion selection) ────────────────────────────
