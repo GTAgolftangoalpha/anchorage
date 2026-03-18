@@ -52,7 +52,7 @@ class AboutScreen extends StatelessWidget {
               _SectionTitle(title: 'Our Approach'),
               const SizedBox(height: 12),
               Text(
-                "ANCHORAGE is informed by Acceptance and Commitment Therapy (ACT), which has strong research support for helping people change unwanted behaviours. Early clinical trials applying ACT to compulsive pornography use have shown promising reductions in problematic viewing.",
+                "ANCHORAGE is informed by Acceptance and Commitment Therapy (ACT), which has strong research support for helping people change unwanted behaviours. Early clinical trials applying ACT to compulsive pornography use have shown promising results.",
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: AppColors.textSecondary,
                   height: 1.7,
