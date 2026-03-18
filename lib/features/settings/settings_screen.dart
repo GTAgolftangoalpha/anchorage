@@ -82,7 +82,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('All your data has been deleted.'),
+          content: Text('All your data has been deleted'),
           backgroundColor: AppColors.success,
         ),
       );

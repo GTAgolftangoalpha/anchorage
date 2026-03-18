@@ -165,7 +165,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           const SizedBox(height: 12),
                           if (values.isEmpty)
                             Text(
-                              'Set your values in Settings to see them here.',
+                              'Set your values in Settings to see them here',
                               style: theme.textTheme.bodyMedium
                                   ?.copyWith(
                                 color: AppColors.white.withAlpha(140),
@@ -275,7 +275,7 @@ class _StatusCard extends StatelessWidget {
                 motivation == 'Someone asked me to try this';
             String greeting;
             if (!isActive) {
-              greeting = 'Not guarding any apps.';
+              greeting = 'Not guarding any apps';
             } else if (name.isNotEmpty) {
               greeting = isExploring
                   ? 'Welcome back, $name.'

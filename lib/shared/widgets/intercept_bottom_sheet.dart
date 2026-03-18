@@ -83,7 +83,7 @@ class InterceptBottomSheet extends StatelessWidget {
                   const SizedBox(height: 32),
 
                   Text(
-                    'HOLD ON.',
+                    'HOLD ON',
                     style: theme.textTheme.displayMedium?.copyWith(
                       color: AppColors.white,
                       letterSpacing: 4,
@@ -109,7 +109,7 @@ class InterceptBottomSheet extends StatelessWidget {
                           ),
                         ),
                         const TextSpan(
-                          text: '.\nANCHORAGE intercepted it for you.',
+                          text: '\nANCHORAGE intercepted it for you',
                         ),
                       ],
                     ),

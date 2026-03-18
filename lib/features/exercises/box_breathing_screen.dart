@@ -136,7 +136,7 @@ class _BoxBreathingScreenState extends State<BoxBreathingScreen>
             children: [
               const Spacer(),
               Text(
-                'Exercise complete.',
+                'Exercise complete',
                 style: theme.textTheme.headlineMedium?.copyWith(
                   color: AppColors.white,
                   fontWeight: FontWeight.w700,

@@ -33,7 +33,7 @@ class _RelapseLogScreenState extends State<RelapseLogScreen> {
     if (_whatHappenedController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Tell us what happened first.'),
+          content: Text('Tell us what happened first'),
           backgroundColor: AppColors.warning,
         ),
       );
@@ -58,7 +58,7 @@ class _RelapseLogScreenState extends State<RelapseLogScreen> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Logged. Every setback is a lesson. Keep going.'),
+        content: Text('Logged -- every setback is a lesson'),
         backgroundColor: AppColors.success,
       ),
     );

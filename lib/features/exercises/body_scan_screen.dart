@@ -325,7 +325,7 @@ class _BodyScanScreenState extends State<BodyScanScreen> {
             children: [
               const Spacer(),
               Text(
-                'Exercise complete.',
+                'Exercise complete',
                 style: theme.textTheme.headlineMedium?.copyWith(
                   color: AppColors.white,
                   fontWeight: FontWeight.w700,

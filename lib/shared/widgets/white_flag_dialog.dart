@@ -67,7 +67,7 @@ Future<bool> showWhiteFlagConfirmation(
             if (isPremium && hasPartner) ...[
               const SizedBox(height: 12),
               Text(
-                'Your accountability partner will be notified.',
+                'Your accountability partner will be notified',
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: AppColors.gold,

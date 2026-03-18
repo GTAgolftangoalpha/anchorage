@@ -52,7 +52,7 @@ class _BlockedDomainScreenState extends State<BlockedDomainScreen> {
               ),
               const SizedBox(height: 32),
               Text(
-                'This site is blocked.',
+                'This site is blocked',
                 style: theme.textTheme.headlineMedium?.copyWith(
                   color: AppColors.white,
                   fontWeight: FontWeight.bold,
@@ -63,7 +63,7 @@ class _BlockedDomainScreenState extends State<BlockedDomainScreen> {
               if (widget.domain.isNotEmpty) ...[
                 const SizedBox(height: 12),
                 Text(
-                  '${widget.domain} is blocked by ANCHORAGE.',
+                  '${widget.domain} is blocked by ANCHORAGE',
                   style: theme.textTheme.bodyLarge?.copyWith(
                     color: AppColors.white.withAlpha(200),
                   ),

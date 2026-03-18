@@ -41,7 +41,7 @@
                 android:layout_marginTop="20dp"
                 android:fontFamily="sans-serif-medium"
                 android:letterSpacing="0.15"
-                android:text="HOLD ON."
+                android:text="HOLD ON"
                 android:textColor="#FFFFFF"
                 android:textSize="28sp"
                 android:textStyle="bold" />
@@ -304,7 +304,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:text="Take this time to pause."
+                android:text="Take this time to pause"
                 android:textColor="#80FFFFFF"
                 android:textSize="12sp" />
 

@@ -98,7 +98,7 @@ class _InterceptScreenState extends State<InterceptScreen> {
               const SizedBox(height: 32),
 
               Text(
-                'HOLD ON.',
+                'HOLD ON',
                 style: theme.textTheme.displayLarge?.copyWith(
                   color: AppColors.white,
                   letterSpacing: 4,
@@ -106,7 +106,7 @@ class _InterceptScreenState extends State<InterceptScreen> {
               ),
               const SizedBox(height: 16),
               Text(
-                'This content has been blocked\nby ANCHORAGE.',
+                'This content has been blocked\nby ANCHORAGE',
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyLarge?.copyWith(
                   color: AppColors.white.withAlpha(200),

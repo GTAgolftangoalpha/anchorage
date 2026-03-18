@@ -191,7 +191,7 @@ class _StreakDashboardScreenState extends State<StreakDashboardScreen>
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('ANCHORAGE+ Feature'),
-        content: const Text('Export your data with ANCHORAGE+.'),
+        content: const Text('Export your data with ANCHORAGE+'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),

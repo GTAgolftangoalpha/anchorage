@@ -42,7 +42,7 @@ class OverlayService : Service() {
             // VPN-blocked mode
             if (overlayView != null && isVpnBlockedMode) {
                 overlayView?.findViewById<TextView>(R.id.tv_domain_msg)?.text =
-                    "$domain is blocked.\nANCHORAGE is protecting you."
+                    "$domain is blocked\nANCHORAGE is protecting you"
                 applyVpnPrompt()
                 resetAutoDismiss()
             } else if (overlayView == null) {
@@ -54,7 +54,7 @@ class OverlayService : Service() {
             val appName = intent?.getStringExtra(EXTRA_APP_NAME) ?: "this app"
             if (overlayView != null && !isVpnBlockedMode) {
                 overlayView?.findViewById<TextView>(R.id.tv_subtitle)?.text =
-                    "You opened $appName.\nANCHORAGE intercepted it."
+                    "You opened $appName\nANCHORAGE intercepted it"
                 resetAutoDismiss()
             } else if (overlayView == null) {
                 isVpnBlockedMode = false
@@ -302,7 +302,7 @@ class OverlayService : Service() {
         overlayView = LayoutInflater.from(this).inflate(R.layout.overlay_intercept, null)
 
         overlayView?.findViewById<TextView>(R.id.tv_subtitle)?.text =
-            "You opened $appName.\nANCHORAGE intercepted it."
+            "You opened $appName\nANCHORAGE intercepted it"
 
         setupEmotionGrid()
         setupActionButtons()
@@ -366,7 +366,7 @@ class OverlayService : Service() {
 
     private fun startCountdown() {
         overlayView?.findViewById<View>(R.id.action_buttons)?.visibility = View.GONE
-        overlayView?.findViewById<TextView>(R.id.tv_timer_label)?.text = "Take this time to pause."
+        overlayView?.findViewById<TextView>(R.id.tv_timer_label)?.text = "Take this time to pause"
 
         countdownTimer?.cancel()
         countdownTimer = object : CountDownTimer(TIMER_DURATION_MS, 1000L) {
@@ -377,7 +377,7 @@ class OverlayService : Service() {
 
             override fun onFinish() {
                 overlayView?.findViewById<TextView>(R.id.tv_timer)?.text = "0"
-                overlayView?.findViewById<TextView>(R.id.tv_timer_label)?.text = "You can continue now."
+                overlayView?.findViewById<TextView>(R.id.tv_timer_label)?.text = "You can continue now"
                 overlayView?.findViewById<View>(R.id.action_buttons)?.visibility = View.VISIBLE
             }
         }.start()
@@ -456,7 +456,7 @@ class OverlayService : Service() {
         overlayView = LayoutInflater.from(this).inflate(R.layout.overlay_vpn_blocked, null)
 
         overlayView?.findViewById<TextView>(R.id.tv_domain_msg)?.text =
-            "$domain is blocked.\nANCHORAGE is protecting you."
+            "$domain is blocked\nANCHORAGE is protecting you"
 
         applyVpnPrompt()
 

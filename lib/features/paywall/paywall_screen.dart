@@ -59,7 +59,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Products not available yet. Please try again later.'),
+            content: Text('Products not available yet -- please try again later'),
             backgroundColor: AppColors.danger,
           ),
         );
@@ -72,7 +72,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('This plan is not available yet. Please try again later.'),
+            content: Text('This plan is not available yet -- please try again later'),
             backgroundColor: AppColors.danger,
           ),
         );
@@ -90,7 +90,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
       FirebaseAnalytics.instance.logEvent(name: 'paywall_purchase');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Welcome to ANCHORAGE+! You\'re fully anchored.'),
+          content: Text('Welcome to ANCHORAGE+!'),
           backgroundColor: AppColors.success,
         ),
       );
@@ -109,7 +109,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Purchases restored. Welcome back!'),
+          content: Text('Purchases restored -- welcome back!'),
           backgroundColor: AppColors.success,
         ),
       );
@@ -117,7 +117,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('No previous purchases found.'),
+          content: Text('No previous purchases found'),
           backgroundColor: AppColors.navy,
         ),
       );

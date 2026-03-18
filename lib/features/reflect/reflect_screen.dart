@@ -61,7 +61,7 @@ class _ReflectScreenState extends State<ReflectScreen> {
     if (_selectedMood == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Select how you're feeling first."),
+          content: Text("Select how you're feeling first"),
           backgroundColor: AppColors.warning,
         ),
       );
@@ -90,7 +90,7 @@ class _ReflectScreenState extends State<ReflectScreen> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Reflection saved. Stay anchored.'),
+        content: Text('Reflection saved'),
         backgroundColor: AppColors.success,
       ),
     );

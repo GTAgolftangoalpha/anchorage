@@ -101,7 +101,7 @@ class _UrgeLogScreenState extends State<UrgeLogScreen> {
                       builder: (ctx) => AlertDialog(
                         title: const Text('ANCHORAGE+ Feature'),
                         content: const Text(
-                            'Export your data with ANCHORAGE+.'),
+                            'Export your data with ANCHORAGE+'),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.pop(ctx),
