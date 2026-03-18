@@ -69,7 +69,10 @@ class PsychoeducationData {
           'boredom, loneliness, or habit, not just attraction. When you '
           'notice it, name it without judgement: "I am feeling aroused." '
           'Then choose what you do next. The feeling is not the problem. '
-          'The automatic reaction is.',
+          'The automatic reaction is.\n\n'
+          'Note: If unwanted arousal is linked to past trauma, that is '
+          'not something to work through alone. Please consider reaching '
+          'out to a trauma-informed therapist or counsellor.',
       icon: Icons.lightbulb_outline,
     ),
   ];
