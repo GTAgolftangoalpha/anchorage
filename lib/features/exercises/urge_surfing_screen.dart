@@ -218,7 +218,7 @@ class _UrgeSurfingScreenState extends State<UrgeSurfingScreen>
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(4),
                     color: i <= _currentPhase
-                        ? Anchorage.accent
+                        ? AppColors.darkBackgroundTeal
                         : AppColors.white.withAlpha(30),
                   ),
                 );
@@ -383,8 +383,8 @@ class _WavePainter extends CustomPainter {
     final paint = Paint()
       ..shader = LinearGradient(
         colors: [
-          const Color(0xFF1A6B72).withAlpha(60),
-          const Color(0xFF1A6B72).withAlpha(30),
+          AppColors.darkBackgroundTeal.withAlpha(60),
+          AppColors.darkBackgroundTeal.withAlpha(30),
         ],
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
@@ -392,7 +392,7 @@ class _WavePainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     final linePaint = Paint()
-      ..color = const Color(0xFF1A6B72)
+      ..color = AppColors.darkBackgroundTeal
       ..strokeWidth = 2
       ..style = PaintingStyle.stroke;
 

@@ -159,7 +159,7 @@ class _BodyScanScreenState extends State<BodyScanScreen> {
           Icon(
             Icons.accessibility_new,
             size: 64,
-            color: Anchorage.accent.withAlpha(180),
+            color: AppColors.darkBackgroundTeal.withAlpha(180),
           ),
           const SizedBox(height: 24),
           Text(
@@ -213,7 +213,7 @@ class _BodyScanScreenState extends State<BodyScanScreen> {
                 value: _overallProgress,
                 backgroundColor: AppColors.white.withAlpha(20),
                 valueColor:
-                    const AlwaysStoppedAnimation<Color>(Anchorage.accent),
+                    const AlwaysStoppedAnimation<Color>(AppColors.darkBackgroundTeal),
                 minHeight: 4,
               ),
             ),
@@ -249,16 +249,16 @@ class _BodyScanScreenState extends State<BodyScanScreen> {
                   height: 80,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Anchorage.accent.withAlpha(30),
+                    color: AppColors.darkBackgroundTeal.withAlpha(30),
                     border: Border.all(
-                      color: Anchorage.accent.withAlpha(80),
+                      color: AppColors.darkBackgroundTeal.withAlpha(80),
                       width: 2,
                     ),
                   ),
                   child: Icon(
                     region.icon,
                     size: 36,
-                    color: Anchorage.accent,
+                    color: AppColors.darkBackgroundTeal,
                   ),
                 ),
                 const SizedBox(height: 24),

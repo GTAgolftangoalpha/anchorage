@@ -262,7 +262,7 @@ class _BoxBreathingScreenState extends State<BoxBreathingScreen>
                             style: theme.textTheme.displayLarge?.copyWith(
                               color: _isHoldPhase
                                   ? AppColors.white
-                                  : Anchorage.accent,
+                                  : AppColors.darkBackgroundTeal,
                               fontSize: 48,
                             ),
                           ),
@@ -356,13 +356,13 @@ class _BoxPainter extends CustomPainter {
       ..style = PaintingStyle.stroke;
 
     final activePaint = Paint()
-      ..color = const Color(0xFF1A6B72)
+      ..color = AppColors.darkBackgroundTeal
       ..strokeWidth = 3
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
 
     final dotPaint = Paint()
-      ..color = const Color(0xFF1A6B72)
+      ..color = AppColors.darkBackgroundTeal
       ..style = PaintingStyle.fill;
 
     const padding = 20.0;
@@ -476,7 +476,7 @@ class _BoxPainter extends CustomPainter {
       dot,
       12,
       Paint()
-        ..color = const Color(0xFF1A6B72).withAlpha(60)
+        ..color = AppColors.darkBackgroundTeal.withAlpha(60)
         ..style = PaintingStyle.fill,
     );
   }

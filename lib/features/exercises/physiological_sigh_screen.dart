@@ -299,14 +299,14 @@ class _PhysiologicalSighScreenState extends State<PhysiologicalSighScreen>
                               height: 200 * scale,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: Anchorage.accent.withAlpha(40),
+                                color: AppColors.darkBackgroundTeal.withAlpha(40),
                                 border: Border.all(
-                                  color: Anchorage.accent,
+                                  color: AppColors.darkBackgroundTeal,
                                   width: 3,
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Anchorage.accent.withAlpha(
+                                    color: AppColors.darkBackgroundTeal.withAlpha(
                                       (30 * scale).round(),
                                     ),
                                     blurRadius: 40 * scale,
@@ -320,7 +320,7 @@ class _PhysiologicalSighScreenState extends State<PhysiologicalSighScreen>
                                   height: 12,
                                   decoration: const BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: Anchorage.accent,
+                                    color: AppColors.darkBackgroundTeal,
                                   ),
                                 ),
                               ),
@@ -425,11 +425,11 @@ class _PatternStep extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
         color: active
-            ? Anchorage.accent.withAlpha(40)
+            ? AppColors.darkBackgroundTeal.withAlpha(40)
             : AppColors.white.withAlpha(10),
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: active ? Anchorage.accent : AppColors.white.withAlpha(30),
+          color: active ? AppColors.darkBackgroundTeal : AppColors.white.withAlpha(30),
           width: active ? 1.5 : 1,
         ),
       ),
@@ -438,7 +438,7 @@ class _PatternStep extends StatelessWidget {
           Text(
             label,
             style: TextStyle(
-              color: active ? Anchorage.accent : AppColors.white.withAlpha(150),
+              color: active ? AppColors.darkBackgroundTeal : AppColors.white.withAlpha(150),
               fontSize: 14,
               fontWeight: FontWeight.w600,
             ),
