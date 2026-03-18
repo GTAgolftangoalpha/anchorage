@@ -22,10 +22,10 @@ class PsychoeducationData {
       title: 'Urges Are Waves',
       summary: 'They feel permanent, but they always pass.',
       body:
-          'The average urge lasts 20 to 30 minutes. It builds in intensity, '
-          'peaks, and then fades on its own. You do not need to fight it or '
-          'give in to it. You just need to ride it out. Every time you do, '
-          'the next wave gets a little smaller.',
+          'Research suggests urges typically peak within 15 to 30 minutes. '
+          'They build in intensity, peak, and then fade on their own. You do '
+          'not need to fight it or give in to it. You just need to ride it '
+          'out. Every time you do, the next wave gets a little smaller.',
       icon: Icons.waves,
     ),
     PsychoeducationData(
@@ -54,11 +54,10 @@ class PsychoeducationData {
       title: 'Why Willpower Is Not Enough',
       summary: 'Structure beats motivation every time.',
       body:
-          'Willpower is a limited resource. It depletes under stress, '
-          'fatigue, and hunger. That is why you are most vulnerable late '
-          'at night or after a tough day. The solution is not more willpower. '
-          'It is building systems, blockers, and habits that protect you '
-          'when willpower runs low. That is what ANCHORAGE is for.',
+          'Relying on willpower alone is unreliable. Research shows that '
+          'stress, fatigue, and emotional distress make it harder to resist '
+          'habitual behaviours. That is why environmental changes, tools, '
+          'and support systems work better than white-knuckling it.',
       icon: Icons.battery_alert,
     ),
     PsychoeducationData(
