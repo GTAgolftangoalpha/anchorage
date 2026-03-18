@@ -1,8 +1,6 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../../core/constants/app_colors.dart';
 import '../../models/guardable_app.dart';
 import '../../services/accountability_service.dart';
@@ -38,7 +36,6 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   String? _selectedGender;
   int? _selectedBirthYear;
   bool _dobSkipped = false;
-  bool _underageBlocked = false;
   String? _selectedUsageFrequency;
 
   // Screen 3: Values
@@ -479,7 +476,25 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                 final year = dateTime.year;
                 if (_isUnder18(year)) {
                   FirebaseAnalytics.instance.logEvent(name: 'onboarding_blocked_minor');
-                  setState(() => _underageBlocked = true);
+                  if (mounted) {
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text('Age requirement'),
+                        content: const Text(
+                          'ANCHORAGE is designed for adults aged 18 and over. '
+                          'We are not able to create an account for you at this time.',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            child: const Text('OK'),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
                   return;
                 }
                 setState(() {
@@ -496,8 +511,6 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   }
 
   Widget _buildAboutYouPage() {
-    if (_underageBlocked) return _buildUnderageScreen();
-
     final theme = Theme.of(context);
 
     return Container(
@@ -769,100 +782,6 @@ class _OnboardingScreenState extends State<OnboardingScreen>
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildUnderageScreen() {
-    final theme = Theme.of(context);
-
-    return Container(
-      color: AppColors.white,
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.shield_outlined,
-              color: AppColors.navy,
-              size: 64,
-            ),
-            const SizedBox(height: 32),
-            Text(
-              'ANCHORAGE is designed for adults.',
-              textAlign: TextAlign.center,
-              style: theme.textTheme.headlineMedium?.copyWith(
-                color: AppColors.navy,
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'This app is for people aged 18 and over. If you are under 18 and struggling, '
-              'please talk to a trusted adult, school counsellor, or visit findahelpline.com for support.',
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: AppColors.textSecondary,
-                height: 1.7,
-              ),
-            ),
-            const SizedBox(height: 24),
-            GestureDetector(
-              onTap: () {
-                launchUrl(
-                  Uri.parse('https://findahelpline.com'),
-                  mode: LaunchMode.externalApplication,
-                );
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                decoration: BoxDecoration(
-                  color: AppColors.navy.withAlpha(10),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.navy.withAlpha(40)),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.language, color: AppColors.navy, size: 20),
-                    const SizedBox(width: 10),
-                    Text(
-                      'findahelpline.com',
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        color: AppColors.navy,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    Icon(Icons.open_in_new, color: AppColors.navy, size: 14),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 32),
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton(
-                onPressed: () => SystemNavigator.pop(),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.navy,
-                  side: BorderSide(color: AppColors.navy.withAlpha(100)),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-                child: Text(
-                  'Close',
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    color: AppColors.navy,
-                    letterSpacing: 1,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
