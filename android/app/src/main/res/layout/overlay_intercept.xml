@@ -64,7 +64,7 @@
                 android:textColor="#B3FFFFFF"
                 android:textSize="14sp" />
 
-            <!-- Emotion list (single column) -->
+            <!-- Emotion grid (2 columns) -->
             <LinearLayout
                 android:id="@+id/grid_emotions"
                 android:layout_width="match_parent"
@@ -72,120 +72,156 @@
                 android:layout_marginTop="16dp"
                 android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/emo_bored"
+                <!-- Row 1: Bored | Stressed -->
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="44dp"
-                    android:layout_margin="4dp"
-                    android:background="@drawable/bg_emotion_card"
-                    android:gravity="center"
-                    android:text="Bored"
-                    android:textColor="#DDFFFFFF"
-                    android:textSize="13sp" />
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/emo_bored"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/bg_emotion_card"
+                        android:gravity="center"
+                        android:text="Bored"
+                        android:textColor="#DDFFFFFF"
+                        android:textSize="13sp" />
+                    <TextView
+                        android:id="@+id/emo_stressed"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/bg_emotion_card"
+                        android:gravity="center"
+                        android:text="Stressed"
+                        android:textColor="#DDFFFFFF"
+                        android:textSize="13sp" />
+                </LinearLayout>
 
-                <TextView
-                    android:id="@+id/emo_stressed"
+                <!-- Row 2: Lonely | Tired -->
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="44dp"
-                    android:layout_margin="4dp"
-                    android:background="@drawable/bg_emotion_card"
-                    android:gravity="center"
-                    android:text="Stressed"
-                    android:textColor="#DDFFFFFF"
-                    android:textSize="13sp" />
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/emo_lonely"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/bg_emotion_card"
+                        android:gravity="center"
+                        android:text="Lonely"
+                        android:textColor="#DDFFFFFF"
+                        android:textSize="13sp" />
+                    <TextView
+                        android:id="@+id/emo_tired"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/bg_emotion_card"
+                        android:gravity="center"
+                        android:text="Tired"
+                        android:textColor="#DDFFFFFF"
+                        android:textSize="13sp" />
+                </LinearLayout>
 
-                <TextView
-                    android:id="@+id/emo_lonely"
+                <!-- Row 3: Anxious | Down -->
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="44dp"
-                    android:layout_margin="4dp"
-                    android:background="@drawable/bg_emotion_card"
-                    android:gravity="center"
-                    android:text="Lonely"
-                    android:textColor="#DDFFFFFF"
-                    android:textSize="13sp" />
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/emo_anxious"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/bg_emotion_card"
+                        android:gravity="center"
+                        android:text="Anxious"
+                        android:textColor="#DDFFFFFF"
+                        android:textSize="13sp" />
+                    <TextView
+                        android:id="@+id/emo_down"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/bg_emotion_card"
+                        android:gravity="center"
+                        android:text="Down"
+                        android:textColor="#DDFFFFFF"
+                        android:textSize="13sp" />
+                </LinearLayout>
 
-                <TextView
-                    android:id="@+id/emo_tired"
+                <!-- Row 4: Angry | Aroused -->
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="44dp"
-                    android:layout_margin="4dp"
-                    android:background="@drawable/bg_emotion_card"
-                    android:gravity="center"
-                    android:text="Tired"
-                    android:textColor="#DDFFFFFF"
-                    android:textSize="13sp" />
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/emo_angry"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/bg_emotion_card"
+                        android:gravity="center"
+                        android:text="Angry"
+                        android:textColor="#DDFFFFFF"
+                        android:textSize="13sp" />
+                    <TextView
+                        android:id="@+id/emo_aroused"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/bg_emotion_card"
+                        android:gravity="center"
+                        android:text="Aroused"
+                        android:textColor="#DDFFFFFF"
+                        android:textSize="13sp" />
+                </LinearLayout>
 
-                <TextView
-                    android:id="@+id/emo_anxious"
+                <!-- Row 5: Numb | Rewarding Myself -->
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="44dp"
-                    android:layout_margin="4dp"
-                    android:background="@drawable/bg_emotion_card"
-                    android:gravity="center"
-                    android:text="Anxious"
-                    android:textColor="#DDFFFFFF"
-                    android:textSize="13sp" />
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/emo_numb"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/bg_emotion_card"
+                        android:gravity="center"
+                        android:text="Numb"
+                        android:textColor="#DDFFFFFF"
+                        android:textSize="13sp" />
+                    <TextView
+                        android:id="@+id/emo_rewarding"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/bg_emotion_card"
+                        android:gravity="center"
+                        android:text="Rewarding Myself"
+                        android:textColor="#DDFFFFFF"
+                        android:textSize="12sp" />
+                </LinearLayout>
 
-                <TextView
-                    android:id="@+id/emo_down"
-                    android:layout_width="match_parent"
-                    android:layout_height="44dp"
-                    android:layout_margin="4dp"
-                    android:background="@drawable/bg_emotion_card"
-                    android:gravity="center"
-                    android:text="Down"
-                    android:textColor="#DDFFFFFF"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:id="@+id/emo_angry"
-                    android:layout_width="match_parent"
-                    android:layout_height="44dp"
-                    android:layout_margin="4dp"
-                    android:background="@drawable/bg_emotion_card"
-                    android:gravity="center"
-                    android:text="Angry"
-                    android:textColor="#DDFFFFFF"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:id="@+id/emo_aroused"
-                    android:layout_width="match_parent"
-                    android:layout_height="44dp"
-                    android:layout_margin="4dp"
-                    android:background="@drawable/bg_emotion_card"
-                    android:gravity="center"
-                    android:text="Aroused"
-                    android:textColor="#DDFFFFFF"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:id="@+id/emo_numb"
-                    android:layout_width="match_parent"
-                    android:layout_height="44dp"
-                    android:layout_margin="4dp"
-                    android:background="@drawable/bg_emotion_card"
-                    android:gravity="center"
-                    android:text="Numb"
-                    android:textColor="#DDFFFFFF"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:id="@+id/emo_rewarding"
-                    android:layout_width="match_parent"
-                    android:layout_height="44dp"
-                    android:layout_margin="4dp"
-                    android:background="@drawable/bg_emotion_card"
-                    android:gravity="center"
-                    android:text="Rewarding Myself"
-                    android:textColor="#DDFFFFFF"
-                    android:textSize="12sp" />
-
+                <!-- Row 6: Not sure (full width) -->
                 <TextView
                     android:id="@+id/emo_not_sure"
                     android:layout_width="match_parent"
-                    android:layout_height="44dp"
+                    android:layout_height="48dp"
                     android:layout_margin="4dp"
                     android:background="@drawable/bg_emotion_card_outlined"
                     android:gravity="center"
