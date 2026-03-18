@@ -216,7 +216,7 @@ class AboutScreen extends StatelessWidget {
                   border: Border.all(color: AppColors.midGray),
                 ),
                 child: Text(
-                  'ANCHORAGE is a self-help tool. It is not a mental health service, and using it does not establish a therapeutic relationship. If you are experiencing significant distress, please seek support from a registered mental health professional.',
+                  'ANCHORAGE is a self-help tool. It is not a mental health service, and using it does not establish a therapeutic relationship with Temporal Psychology or its practitioners. If you are experiencing significant distress, please seek support from a registered mental health professional.',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: AppColors.textSecondary,
                     height: 1.6,

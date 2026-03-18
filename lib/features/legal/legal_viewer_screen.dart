@@ -277,7 +277,7 @@ class LegalHtml {
 
 <h2>2. Not a Substitute for Professional Treatment</h2>
 <div class="warning-box">
-  <p><strong>Important:</strong> ANCHORAGE is a self-help tool designed to support your personal goals. It is <strong>not</strong> a substitute for professional mental health treatment, therapy, counselling, or medical advice.</p>
+  <p><strong>Important:</strong> ANCHORAGE is a self-help tool. It is not a mental health service, and using it does not establish a therapeutic relationship with Temporal Psychology or its practitioners. If you are experiencing significant distress, please seek support from a registered mental health professional.</p>
 </div>
 <p>If you are in crisis, please visit <strong>findahelpline.com</strong> for support in your country. We do not make any claims that ANCHORAGE will cure, treat, or prevent any condition.</p>
 
