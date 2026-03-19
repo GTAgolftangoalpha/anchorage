@@ -382,14 +382,6 @@ class _UpgradeBanner extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'You are doing the work.',
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: AppColors.white,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
               'ANCHORAGE+ gives you unlimited guarded apps, unlimited urge logging, '
               'your Reflect journal, therapist-ready data export, and accountability '
               'partner reports. Everything you need to go deeper.',
