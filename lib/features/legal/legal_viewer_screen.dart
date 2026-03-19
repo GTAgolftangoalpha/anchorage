@@ -273,7 +273,7 @@ class LegalHtml {
 <p>ANCHORAGE is published by <strong>Golf Tango Alpha Pty Ltd</strong>. By downloading, installing, or using ANCHORAGE ("the App"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree, do not use the App.</p>
 
 <h2>1. Age Requirement</h2>
-<p>You must be at least <strong>18 years of age</strong> to use ANCHORAGE. By using the App, you confirm that you are 18 or older.</p>
+<p>By using ANCHORAGE you confirm you are aged 18 or over, or have obtained parental consent to use this app.</p>
 
 <h2>2. Not a Substitute for Professional Treatment</h2>
 <div class="warning-box">
