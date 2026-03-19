@@ -259,7 +259,8 @@ class _PhysiologicalSighScreenState extends State<PhysiologicalSighScreen>
             Text(
               'Double inhale, long exhale',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: AppColors.white.withAlpha(180),
+                color: AppColors.darkBackgroundTeal,
+                fontSize: 18,
               ),
             ),
             const SizedBox(height: 8),
@@ -267,7 +268,8 @@ class _PhysiologicalSighScreenState extends State<PhysiologicalSighScreen>
               'A rapid stress-reduction breathing technique supported by recent neuroscience research',
               textAlign: TextAlign.center,
               style: theme.textTheme.bodySmall?.copyWith(
-                color: AppColors.white.withAlpha(120),
+                color: AppColors.darkBackgroundTeal,
+                fontSize: 16,
               ),
             ),
 
@@ -284,7 +286,7 @@ class _PhysiologicalSighScreenState extends State<PhysiologicalSighScreen>
                         Text(
                           _phase,
                           style: theme.textTheme.headlineMedium?.copyWith(
-                            color: AppColors.white,
+                            color: AppColors.darkBackgroundTeal,
                           ),
                         ),
                         const SizedBox(height: 40),
@@ -358,7 +360,8 @@ class _PhysiologicalSighScreenState extends State<PhysiologicalSighScreen>
                         Text(
                           '$_completedCycles of $_totalCycles cycles completed',
                           style: theme.textTheme.bodySmall?.copyWith(
-                            color: AppColors.white.withAlpha(120),
+                            color: AppColors.darkBackgroundTeal,
+                            fontSize: 16,
                           ),
                         ),
                       ],
@@ -438,16 +441,16 @@ class _PatternStep extends StatelessWidget {
           Text(
             label,
             style: TextStyle(
-              color: active ? AppColors.darkBackgroundTeal : AppColors.white.withAlpha(150),
-              fontSize: 14,
+              color: active ? AppColors.darkBackgroundTeal : AppColors.darkBackgroundTeal.withAlpha(150),
+              fontSize: 16,
               fontWeight: FontWeight.w600,
             ),
           ),
           Text(
             seconds,
             style: TextStyle(
-              color: AppColors.white.withAlpha(80),
-              fontSize: 12,
+              color: AppColors.darkBackgroundTeal.withAlpha(120),
+              fontSize: 14,
             ),
           ),
         ],

@@ -228,14 +228,16 @@ class _BoxBreathingScreenState extends State<BoxBreathingScreen>
             Text(
               'Breathe in a square pattern',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: AppColors.white.withAlpha(180),
+                color: AppColors.darkBackgroundTeal,
+                fontSize: 18,
               ),
             ),
             const SizedBox(height: 8),
             Text(
               '4 seconds per side',
               style: theme.textTheme.bodySmall?.copyWith(
-                color: AppColors.white.withAlpha(120),
+                color: AppColors.darkBackgroundTeal,
+                fontSize: 16,
               ),
             ),
 
@@ -252,7 +254,7 @@ class _BoxBreathingScreenState extends State<BoxBreathingScreen>
                         Text(
                           _currentPhase,
                           style: theme.textTheme.headlineMedium?.copyWith(
-                            color: AppColors.white,
+                            color: AppColors.darkBackgroundTeal,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -287,7 +289,8 @@ class _BoxBreathingScreenState extends State<BoxBreathingScreen>
                         Text(
                           '${(_completedCycles / 2).floor()} of ${_totalCycles ~/ 2} cycles completed',
                           style: theme.textTheme.bodySmall?.copyWith(
-                            color: AppColors.white.withAlpha(120),
+                            color: AppColors.darkBackgroundTeal,
+                            fontSize: 16,
                           ),
                         ),
                       ],
