@@ -251,7 +251,7 @@ class _StatusCard extends StatelessWidget {
                 height: 12,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isActive ? AppColors.seafoam : AppColors.slate,
+                  color: isActive ? const Color(0xFF4CAF50) : const Color(0xFFF44336),
                 ),
               ),
               const SizedBox(width: 10),
