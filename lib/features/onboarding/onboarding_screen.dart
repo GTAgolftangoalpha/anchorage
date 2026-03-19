@@ -801,8 +801,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                   ),
                   const SizedBox(height: 12),
                   Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
+                    spacing: 10,
+                    runSpacing: 10,
+                    alignment: WrapAlignment.center,
                     children: _valueOptions.map((v) {
                       final isSelected = _selectedValues.contains(v);
                       return FilterChip(
