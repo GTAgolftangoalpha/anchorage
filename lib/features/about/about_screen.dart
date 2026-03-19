@@ -158,7 +158,7 @@ class AboutScreen extends StatelessWidget {
               _SectionTitle(title: 'Need More Support?'),
               const SizedBox(height: 12),
               Text(
-                "ANCHORAGE is a self-help tool, not a replacement for professional support. If you're struggling, please reach out.",
+                'ANCHORAGE is a self-help tool. It is not a mental health service.',
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: AppColors.textSecondary,
                   height: 1.7,
