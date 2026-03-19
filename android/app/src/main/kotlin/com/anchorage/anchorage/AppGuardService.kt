@@ -194,13 +194,26 @@ class AppGuardService : Service() {
                 interceptedPkg = ""
                 overlayShowingSince = 0L
                 dismissedAt = 0L
+                // Clear lastForegroundPkg so the next guarded app is detected as a
+                // new foreground on its very first poll. Without this, stats-based
+                // detection silently fails: the confirmation counter reaches threshold
+                // on poll 2, but by then isNewForeground is false and line 203's
+                // early return suppresses the intercept permanently.
+                lastForegroundPkg = ""
+                statsConfirmPkg = ""
+                statsConfirmCount = 0
             }
             return
         }
 
-        // Skip re-processing if nothing changed, UNLESS we're in POST_DISMISS_COOLDOWN
-        // (which is time-based and must keep evaluating even without a foreground change).
-        if (!isNewForeground && guardState != GuardState.POST_DISMISS_COOLDOWN) return
+        // Skip re-processing if nothing changed, UNLESS:
+        // - we're in POST_DISMISS_COOLDOWN (time-based, must keep evaluating), or
+        // - stats-based detection just reached confirmation threshold (isNewForeground
+        //   may be false because lastForegroundPkg was set on a prior confirmation poll).
+        val statsJustConfirmed = detectionSource == DetectionSource.USAGE_STATS &&
+                statsConfirmCount >= STATS_CONFIRM_THRESHOLD &&
+                guardState == GuardState.IDLE
+        if (!isNewForeground && guardState != GuardState.POST_DISMISS_COOLDOWN && !statsJustConfirmed) return
 
         if (guardedApps.isEmpty()) {
             Log.w(TAG, "checkForeground: guardedApps is EMPTY — service running but nothing to guard")
