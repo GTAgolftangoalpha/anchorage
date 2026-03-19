@@ -142,6 +142,30 @@ class _GuardedAppsScreenState extends State<GuardedAppsScreen>
       return;
     }
 
+    // Show friction dialog before applying changes
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Are you sure?'),
+        content: const Text(
+          'Changing your guarded apps makes it easier to access '
+          'content you are trying to avoid. Are you sure you want '
+          'to do this?',
+        ),
+        actions: [
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Yes, make changes'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
     await _saveAndApply();
   }
 
