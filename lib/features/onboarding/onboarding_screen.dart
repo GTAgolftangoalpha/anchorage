@@ -449,10 +449,6 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
   // == Screen 2: About You (Gender + Birth Year + Usage Frequency) ========
 
-  bool _isUnder18(int birthYear) {
-    return DateTime.now().year - birthYear < 18;
-  }
-
   bool get _dobAnswered => _selectedBirthYear != null || _dobSkipped;
 
   void _showYearPicker() {
@@ -474,29 +470,6 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               onChanged: (DateTime dateTime) {
                 Navigator.pop(ctx);
                 final year = dateTime.year;
-                if (_isUnder18(year)) {
-                  FirebaseAnalytics.instance.logEvent(name: 'onboarding_blocked_minor');
-                  if (mounted) {
-                    showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (ctx) => AlertDialog(
-                        title: const Text('Age requirement'),
-                        content: const Text(
-                          'ANCHORAGE is designed for adults aged 18 and over. '
-                          'We are not able to create an account for you at this time.',
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(ctx),
-                            child: const Text('OK'),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-                  return;
-                }
                 setState(() {
                   _selectedBirthYear = year;
                   _dobSkipped = false;
