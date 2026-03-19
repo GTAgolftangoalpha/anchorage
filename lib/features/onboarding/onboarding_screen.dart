@@ -287,7 +287,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       padding: const EdgeInsets.symmetric(horizontal: 32),
       child: Column(
         children: [
-          SizedBox(height: keyboardVisible ? 16 : 48),
+          SizedBox(height: keyboardVisible ? 16 : 32),
           if (!keyboardVisible) ...[
             const AnchorLogo(size: 64, color: AppColors.white),
             const SizedBox(height: 16),
@@ -306,7 +306,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                 letterSpacing: 2,
               ),
             ),
-            const SizedBox(height: 48),
+            const SizedBox(height: 24),
           ],
           Text(
             'What should we call you?',
