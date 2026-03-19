@@ -9,7 +9,6 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../services/premium_service.dart';
-import '../../services/tamper_service.dart';
 import '../../services/user_preferences_service.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -278,12 +277,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               subtitle: 'Choose apps to intercept',
               onTap: () => context.push('/guarded-apps'),
             ),
-            _SettingsTile(
-              icon: Icons.dns_outlined,
-              title: 'Custom Blocklist',
-              subtitle: 'Add your own blocked domains',
-              onTap: () => context.push('/custom-blocklist'),
-            ),
 
             // HIDDEN: Accountability partner UI hidden until Cloud Function backend is built. Do not delete.
             // const SizedBox(height: 8),
@@ -296,21 +289,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
             // ),
             // REMOVED: Storm Mode removed from V1. Do not re-add without safety review.
             // REMOVED: Partner-held PIN lockout removed from V1. Do not re-add without safety review.
-
-            const SizedBox(height: 8),
-            _SectionHeader(title: 'Advanced Protection'),
-            _SettingsTile(
-              icon: Icons.admin_panel_settings,
-              title: 'Device Admin',
-              subtitle: 'Prevents ANCHORAGE from being uninstalled without deactivating first. Recommended.',
-              onTap: () => TamperService.requestDeviceAdmin(),
-            ),
-            _SettingsTile(
-              icon: Icons.vpn_lock,
-              title: 'Always-On VPN',
-              subtitle: 'Keeps content filtering active at all times, even after a device restart. Recommended.',
-              onTap: () => TamperService.openAlwaysOnVpnSettings(),
-            ),
 
             const SizedBox(height: 8),
             _SectionHeader(title: 'Subscription'),
