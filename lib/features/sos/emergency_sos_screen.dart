@@ -57,7 +57,7 @@ class EmergencySosScreen extends StatelessWidget {
           ),
           _CrisisResource(
             name: 'CALM',
-            description: 'Support for men in crisis, 5pm–midnight daily',
+            description: 'Support for men in crisis, 5pm to midnight daily',
             number: '0800 58 58 58',
             dialNumber: '0800585858',
           ),

@@ -58,7 +58,7 @@ class _RelapseLogScreenState extends State<RelapseLogScreen> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Logged -- every setback is a lesson'),
+        content: Text('Logged. Every setback is a lesson.'),
         backgroundColor: AppColors.success,
       ),
     );

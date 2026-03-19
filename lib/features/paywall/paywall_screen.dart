@@ -59,7 +59,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Products not available yet -- please try again later'),
+            content: Text('Products not available yet. Please try again later.'),
             backgroundColor: AppColors.danger,
           ),
         );
@@ -72,7 +72,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('This plan is not available yet -- please try again later'),
+            content: Text('This plan is not available yet. Please try again later.'),
             backgroundColor: AppColors.danger,
           ),
         );
@@ -109,7 +109,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Purchases restored -- welcome back!'),
+          content: Text('Purchases restored. Welcome back!'),
           backgroundColor: AppColors.success,
         ),
       );
@@ -216,7 +216,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Founding Member pricing -- locked in forever.',
+                            'Founding Member pricing, locked in forever.',
                             textAlign: TextAlign.center,
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: AppColors.textSecondary,

@@ -652,7 +652,7 @@ class AnchorageVpnService : VpnService() {
             Intent(this, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE)
         val notification: Notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("ANCHORAGE is protecting you ⚓")
-            .setContentText("VPN filter active — explicit content blocked")
+            .setContentText("VPN filter active, explicit content blocked")
             .setSmallIcon(R.drawable.ic_notification)
             .setContentIntent(pi)
             .setOngoing(true).setSilent(true)

@@ -55,7 +55,7 @@ class _GuardedAppsScreenState extends State<GuardedAppsScreen>
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Usage access not granted -- tap SAVE to try again'),
+          content: Text('Usage access not granted. Tap SAVE to try again.'),
           backgroundColor: AppColors.danger,
         ),
       );
@@ -193,7 +193,7 @@ class _GuardedAppsScreenState extends State<GuardedAppsScreen>
           content: Text(
             packages.isEmpty
                 ? 'Guard stopped'
-                : 'Guarding ${packages.length} app${packages.length == 1 ? '' : 's'} -- open a guarded app to test',
+                : 'Guarding ${packages.length} app${packages.length == 1 ? '' : 's'}. Open a guarded app to test.',
           ),
           backgroundColor: AppColors.navy,
           duration: const Duration(seconds: 4),
@@ -334,7 +334,7 @@ class _FreeTierBar extends StatelessWidget {
             child: Text(
               remaining > 0
                   ? '$remaining slot${remaining == 1 ? '' : 's'} remaining (free plan)'
-                  : 'All free slots used -- upgrade for more',
+                  : 'All free slots used. Upgrade for more.',
               style: theme.textTheme.bodySmall?.copyWith(
                 color:
                     remaining > 0 ? AppColors.textSecondary : AppColors.danger,
@@ -361,7 +361,7 @@ class _PermissionBanner extends StatelessWidget {
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              'Usage access required -- tap "SAVE" to open Settings',
+              'Usage access required. Tap "SAVE" to open Settings.',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w500,
