@@ -1,8 +1,8 @@
 # ANCHORAGE Security Audit
 
-Audit date: 14 March 2026
+Audit date: 24 March 2026
 Status: Pre-launch V1
-Last verified: 14 March 2026
+Last verified: 24 March 2026
 
 ## 1. Data Storage Summary
 
