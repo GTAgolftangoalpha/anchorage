@@ -158,7 +158,7 @@ class AboutScreen extends StatelessWidget {
               _SectionTitle(title: 'Need More Support?'),
               const SizedBox(height: 12),
               Text(
-                'ANCHORAGE is a self-help tool. It is not a mental health service.',
+                'ANCHORAGE is a self-help tool. It is not a mental health service, and using it does not establish a therapeutic relationship. If you are experiencing significant distress, please seek support from a qualified mental health professional or call a crisis helpline.',
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: AppColors.textSecondary,
                   height: 1.7,
@@ -167,7 +167,7 @@ class AboutScreen extends StatelessWidget {
               const SizedBox(height: 20),
 
               Text(
-                'If you are in crisis, please visit findahelpline.com for support in your country.',
+                'For immediate support, visit findahelpline.com.',
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: AppColors.textSecondary,
                   height: 1.7,
@@ -216,7 +216,7 @@ class AboutScreen extends StatelessWidget {
                   border: Border.all(color: AppColors.midGray),
                 ),
                 child: Text(
-                  'ANCHORAGE is a self-help tool. It is not a mental health service.',
+                  'ANCHORAGE is a self-help tool. It is not a mental health service, and using it does not establish a therapeutic relationship. If you are experiencing significant distress, please seek support from a qualified mental health professional or call a crisis helpline. For immediate support, visit findahelpline.com.',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: AppColors.textSecondary,
                     height: 1.6,
