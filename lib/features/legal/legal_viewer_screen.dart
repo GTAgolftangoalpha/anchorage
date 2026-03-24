@@ -110,6 +110,7 @@ class LegalHtml {
 <p>We collect the following:</p>
 <ul>
   <li><strong>Email address</strong>, provided during onboarding</li>
+  <li><strong>Date of birth and gender</strong>, provided during onboarding (used to personalise your experience; stored on-device only)</li>
   <li><strong>Usage data</strong>, including streak counts and anonymous identifiers used to run your account</li>
   <li><strong>Anonymised crash reports</strong>, to help us fix bugs and improve the app</li>
 </ul>
@@ -121,6 +122,7 @@ class LegalHtml {
   <li>Journal and reflection entries</li>
   <li>Urge log content and notes</li>
   <li>Lapse log content</li>
+  <li>Free-text fields (values, motivations, reflection notes) entered during onboarding or in-app use</li>
 </ul>
 <p>We do not use advertising trackers or fingerprinting. We do not sell or share your data with third parties for marketing.</p>
 
