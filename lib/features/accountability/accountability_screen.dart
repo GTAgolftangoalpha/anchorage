@@ -18,6 +18,7 @@ class _AccountabilityScreenState extends State<AccountabilityScreen> {
   final _emailController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _sending = false;
+  bool _partnerConsent = false;
 
   @override
   void dispose() {
@@ -200,6 +201,47 @@ class _AccountabilityScreenState extends State<AccountabilityScreen> {
                     validator: (v) =>
                         (v == null || v.trim().isEmpty) ? 'Enter a name' : null,
                   ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Anchorage is a voluntary self-help tool. The accountability '
+                    'partner feature is designed to support you with someone you '
+                    'trust and who has agreed to this role. You must have your '
+                    "partner's consent before adding their email. Do not use this "
+                    'feature to monitor another person without their full knowledge '
+                    'and agreement.',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                      height: 1.5,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  GestureDetector(
+                    onTap: () => setState(() => _partnerConsent = !_partnerConsent),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: Checkbox(
+                            value: _partnerConsent,
+                            onChanged: (v) => setState(() => _partnerConsent = v ?? false),
+                            activeColor: AppColors.navy,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'My accountability partner has agreed to receive updates from Anchorage.',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: AppColors.textPrimary,
+                              height: 1.4,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   const SizedBox(height: 12),
                   TextFormField(
                     controller: _emailController,
@@ -222,7 +264,7 @@ class _AccountabilityScreenState extends State<AccountabilityScreen> {
                   SizedBox(
                     width: double.infinity,
                     child: FilledButton(
-                      onPressed: _sending ? null : _sendInvitation,
+                      onPressed: _sending || !_partnerConsent ? null : _sendInvitation,
                       style: FilledButton.styleFrom(
                         backgroundColor: AppColors.navy,
                         padding: const EdgeInsets.symmetric(vertical: 16),
