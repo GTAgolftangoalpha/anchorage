@@ -54,10 +54,15 @@ class PsychoeducationData {
       title: 'Why Willpower Is Not Enough',
       summary: 'Structure beats motivation every time.',
       body:
-          'Relying on willpower alone is unreliable. Research shows that '
-          'stress, fatigue, and emotional distress make it harder to resist '
-          'habitual behaviours. That is why environmental changes, tools, '
-          'and support systems work better than white-knuckling it.',
+          'Research once suggested that willpower works like a muscle that '
+          'gets tired with use. While that specific model is still debated, '
+          'the broader insight holds: relying on willpower alone is an '
+          'unreliable strategy for changing habitual behaviour.\n\n'
+          'What the evidence does support is that changing your environment, '
+          'recognising emotional triggers, and having a concrete plan for '
+          'high-risk moments is far more effective than trying harder. '
+          'Anchorage is built around this. When an urge fires, you already '
+          'have a strategy waiting.',
       icon: Icons.battery_alert,
     ),
     PsychoeducationData(
