@@ -92,7 +92,7 @@
             android:textColor="#0A1628"
             android:textSize="13sp" />
 
-        <!-- Go Back — secondary action -->
+        <!-- Go Back - secondary action -->
         <Button
             android:id="@+id/btn_vpn_go_back"
             android:layout_width="match_parent"

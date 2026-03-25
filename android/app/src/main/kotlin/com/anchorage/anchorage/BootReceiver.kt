@@ -17,7 +17,7 @@ import android.util.Log
  * CE-encrypted SharedPreferences (guarded app list) are accessible.
  *
  * Starting foreground services from a BOOT_COMPLETED receiver is explicitly
- * permitted by Android — this is one of the allowed background-start exceptions.
+ * permitted by Android - this is one of the allowed background-start exceptions.
  */
 class BootReceiver : BroadcastReceiver() {
 
@@ -28,7 +28,7 @@ class BootReceiver : BroadcastReceiver() {
             return
         }
 
-        Log.d(TAG, "onReceive: action=$action — starting ANCHORAGE services")
+        Log.d(TAG, "onReceive: action=$action - starting ANCHORAGE services")
 
         startVpn(context)
         startGuard(context)
@@ -39,12 +39,12 @@ class BootReceiver : BroadcastReceiver() {
         // On boot there is no UI, so we can only start if consent was previously granted.
         val needsConsent = VpnService.prepare(context)
         if (needsConsent != null) {
-            Log.w(TAG, "startVpn: VPN consent not yet granted — skipping (user must open app once)")
+            Log.w(TAG, "startVpn: VPN consent not yet granted - skipping (user must open app once)")
             return
         }
 
         if (AnchorageVpnService.isRunning) {
-            Log.d(TAG, "startVpn: already running — skipping")
+            Log.d(TAG, "startVpn: already running - skipping")
             return
         }
 
@@ -57,13 +57,13 @@ class BootReceiver : BroadcastReceiver() {
 
     private fun startGuard(context: Context) {
         if (AppGuardService.serviceRunning) {
-            Log.d(TAG, "startGuard: already running — skipping")
+            Log.d(TAG, "startGuard: already running - skipping")
             return
         }
 
         // Read the guarded-app list that AppGuardService persisted during the
         // last user session. If the list is empty, the guard service starts but
-        // has nothing to monitor — it will re-arm when the user next opens the app.
+        // has nothing to monitor - it will re-arm when the user next opens the app.
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val raw = prefs.getString(PREFS_KEY_APPS, "") ?: ""
         val apps = if (raw.isNotEmpty()) {

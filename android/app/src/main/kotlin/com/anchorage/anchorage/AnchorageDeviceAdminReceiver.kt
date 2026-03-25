@@ -10,16 +10,16 @@ import android.util.Log
  * requires the user to manually deactivate it in Settings before uninstalling,
  * adding friction against impulsive removal.
  *
- * No policies are enforced — the only purpose is uninstall friction.
+ * No policies are enforced - the only purpose is uninstall friction.
  */
 class AnchorageDeviceAdminReceiver : DeviceAdminReceiver() {
 
     override fun onEnabled(context: Context, intent: Intent) {
-        Log.d(TAG, "Device admin enabled — uninstall friction active")
+        Log.d(TAG, "Device admin enabled - uninstall friction active")
     }
 
     override fun onDisabled(context: Context, intent: Intent) {
-        Log.d(TAG, "Device admin disabled — user can now uninstall")
+        Log.d(TAG, "Device admin disabled - user can now uninstall")
     }
 
     override fun onDisableRequested(context: Context, intent: Intent): CharSequence {

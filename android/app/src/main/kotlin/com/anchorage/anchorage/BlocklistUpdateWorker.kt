@@ -12,7 +12,7 @@ import java.net.URL
  * Downloads the latest Steven Black porn-only blocklist every 14 days and
  * stores it in [Context.getFilesDir]/blocklist.txt.
  *
- * Porn-only blocklist — deliberately excludes ads, trackers, and analytics
+ * Porn-only blocklist - deliberately excludes ads, trackers, and analytics
  * to prevent over-blocking legitimate apps and sites.
  *
  * [AnchorageVpnService] prefers this updated file over the bundled asset.
@@ -33,7 +33,7 @@ class BlocklistUpdateWorker(
             conn.connect()
 
             if (conn.responseCode != 200) {
-                Log.w(TAG, "doWork: HTTP ${conn.responseCode} — will retry")
+                Log.w(TAG, "doWork: HTTP ${conn.responseCode} - will retry")
                 return Result.retry()
             }
 
@@ -58,14 +58,14 @@ class BlocklistUpdateWorker(
 
             Result.success()
         } catch (e: Exception) {
-            Log.e(TAG, "doWork: download failed — ${e.message}")
+            Log.e(TAG, "doWork: download failed - ${e.message}")
             Result.retry()
         }
     }
 
     companion object {
         private const val TAG = "BlocklistWorker"
-        // Porn-only blocklist — deliberately excludes ads, trackers, and analytics
+        // Porn-only blocklist - deliberately excludes ads, trackers, and analytics
         // to prevent over-blocking legitimate apps and sites.
         private const val BLOCKLIST_URL =
             "https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/porn-only/hosts"

@@ -32,19 +32,19 @@ class AnchorageVpnService : VpnService() {
     private var vpnInterface: ParcelFileDescriptor? = null
     private var vpnThread: Thread? = null
 
-    // Volatile reference — loadBlocklist() swaps in a new HashSet atomically so
+    // Volatile reference - loadBlocklist() swaps in a new HashSet atomically so
     // the packet-loop thread always sees a consistent snapshot.
     @Volatile private var blocklist: HashSet<String> = HashSet()
 
-    // Custom user-added domains — separate from the main blocklist for hot-reload.
+    // Custom user-added domains - separate from the main blocklist for hot-reload.
     @Volatile private var customBlocklist: HashSet<String> = HashSet()
 
     // Set to true once the blocklist is fully loaded and ready to query.
-    // While false, DNS responses return SERVFAIL — nothing resolves until VPN
+    // While false, DNS responses return SERVFAIL - nothing resolves until VPN
     // protection is fully armed, closing the boot startup window.
     @Volatile private var blocklistReady = false
 
-    // Post overlay startService to main thread — calling from the VPN packet-loop
+    // Post overlay startService to main thread - calling from the VPN packet-loop
     // background thread is silently dropped on Samsung Android 14.
     private val mainHandler = Handler(Looper.getMainLooper())
 
@@ -110,7 +110,7 @@ class AnchorageVpnService : VpnService() {
     private fun startVpn() {
         Log.d(TAG, "startVpn: isRunning=$isRunning")
         if (isRunning) {
-            Log.d(TAG, "startVpn: already running — no-op")
+            Log.d(TAG, "startVpn: already running - no-op")
             return
         }
 
@@ -120,7 +120,7 @@ class AnchorageVpnService : VpnService() {
 
         // Load blocklist in a background thread in parallel with tunnel setup.
         // Until loadBlocklist() completes and sets blocklistReady=true, all DNS
-        // queries return SERVFAIL — the network is inaccessible but protected.
+        // queries return SERVFAIL - the network is inaccessible but protected.
         blocklistReady = false
         Thread({
             try {
@@ -131,7 +131,7 @@ class AnchorageVpnService : VpnService() {
             }
         }, "anchorage-blocklist").start()
 
-        // Establish the VPN tunnel immediately — routes are active within ~1 second.
+        // Establish the VPN tunnel immediately - routes are active within ~1 second.
         // The packet loop starts here and handles SERVFAIL until the blocklist is ready.
         Thread({
             try {
@@ -163,7 +163,7 @@ class AnchorageVpnService : VpnService() {
             builder.setBlocking(true)
 
             // DNS-only routing: only route the fake DNS IP and the blocked-domain
-            // sentinel IP through TUN. All real traffic bypasses the VPN entirely —
+            // sentinel IP through TUN. All real traffic bypasses the VPN entirely -
             // no TCP proxying is needed and browser performance is unaffected.
             //
             // Flow for blocked domains:
@@ -181,13 +181,13 @@ class AnchorageVpnService : VpnService() {
             vpnInterface = builder.establish()
 
             if (vpnInterface == null) {
-                Log.e(TAG, "establishTunnel: establish() returned null — VPN permission not held!")
+                Log.e(TAG, "establishTunnel: establish() returned null - VPN permission not held!")
                 stopSelf()
                 return
             }
 
             isRunning = true
-            Log.d(TAG, "establishTunnel: TUN fd=${vpnInterface!!.fd} — VPN is UP")
+            Log.d(TAG, "establishTunnel: TUN fd=${vpnInterface!!.fd} - VPN is UP")
 
             scheduleBlocklistUpdate()
             runPacketLoop()
@@ -217,7 +217,7 @@ class AnchorageVpnService : VpnService() {
             val len = try {
                 input.read(buffer)
             } catch (e: Exception) {
-                if (isRunning) Log.w(TAG, "runPacketLoop: read error — ${e.message}")
+                if (isRunning) Log.w(TAG, "runPacketLoop: read error -${e.message}")
                 break
             }
 
@@ -231,7 +231,7 @@ class AnchorageVpnService : VpnService() {
             try {
                 handlePacket(buffer.copyOf(len), output)
             } catch (e: Exception) {
-                Log.w(TAG, "runPacketLoop: handlePacket error — ${e.message}")
+                Log.w(TAG, "runPacketLoop: handlePacket error -${e.message}")
             }
         }
 
@@ -282,7 +282,7 @@ class AnchorageVpnService : VpnService() {
         if (qTypeOffset + 3 >= dns.size) return
         val qType = ((dns[qTypeOffset].toInt() and 0xFF) shl 8) or (dns[qTypeOffset + 1].toInt() and 0xFF)
 
-        // Whitelist always wins — forward even while blocklist is still loading,
+        // Whitelist always wins - forward even while blocklist is still loading,
         // so Firebase/Google services are never disrupted during startup.
         if (isWhitelisted(domain)) {
             Log.v(TAG, "DNS ALLOWED (whitelist): $domain → forwarding")
@@ -290,7 +290,7 @@ class AnchorageVpnService : VpnService() {
             return
         }
 
-        // Blocklist still loading — return SERVFAIL so nothing resolves until
+        // Blocklist still loading - return SERVFAIL so nothing resolves until
         // VPN protection is fully armed. Closes the boot startup window.
         if (!blocklistReady) {
             Log.d(TAG, "DNS SERVFAIL (loading): $domain")
@@ -454,7 +454,7 @@ class AnchorageVpnService : VpnService() {
     // ── TCP handling ──────────────────────────────────────────────────────────
     //
     // With DNS-only routing, the only TCP packets that arrive here are connections
-    // to BLOCKED_DOMAIN_IP (10.111.222.3). RST all SYN packets — the overlay
+    // to BLOCKED_DOMAIN_IP (10.111.222.3). RST all SYN packets - the overlay
     // launched by notifyDomainBlocked() handles the user-facing UX.
 
     private fun handleTcp(packet: ByteArray, output: FileOutputStream) {
@@ -495,16 +495,16 @@ class AnchorageVpnService : VpnService() {
         // Don't show the blocked-domain overlay when ANCHORAGE itself is in the foreground.
         // Our own SDKs (Firebase logging, Braze) may query domains that are in the blocklist;
         // showing an overlay over our own UI would be confusing and incorrect.
-        // Only trust the foreground data if it was updated recently — stale data means the
+        // Only trust the foreground data if it was updated recently - stale data means the
         // guard lost track of the foreground app and we should NOT suppress the overlay.
         val foregroundFresh = now - AppGuardService.lastKnownForegroundTime < FOREGROUND_STALE_MS
         if (foregroundFresh && AppGuardService.lastKnownForeground == packageName) {
-            Log.d(TAG, "notifyDomainBlocked: ANCHORAGE in foreground — suppressing overlay for '$domain'")
+            Log.d(TAG, "notifyDomainBlocked: ANCHORAGE in foreground - suppressing overlay for '$domain'")
             blockedDomainListener?.invoke(domain)
             return
         }
 
-        // Post to main thread — startService from VPN packet-loop background thread
+        // Post to main thread - startService from VPN packet-loop background thread
         // is silently dropped on Samsung Android 14.
         mainHandler.post {
             if (AndroidSettings.canDrawOverlays(this)) {
@@ -517,7 +517,7 @@ class AnchorageVpnService : VpnService() {
                     Log.w(TAG, "notifyDomainBlocked: OverlayService start failed: ${e.message}")
                 }
             } else {
-                Log.w(TAG, "notifyDomainBlocked: overlay permission not granted — skipping overlay")
+                Log.w(TAG, "notifyDomainBlocked: overlay permission not granted - skipping overlay")
             }
         }
 
@@ -572,7 +572,7 @@ class AnchorageVpnService : VpnService() {
         "${ip[0].toInt() and 0xFF}.${ip[1].toInt() and 0xFF}.${ip[2].toInt() and 0xFF}.${ip[3].toInt() and 0xFF}"
 
     // ── Blocklist ─────────────────────────────────────────────────────────────
-    // Porn-only blocklist — deliberately excludes ads, trackers, and analytics
+    // Porn-only blocklist - deliberately excludes ads, trackers, and analytics
     // to prevent over-blocking legitimate apps and sites.
 
     private fun loadBlocklist() {
@@ -598,7 +598,7 @@ class AnchorageVpnService : VpnService() {
             Log.d(TAG, "loadBlocklist: loading bundled asset")
             assets.open("blocklist.txt")
         }
-        // Build into a new HashSet and assign atomically — safe because the
+        // Build into a new HashSet and assign atomically - safe because the
         // volatile write is visible to the packet-loop thread immediately.
         val newList = HashSet<String>(200_000)
         stream.bufferedReader().use { reader ->
@@ -610,7 +610,7 @@ class AnchorageVpnService : VpnService() {
         blocklist = newList
         blocklistReady = true
         val elapsed = System.currentTimeMillis() - start
-        Log.d(TAG, "loadBlocklist: loaded ${blocklist.size} domains in ${elapsed}ms — VPN fully armed")
+        Log.d(TAG, "loadBlocklist: loaded ${blocklist.size} domains in ${elapsed}ms - VPN fully armed")
     }
 
     private fun loadCustomBlocklist() {
@@ -677,15 +677,15 @@ class AnchorageVpnService : VpnService() {
 
         /**
          * Max age of [AppGuardService.lastKnownForegroundTime] before we consider
-         * the foreground data stale. When stale, do NOT suppress VPN overlays —
+         * the foreground data stale. When stale, do NOT suppress VPN overlays -
          * the guard may have lost track of the foreground app (Samsung event expiry).
          */
         private const val FOREGROUND_STALE_MS = 30_000L
 
-        // 10.111.222.2 — fake DNS server (DNS queries are routed here via addRoute)
+        // 10.111.222.2 - fake DNS server (DNS queries are routed here via addRoute)
         private val FAKE_DNS_IP = byteArrayOf(10, 111, 222.toByte(), 2)
 
-        // 10.111.222.3 — returned in A record for blocked domains.
+        // 10.111.222.3 - returned in A record for blocked domains.
         // TCP connections here receive RST; the overlay handles the UX.
         private val BLOCKED_DOMAIN_IP = byteArrayOf(10, 111, 222.toByte(), 3)
 
@@ -711,11 +711,11 @@ class AnchorageVpnService : VpnService() {
         }
 
         /**
-         * Permanent DNS whitelist — these domains always resolve normally, even if they
+         * Permanent DNS whitelist - these domains always resolve normally, even if they
          * somehow appear in the porn-only blocklist. Covers critical infrastructure that
          * the app depends on (Google services, Firebase, CDNs, payment providers).
          *
-         * Porn-only blocklist — deliberately excludes ads, trackers, and analytics
+         * Porn-only blocklist - deliberately excludes ads, trackers, and analytics
          * to prevent over-blocking legitimate apps and sites.
          */
         private val WHITELIST_SUFFIXES = setOf(

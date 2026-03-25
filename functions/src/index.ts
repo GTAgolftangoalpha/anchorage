@@ -7,7 +7,7 @@ const db = admin.firestore();
 
 // SendGrid API key stored as Firebase secret:
 //   firebase functions:secrets:set SENDGRID_API_KEY
-// Then deploy — Functions runtime injects it at startup.
+// Then deploy. Functions runtime injects it at startup.
 const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY ?? "";
 const FROM_EMAIL = "hello@getanchorage.app";
 const FROM_NAME = "ANCHORAGE";
@@ -332,7 +332,7 @@ function partnerInviteHtml(opts: {
               <strong>ANCHORAGE</strong>.
             </p>
             <p style="margin:0 0 24px;font-size:16px;color:#4A6080;line-height:1.6;">
-              As their partner, you'll receive a brief weekly email with their progress —
+              As their partner, you'll receive a brief weekly email with their progress:
               streak days, reflection count, and how they're going. No judgment, just support.
             </p>
 
@@ -397,7 +397,7 @@ function weeklyReportHtml(opts: {
   const encouragement = streakDays === 0
     ? "Every journey starts with a single step. They're still in the fight."
     : streakDays < 7
-      ? `${streakDays} day${streakDays !== 1 ? "s" : ""} is a real start — steady progress.`
+      ? `${streakDays} day${streakDays !== 1 ? "s" : ""} is a real start. Steady progress.`
       : `${streakDays} days is something to be proud of. Keep cheering them on.`;
 
   return `<!DOCTYPE html>
@@ -535,7 +535,7 @@ function respondedHtml(status: "accepted" | "declined", userName: string): strin
     <p style="color:#4A6080;max-width:400px;margin:16px auto;">
       ${accepted
     ? `Thank you for supporting ${escapeHtml(userName)}. You'll receive a brief weekly progress email. It means a lot.`
-    : `No worries — ${escapeHtml(userName)} will be notified.`}
+    : `No worries. ${escapeHtml(userName)} will be notified.`}
     </p>
   </body></html>`;
 }
@@ -618,7 +618,7 @@ async function checkHeartbeatForUser(
 
   if (!heartbeatSnap.exists) {
     functions.logger.info(
-      `[checkHeartbeatForUser] No heartbeat for user ${userId} — skipping (may be new user)`
+      `[checkHeartbeatForUser] No heartbeat for user ${userId} - skipping (may be new user)`
     );
     return;
   }
@@ -628,7 +628,7 @@ async function checkHeartbeatForUser(
   if (!timestamp) return;
 
   const heartbeatAge = now - timestamp.toMillis();
-  if (heartbeatAge < twelveHours) return; // heartbeat is recent — all good
+  if (heartbeatAge < twelveHours) return; // heartbeat is recent - all good
 
   // Check if we already sent an alert in the last 24 hours
   const alertsSnap = await db
@@ -644,7 +644,7 @@ async function checkHeartbeatForUser(
     const lastSentAt = lastAlert.sentAt as admin.firestore.Timestamp;
     if (now - lastSentAt.toMillis() < twentyFourHours) {
       functions.logger.info(
-        `[checkHeartbeatForUser] Already alerted for user ${userId} within 24h — skipping`
+        `[checkHeartbeatForUser] Already alerted for user ${userId} within 24h - skipping`
       );
       return;
     }

@@ -16,10 +16,10 @@
     <!-- Post notifications (Android 13+) -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
-    <!-- Draw over other apps — required for TYPE_APPLICATION_OVERLAY intercept -->
+    <!-- Draw over other apps - required for TYPE_APPLICATION_OVERLAY intercept -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
-    <!-- Request battery optimization exemption — prevents Samsung doze from
+    <!-- Request battery optimization exemption - prevents Samsung doze from
          throttling or killing the guard polling handler -->
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
@@ -30,7 +30,7 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <!-- Required to call startForeground() with type=systemExempted on API 34+.
-         Normal protection level — no user approval needed. The activate_vpn
+         Normal protection level - no user approval needed. The activate_vpn
          condition is satisfied implicitly by BIND_VPN_SERVICE. -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SYSTEM_EXEMPTED" />
 
@@ -84,7 +84,7 @@
             android:exported="false" />
 
         <!-- Boot receiver: auto-starts VPN and guard service after device boot.
-             exported="true" is required — the system sends BOOT_COMPLETED from
+             exported="true" is required - the system sends BOOT_COMPLETED from
              outside the app process. directBootAware="false" (default) means the
              receiver fires only after the user's first unlock, ensuring CE-encrypted
              SharedPreferences (guarded app list) are accessible. -->
@@ -113,7 +113,7 @@
             </intent-filter>
         </service>
 
-        <!-- Device Admin receiver — adds uninstall friction (user must deactivate
+        <!-- Device Admin receiver - adds uninstall friction (user must deactivate
              device admin before uninstalling). No policies enforced. -->
         <receiver
             android:name=".AnchorageDeviceAdminReceiver"

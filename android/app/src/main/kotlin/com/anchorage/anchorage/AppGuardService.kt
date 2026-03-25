@@ -23,7 +23,7 @@ class AppGuardService : Service() {
     // ── State machine ─────────────────────────────────────────────────────────
 
     private enum class GuardState {
-        /** No guarded app in foreground — polling normally. */
+        /** No guarded app in foreground - polling normally. */
         IDLE,
         /** Overlay is visible over a guarded app. */
         OVERLAY_SHOWING,
@@ -152,13 +152,13 @@ class AppGuardService : Service() {
             // ~3-5 second window when events ARE available during app transitions.
             if (lastKnownForeground.isNotEmpty()) {
                 foregroundPkg = lastKnownForeground
-                Log.v(TAG, "checkForeground: events empty — using persistent '$foregroundPkg'")
+                Log.v(TAG, "checkForeground: events empty - using persistent '$foregroundPkg'")
             } else {
-                // Very first poll or no foreground ever detected — nothing to fall back to.
+                // Very first poll or no foreground ever detected - nothing to fall back to.
                 if (guardState == GuardState.OVERLAY_SHOWING && overlayShowingSince > 0L &&
                     now - overlayShowingSince > OVERLAY_TIMEOUT_MS
                 ) {
-                    Log.w(TAG, "checkForeground: OVERLAY_SHOWING timed out (${now - overlayShowingSince}ms) — auto-dismissing")
+                    Log.w(TAG, "checkForeground: OVERLAY_SHOWING timed out (${now - overlayShowingSince}ms) - auto-dismissing")
                     guardState = GuardState.IDLE
                     interceptedPkg = ""
                     overlayShowingSince = 0L
@@ -180,12 +180,12 @@ class AppGuardService : Service() {
         lastKnownForeground = foregroundPkg
         lastKnownForegroundTime = now
 
-        // ANCHORAGE itself came to foreground — fully reset the state machine so
+        // ANCHORAGE itself came to foreground - fully reset the state machine so
         // the same guarded app can be caught again the next time it opens.
         if (foregroundPkg == packageName) {
             if (isNewForeground) {
-                Log.d(TAG, "checkForeground: ANCHORAGE in foreground — reset to IDLE (was $guardState)")
-                // If an overlay is active, dismiss it — it must never persist over ANCHORAGE's own UI.
+                Log.d(TAG, "checkForeground: ANCHORAGE in foreground - reset to IDLE (was $guardState)")
+                // If an overlay is active, dismiss it - it must never persist over ANCHORAGE's own UI.
                 if (guardState == GuardState.OVERLAY_SHOWING) {
                     OverlayService.isBeingAutoDismissed = true
                     stopService(Intent(this, OverlayService::class.java))
@@ -216,7 +216,7 @@ class AppGuardService : Service() {
         if (!isNewForeground && guardState != GuardState.POST_DISMISS_COOLDOWN && !statsJustConfirmed) return
 
         if (guardedApps.isEmpty()) {
-            Log.w(TAG, "checkForeground: guardedApps is EMPTY — service running but nothing to guard")
+            Log.w(TAG, "checkForeground: guardedApps is EMPTY - service running but nothing to guard")
             return
         }
 
@@ -225,7 +225,7 @@ class AppGuardService : Service() {
         when (guardState) {
             GuardState.IDLE -> {
                 if (!guardedApps.contains(foregroundPkg)) {
-                    Log.v(TAG, "checkForeground: IDLE — '$foregroundPkg' not in guardedApps, skipping")
+                    Log.v(TAG, "checkForeground: IDLE - '$foregroundPkg' not in guardedApps, skipping")
                     return
                 }
 
@@ -233,7 +233,7 @@ class AppGuardService : Service() {
                 // detecting the same guarded package to eliminate false positives
                 // from stale lastTimeUsed data.
                 if (detectionSource == DetectionSource.USAGE_STATS && statsConfirmCount < STATS_CONFIRM_THRESHOLD) {
-                    Log.d(TAG, "checkForeground: IDLE — '$foregroundPkg' detected via stats (confirm=$statsConfirmCount/$STATS_CONFIRM_THRESHOLD), waiting for confirmation")
+                    Log.d(TAG, "checkForeground: IDLE - '$foregroundPkg' detected via stats (confirm=$statsConfirmCount/$STATS_CONFIRM_THRESHOLD), waiting for confirmation")
                     return
                 }
 
@@ -246,19 +246,19 @@ class AppGuardService : Service() {
 
             GuardState.OVERLAY_SHOWING -> {
                 if (foregroundPkg == interceptedPkg) {
-                    // Overlay is already up for this exact app — no-op
+                    // Overlay is already up for this exact app - no-op
                     return
                 }
                 // Foreground switched to something other than the intercepted app
                 // (user pressed Home, Back, or Recents). Auto-dismiss the overlay
-                // and return to IDLE — no cooldown, so next open re-intercepts immediately.
-                Log.d(TAG, "checkForeground: OVERLAY_SHOWING — user left '$interceptedPkg' (now '$foregroundPkg') — auto-dismiss overlay")
+                // and return to IDLE - no cooldown, so next open re-intercepts immediately.
+                Log.d(TAG, "checkForeground: OVERLAY_SHOWING - user left '$interceptedPkg' (now '$foregroundPkg') - auto-dismiss overlay")
                 guardState = GuardState.IDLE
                 interceptedPkg = ""
                 overlayShowingSince = 0L
                 OverlayService.isBeingAutoDismissed = true
                 stopService(Intent(this, OverlayService::class.java))
-                // Don't set overlayDismissed — auto-dismiss goes straight to IDLE, no cooldown.
+                // Don't set overlayDismissed - auto-dismiss goes straight to IDLE, no cooldown.
             }
 
             GuardState.POST_DISMISS_COOLDOWN -> {
@@ -271,7 +271,7 @@ class AppGuardService : Service() {
                     overlayShowingSince = now
                     launchIntercept(foregroundPkg)
                 } else {
-                    Log.v(TAG, "checkForeground: POST_DISMISS cooldown active — ${POST_DISMISS_COOLDOWN_MS - elapsed}ms remaining")
+                    Log.v(TAG, "checkForeground: POST_DISMISS cooldown active - ${POST_DISMISS_COOLDOWN_MS - elapsed}ms remaining")
                 }
             }
         }
@@ -327,7 +327,7 @@ class AppGuardService : Service() {
     private fun launchIntercept(pkg: String) {
         // Absolute guard: ANCHORAGE must never intercept itself under any circumstances.
         if (pkg == packageName) {
-            Log.e(TAG, "launchIntercept: BUG — tried to intercept own package '$pkg' — skipping")
+            Log.e(TAG, "launchIntercept: BUG - tried to intercept own package '$pkg' - skipping")
             guardState = GuardState.IDLE
             interceptedPkg = ""
             return
@@ -336,7 +336,7 @@ class AppGuardService : Service() {
         // Hard safety gate: never intercept a package not explicitly in the guard list.
         // Protects against stale SharedPreferences, race conditions, or state machine bugs.
         if (!guardedApps.contains(pkg)) {
-            Log.e(TAG, "launchIntercept: SAFETY GATE — '$pkg' not in guardedApps $guardedApps — skipping")
+            Log.e(TAG, "launchIntercept: SAFETY GATE - '$pkg' not in guardedApps $guardedApps - skipping")
             guardState = GuardState.IDLE
             interceptedPkg = ""
             return
@@ -469,7 +469,7 @@ class AppGuardService : Service() {
         /**
          * Set to `true` by [OverlayService] when the user taps a dismiss button.
          * Consumed by [AppGuardService.checkForeground] to transition to POST_DISMISS_COOLDOWN.
-         * NOT set on auto-dismiss (home/back nav) — that goes straight to IDLE.
+         * NOT set on auto-dismiss (home/back nav) - that goes straight to IDLE.
          */
         @Volatile var overlayDismissed = false
 
@@ -489,7 +489,7 @@ class AppGuardService : Service() {
 
         /**
          * Timestamp (SystemClock.uptimeMillis) when [lastKnownForeground] was last updated.
-         * Used by VPN to detect stale foreground data — if the guard hasn't updated
+         * Used by VPN to detect stale foreground data - if the guard hasn't updated
          * in [AnchorageVpnService.FOREGROUND_STALE_MS], the value should not be trusted.
          */
         @Volatile var lastKnownForegroundTime = 0L
@@ -498,19 +498,19 @@ class AppGuardService : Service() {
         private const val NOTIFICATION_ID = 1001
         private const val NOTIFICATION_CHANNEL_ID = "anchorage_guard"
 
-        /** Poll interval — 150ms for fast detection. */
+        /** Poll interval - 150ms for fast detection. */
         private const val POLL_INTERVAL_MS = 150L
 
         /**
          * Query window for UsageEvents. Samsung fires ACTIVITY_RESUMED only once per
-         * app transition — no new events while the same app stays in foreground.
+         * app transition - no new events while the same app stays in foreground.
          * The window must be large enough to always contain the most recent transition.
          * 60 seconds covers all practical use cases (user rarely stays on an app for
          * 60s without any other transition event being generated).
          */
         private const val QUERY_WINDOW_MS = 60_000L
 
-        /** Query window for UsageStats fallback — 30s for Samsung INTERVAL_BEST. */
+        /** Query window for UsageStats fallback - 30s for Samsung INTERVAL_BEST. */
         private const val STATS_WINDOW_MS = 30_000L
 
         /** Max age of lastTimeUsed to trust stats result. */
