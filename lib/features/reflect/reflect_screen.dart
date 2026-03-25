@@ -237,7 +237,7 @@ class _ReflectScreenState extends State<ReflectScreen> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  'Take a breath before you write. Notice where you are right now. There is no right or wrong thing to say here.',
+                  'Before you write, take a breath. Notice where you are right now. You are not in that moment any more. This is a space to understand, not to judge.',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: AppColors.white,
                     height: 1.5,
