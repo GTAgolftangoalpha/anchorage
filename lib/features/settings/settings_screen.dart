@@ -35,7 +35,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _deleting = false;
 
   Future<void> _deleteAllData() async {
-    FirebaseAnalytics.instance.logEvent(name: 'delete_all_data');
+    FirebaseAnalytics.instance.logEvent(name: 'user_deleted_all_data');
     setState(() => _deleting = true);
     try {
       // 1. Clear flutter_secure_storage
@@ -104,10 +104,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete everything?'),
+        title: const Text('Delete all your data?'),
         content: const Text(
-          'This will permanently delete all your logs, journal entries, '
-          'streak data, and preferences from this device. '
+          'This will permanently delete all your journal entries, urge logs, '
+          'lapse logs, streak data, and account information. '
           'This cannot be undone.',
         ),
         actions: [
@@ -121,9 +121,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               _deleteAllData();
             },
             style: TextButton.styleFrom(
-              foregroundColor: Colors.red.shade700,
+              foregroundColor: AppColors.danger,
             ),
-            child: const Text('Yes, delete everything'),
+            child: const Text('Delete everything'),
           ),
         ],
       ),
@@ -380,11 +380,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             _SectionHeader(title: 'Your Data'),
             _SettingsTile(
               icon: Icons.delete_forever_outlined,
-              title: 'Delete All My Data',
+              title: 'Delete all my data',
               subtitle: 'Permanently erase everything from this device',
               onTap: _deleting ? null : _confirmDeleteAllData,
-              iconColor: Colors.red.shade700,
-              titleColor: Colors.red.shade700,
+              iconColor: AppColors.danger,
+              titleColor: AppColors.danger,
             ),
 
             const SizedBox(height: 16),
