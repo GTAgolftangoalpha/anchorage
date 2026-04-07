@@ -104,9 +104,11 @@ Cloud Functions environment config only.
 
 ## 6. Rate Limiting
 
-- Cloud Functions enforce max 10 emails per user per day
+- Cloud Functions enforce max 10 emails per user per day across all email types
 - Rate limit checked before every email send (invitations, weekly reports, heartbeat alerts, tamper alerts)
 - Email send events recorded in `users/{uid}/email_sends` with server timestamps
+- Each successful send (including tamper alerts) calls `recordEmailSend(userId)` so the daily counter advances
+- Counter resets at midnight UTC because the query window is `>= startOfDay`
 
 ## 7. Accountability Partner Data Scoping
 

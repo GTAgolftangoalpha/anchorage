@@ -23,6 +23,85 @@ function getSgMail(): typeof sgMail {
   return sgMail;
 }
 
+// ── RevenueCat webhook → Firebase custom claims ─────────────────────────
+
+const FREE_TIER_PARTNER_LIMIT = 1;
+
+/**
+ * RevenueCat server-to-server webhook.
+ * Configure in RevenueCat dashboard → Integrations → Webhooks
+ * pointing to this function's URL.
+ *
+ * On subscription events, sets a Firebase custom claim { premium: true/false }
+ * so Firestore rules and other Cloud Functions can verify entitlement server-side.
+ */
+export const revenueCatWebhook = functions.https.onRequest(
+  {},
+  async (req, res) => {
+    if (req.method !== "POST") {
+      res.status(405).send("Method not allowed");
+      return;
+    }
+
+    const event = req.body?.event;
+    if (!event) {
+      res.status(400).send("Missing event payload");
+      return;
+    }
+
+    // RevenueCat sends app_user_id which we set to the Firebase UID.
+    const appUserId: string | undefined = event.app_user_id;
+    if (!appUserId) {
+      res.status(400).send("Missing app_user_id");
+      return;
+    }
+
+    // Events that grant or revoke premium
+    const grantEvents = [
+      "INITIAL_PURCHASE",
+      "RENEWAL",
+      "UNCANCELLATION",
+      "NON_RENEWING_PURCHASE",
+    ];
+    const revokeEvents = [
+      "EXPIRATION",
+      "BILLING_ISSUE",
+      "SUBSCRIPTION_PAUSED",
+    ];
+
+    const eventType: string = event.type ?? "";
+    let premium: boolean | null = null;
+
+    if (grantEvents.includes(eventType)) {
+      premium = true;
+    } else if (revokeEvents.includes(eventType)) {
+      premium = false;
+    } else if (eventType === "CANCELLATION") {
+      // Cancellation means auto-renew off, but entitlement remains until period ends.
+      // Don't revoke yet — EXPIRATION will fire when it actually lapses.
+      res.status(200).send("OK");
+      return;
+    }
+
+    if (premium !== null) {
+      try {
+        await admin.auth().setCustomUserClaims(appUserId, {premium});
+        functions.logger.info(
+          `[revenueCatWebhook] Set premium=${premium} for user ${appUserId} (event: ${eventType})`
+        );
+      } catch (err) {
+        functions.logger.error(
+          `[revenueCatWebhook] Failed to set claims for ${appUserId}:`, err
+        );
+        res.status(500).send("Failed to set claims");
+        return;
+      }
+    }
+
+    res.status(200).send("OK");
+  }
+);
+
 // ── Rate limiting ─────────────────────────────────────────────────────────
 
 const EMAIL_RATE_LIMIT = 10; // max emails per user per day
@@ -87,6 +166,31 @@ export const onPartnerInvited = functions.firestore.onDocumentCreated(
     if (!data) return;
 
     const {partnerEmail, partnerName, userName, inviteToken, userId} = data;
+
+    // Server-side partner limit: free users may only have 1 partner.
+    try {
+      const userRecord = await admin.auth().getUser(userId);
+      const isPremium = userRecord.customClaims?.premium === true;
+      if (!isPremium) {
+        const existingPartners = await db
+          .collection("users")
+          .doc(userId)
+          .collection("partners")
+          .count()
+          .get();
+        if (existingPartners.data().count > FREE_TIER_PARTNER_LIMIT) {
+          functions.logger.warn(
+            `[onPartnerInvited] Free user ${userId} exceeded partner limit — skipping email`
+          );
+          return;
+        }
+      }
+    } catch (err) {
+      functions.logger.error(
+        `[onPartnerInvited] Error checking partner limit:`, err
+      );
+      // Fail open for the email (partner doc already written) but log the issue.
+    }
 
     // Rate limit: max 10 emails per user per day
     const withinLimit = await checkRateLimit(userId);
@@ -721,6 +825,15 @@ export const onTamperEvent = functions.firestore.onDocumentCreated(
 
     if (partnersSnap.empty) return;
 
+    // Rate limit: max 10 emails per user per day across all email types.
+    const withinLimit = await checkRateLimit(userId);
+    if (!withinLimit) {
+      functions.logger.warn(
+        `[onTamperEvent] Rate limit exceeded for user ${userId}`
+      );
+      return;
+    }
+
     const sends: Promise<void>[] = [];
 
     for (const partnerDoc of partnersSnap.docs) {
@@ -755,7 +868,8 @@ export const onTamperEvent = functions.firestore.onDocumentCreated(
           from: {email: FROM_EMAIL, name: FROM_NAME},
           subject,
           html,
-        }).then(() => {
+        }).then(async () => {
+          await recordEmailSend(userId);
           functions.logger.info(
             `[onTamperEvent] Alert sent to ${partner.partnerEmail}`
           );
