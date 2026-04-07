@@ -52,7 +52,7 @@ class AboutScreen extends StatelessWidget {
               _SectionTitle(title: 'Our Approach'),
               const SizedBox(height: 12),
               Text(
-                "ANCHORAGE is informed by Acceptance and Commitment Therapy (ACT), which has strong research support for helping people change unwanted behaviours. Early clinical trials applying ACT to compulsive pornography use have shown promising results.",
+                "ANCHORAGE is informed by Acceptance and Commitment Therapy (ACT), which has strong research support for helping people change unwanted behaviours. Early clinical trials applying ACT to compulsive pornography use have shown promising reductions in problematic viewing.",
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: AppColors.textSecondary,
                   height: 1.7,
@@ -158,7 +158,7 @@ class AboutScreen extends StatelessWidget {
               _SectionTitle(title: 'Need More Support?'),
               const SizedBox(height: 12),
               Text(
-                'ANCHORAGE is a self-help tool. It is not a mental health service, and using it does not establish a therapeutic relationship. If you are experiencing significant distress, please seek support from a qualified mental health professional or call a crisis helpline.',
+                'ANCHORAGE is a self-help tool. It is not a mental health service, and using it does not establish a therapeutic relationship. If you are experiencing significant distress, please seek support from a registered mental health professional.',
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: AppColors.textSecondary,
                   height: 1.7,
@@ -216,7 +216,7 @@ class AboutScreen extends StatelessWidget {
                   border: Border.all(color: AppColors.midGray),
                 ),
                 child: Text(
-                  'ANCHORAGE is a self-help tool. It is not a mental health service, and using it does not establish a therapeutic relationship. If you are experiencing significant distress, please seek support from a qualified mental health professional or call a crisis helpline. For immediate support, visit findahelpline.com.',
+                  'ANCHORAGE is a self-help tool. It is not a mental health service, and using it does not establish a therapeutic relationship. If you are experiencing significant distress, please seek support from a registered mental health professional. For immediate support, visit findahelpline.com.',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: AppColors.textSecondary,
                     height: 1.6,

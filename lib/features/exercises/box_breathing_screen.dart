@@ -145,7 +145,7 @@ class _BoxBreathingScreenState extends State<BoxBreathingScreen>
               ),
               const SizedBox(height: 16),
               Text(
-                'Notice how you feel right now compared to two minutes ago. That difference is real.',
+                'Notice how you feel right now compared to before you started. That difference is real.',
                 style: theme.textTheme.bodyLarge?.copyWith(
                   color: AppColors.white.withAlpha(180),
                   height: 1.6,
