@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'premium_service.dart';
@@ -42,7 +43,12 @@ class WhiteFlagService {
   WhiteFlagService._();
   static final WhiteFlagService instance = WhiteFlagService._();
 
-  static const _prefsKey = 'white_flag_events';
+  static const _secureKey = 'white_flag_events';
+  static const _legacyPrefsKey = 'white_flag_events';
+
+  static const _secureStorage = FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+  );
 
   final ValueNotifier<List<WhiteFlagEvent>> events = ValueNotifier([]);
 
@@ -67,12 +73,27 @@ class WhiteFlagService {
 
   Future<void> _load() async {
     try {
+      final raw = await _secureStorage.read(key: _secureKey);
+      if (raw != null) {
+        final list = jsonDecode(raw) as List;
+        events.value = list
+            .map((e) => WhiteFlagEvent.fromJson(e as Map<String, dynamic>))
+            .toList();
+        return;
+      }
+
+      // One-time migration from legacy SharedPreferences storage.
       final prefs = await SharedPreferences.getInstance();
-      final raw = prefs.getStringList(_prefsKey) ?? [];
-      events.value = raw
-          .map((s) =>
-              WhiteFlagEvent.fromJson(json.decode(s) as Map<String, dynamic>))
-          .toList();
+      final legacy = prefs.getStringList(_legacyPrefsKey);
+      if (legacy != null && legacy.isNotEmpty) {
+        events.value = legacy
+            .map((s) => WhiteFlagEvent.fromJson(
+                json.decode(s) as Map<String, dynamic>))
+            .toList();
+        await _save(events.value);
+        await prefs.remove(_legacyPrefsKey);
+        debugPrint('[WhiteFlagService] migrated to secure storage');
+      }
     } catch (e) {
       debugPrint('[WhiteFlagService] load error: $e');
     }
@@ -80,11 +101,8 @@ class WhiteFlagService {
 
   Future<void> _save(List<WhiteFlagEvent> list) async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setStringList(
-        _prefsKey,
-        list.map((e) => json.encode(e.toJson())).toList(),
-      );
+      final encoded = jsonEncode(list.map((e) => e.toJson()).toList());
+      await _secureStorage.write(key: _secureKey, value: encoded);
     } catch (e) {
       debugPrint('[WhiteFlagService] save error: $e');
     }

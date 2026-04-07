@@ -13,10 +13,13 @@ Last verified: 24 March 2026
 | Urge logs (triggers, timestamps, notes) | flutter_secure_storage | Android Keystore (EncryptedSharedPreferences) |
 | Lapse logs (guided reflections) | flutter_secure_storage | Android Keystore (EncryptedSharedPreferences) |
 | Reflection entries (mood, journal) | flutter_secure_storage | Android Keystore (EncryptedSharedPreferences) |
-| Streak data (counts, dates) | SharedPreferences | None (non-sensitive aggregate data) |
-| User preferences (name, values, settings) | SharedPreferences | None (non-sensitive) |
-| Guarded app selections | SharedPreferences | None (non-sensitive) |
-| Intercept events (emotion, outcome) | SharedPreferences + Firestore sync | None locally; TLS in transit |
+| Intercept events (emotion, outcome) | flutter_secure_storage + Firestore sync | Android Keystore (local); TLS (in transit) |
+| White Flag events (blocked target) | flutter_secure_storage + Firestore sync | Android Keystore (local); TLS (in transit) |
+| Custom blocklist domains | flutter_secure_storage | Android Keystore (EncryptedSharedPreferences) |
+| User profile (name, email, values, motivation, gender, birth year, usage frequency) | flutter_secure_storage | Android Keystore (EncryptedSharedPreferences) |
+| Streak data (counts, dates) | SharedPreferences | None (non-sensitive aggregate counts) |
+| Onboarding complete flag, install date | SharedPreferences | None (non-sensitive flags) |
+| Guarded app selections (package names) | SharedPreferences | None (non-sensitive) |
 
 ### Data Stored in Firebase (Cloud)
 

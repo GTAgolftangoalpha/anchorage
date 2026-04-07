@@ -2,14 +2,20 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CustomBlocklistService {
   CustomBlocklistService._();
   static final CustomBlocklistService instance = CustomBlocklistService._();
 
-  static const _prefsKey = 'custom_blocklist_domains';
+  static const _secureKey = 'custom_blocklist_domains';
+  static const _legacyPrefsKey = 'custom_blocklist_domains';
   static const _vpnChannel = MethodChannel('com.anchorage.app/vpn');
+
+  static const _secureStorage = FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+  );
 
   /// Regex: valid domain (e.g. example.com, sub.domain.co.uk)
   static final _domainRegex = RegExp(
@@ -57,11 +63,23 @@ class CustomBlocklistService {
 
   Future<void> _load() async {
     try {
+      final raw = await _secureStorage.read(key: _secureKey);
+      if (raw != null) {
+        final list = (jsonDecode(raw) as List).cast<String>();
+        domains.value = list;
+        return;
+      }
+
+      // One-time migration from legacy SharedPreferences storage.
       final prefs = await SharedPreferences.getInstance();
-      final raw = prefs.getString(_prefsKey);
-      if (raw == null) return;
-      final list = (jsonDecode(raw) as List).cast<String>();
-      domains.value = list;
+      final legacy = prefs.getString(_legacyPrefsKey);
+      if (legacy != null) {
+        final list = (jsonDecode(legacy) as List).cast<String>();
+        domains.value = list;
+        await _save();
+        await prefs.remove(_legacyPrefsKey);
+        debugPrint('[CustomBlocklistService] migrated to secure storage');
+      }
     } catch (e) {
       debugPrint('[CustomBlocklistService] load error: $e');
     }
@@ -69,8 +87,10 @@ class CustomBlocklistService {
 
   Future<void> _save() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(_prefsKey, jsonEncode(domains.value));
+      await _secureStorage.write(
+        key: _secureKey,
+        value: jsonEncode(domains.value),
+      );
     } catch (e) {
       debugPrint('[CustomBlocklistService] save error: $e');
     }
