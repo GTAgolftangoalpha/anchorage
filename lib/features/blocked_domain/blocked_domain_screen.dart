@@ -398,11 +398,13 @@ class _BlockedDomainScreenState extends State<BlockedDomainScreen> {
           const SizedBox(height: 12),
           TextButton.icon(
             onPressed: () async {
+              final navigator = GoRouter.of(context);
               final confirmed = await showWhiteFlagConfirmation(
                 context,
                 blockedTarget: widget.domain,
               );
-              if (confirmed && context.mounted) context.pop();
+              if (!mounted) return;
+              if (confirmed) navigator.pop();
             },
             icon:
                 const Text('\u{1F3F3}', style: TextStyle(fontSize: 18)),

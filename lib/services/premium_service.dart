@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
@@ -14,7 +15,16 @@ class PremiumService {
   }
 
   void _onCustomerInfoUpdated(CustomerInfo info) {
-    isPremium.value = info.entitlements.all['premium']?.isActive ?? false;
+    final active = info.entitlements.all['premium']?.isActive ?? false;
+    isPremium.value = active;
+    // Force-refresh Firebase ID token so updated custom claims propagate
+    // to Firestore rules without waiting for the next natural refresh.
+    if (active) {
+      FirebaseAuth.instance.currentUser
+          ?.getIdToken(true)
+          .then<String?>((token) => token)
+          .catchError((_) => null);
+    }
   }
 
   Future<void> _refreshStatus() async {

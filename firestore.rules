@@ -3,10 +3,21 @@ service cloud.firestore {
   match /databases/{database}/documents {
     // Default deny: no read or write access to any collection unless explicitly granted.
 
-    // Users can only read/write their own data (document + all subcollections)
+    // Users can only read/write their own data (document + most subcollections)
     match /users/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
 
+      // Partners subcollection: free users can read all, but can only
+      // create up to 1 partner doc. Premium users (custom claim) are unlimited.
+      match /partners/{partnerId} {
+        allow read, delete, update: if request.auth != null && request.auth.uid == userId;
+        allow create: if request.auth != null
+                      && request.auth.uid == userId
+                      && (request.auth.token.premium == true
+                          || !exists(/databases/$(database)/documents/users/$(userId)/partners/$(partnerId)));
+      }
+
+      // All other subcollections remain open to the owning user
       match /{allSubcollections=**} {
         allow read, write: if request.auth != null && request.auth.uid == userId;
       }
