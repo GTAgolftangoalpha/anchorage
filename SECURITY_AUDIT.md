@@ -63,6 +63,22 @@ Last verified: 24 March 2026
 - Only the RevenueCat public API key is present (expected and safe)
 - SendGrid API key exists only in Cloud Functions environment config
 
+### API Key Audit (re-verified pre-launch)
+
+Search performed across `lib/**.dart` for: `apiKey`, `api_key`, `secret`, `token`,
+`password`, `Bearer`, `SendGrid`, `SENDGRID`, `sk-`, `pk-`, `SG.`, `sk_live`,
+`pk_live`, `sk_test`, `pk_test`, `AKIA`, `appl_`, `goog_`.
+
+| Finding | Location | Verdict |
+|---|---|---|
+| `revenueCatKey = 'REPLACE_WITH_PRODUCTION_KEY'` | `lib/core/config/app_config.dart` | Placeholder; runtime guard throws if not replaced. RevenueCat public keys are safe in client code. |
+| `Firebase ID token refresh` | `lib/services/premium_service.dart` | Token is fetched at runtime from Firebase Auth, not hardcoded. |
+| `inviteToken` / `unsubscribeToken` (random UUIDs) | `lib/services/accountability_service.dart` | Generated at runtime via `Random.secure`. Not secrets. |
+
+No SendGrid API key, AWS key, or other private secret found in client Dart code.
+Comment added at top of `app_config.dart` documenting that SendGrid keys live in
+Cloud Functions environment config only.
+
 ## 3. Encryption
 
 | Layer | Method |
