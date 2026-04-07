@@ -219,7 +219,7 @@ class LegalHtml {
 <p>By using ANCHORAGE you confirm you are aged 18 or over, or have obtained parental consent to use this app.</p>
 
 <h2>2. What ANCHORAGE Is</h2>
-<p>ANCHORAGE is a self-help tool. It is not a mental health service, and using it does not establish a therapeutic relationship. We do not make any claims that ANCHORAGE will cure, treat, or prevent any condition. If you are experiencing significant distress, please seek support from a qualified mental health professional or call a crisis helpline. For immediate support, visit <strong>findahelpline.com</strong>.</p>
+<p>ANCHORAGE is a self-help tool. It is not a mental health service, and using it does not establish a therapeutic relationship. We do not make any claims that ANCHORAGE will cure, treat, or prevent any condition. If you are experiencing significant distress, please seek support from a registered mental health professional. For immediate support, visit <strong>findahelpline.com</strong>.</p>
 
 <h2>3. No Guarantee of Outcomes</h2>
 <p>ANCHORAGE uses content filtering and app interception to support your goals, but no filtering solution is 100% effective. We are not responsible for outcomes related to your use of the app. The app is provided "as is" without warranties of any kind.</p>
