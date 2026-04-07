@@ -1,8 +1,8 @@
 # ANCHORAGE Security Audit
 
-Audit date: 24 March 2026
+Audit date: 8 April 2026
 Status: Pre-launch V1
-Last verified: 24 March 2026
+Last verified: 8 April 2026
 
 ## 1. Data Storage Summary
 
@@ -134,10 +134,20 @@ Cloud Functions environment config only.
 | Battery optimization exemption | Prevent guard service throttling | Explicit dialog |
 | Device admin (optional) | Tamper/uninstall protection | Explicit dialog |
 
-## 10. Outstanding Items
+## 10. Network Security
 
-- [ ] Replace RevenueCat test API key with production key before Play Store release
+- `network_security_config.xml` denies all cleartext (HTTP) traffic
+- Only system trust anchors permitted
+- Referenced from `<application android:networkSecurityConfig="@xml/network_security_config"/>`
+- All third-party endpoints (Firebase, RevenueCat, SendGrid via Cloud Functions) use HTTPS
+
+## 11. Outstanding Items
+
+- [ ] Replace RevenueCat placeholder key with production key before Play Store release
 - [x] Configure proper release signing config (replace debug keystore) -- done 2026-03-15
 - [x] Update `FROM_EMAIL` in Cloud Functions to `hello@getanchorage.app` -- done 2026-03-15
 - [ ] Deploy updated Firestore rules via `firebase deploy --only firestore:rules`
 - [ ] Deploy updated Cloud Functions via `firebase deploy --only functions`
+- [x] Migrate sensitive local storage to flutter_secure_storage -- done 2026-04-08
+- [x] Add rate limiting to onTamperEvent Cloud Function -- done 2026-04-08
+- [x] Verify network security config and HTTPS-only enforcement -- done 2026-04-08
