@@ -96,7 +96,7 @@ class AboutScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                "These aren't motivational quotes. They're evidence-based techniques used by psychologists worldwide.",
+                "These aren't motivational quotes. They're evidence-based techniques used by mental health professionals worldwide.",
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: AppColors.textSecondary,
                   fontStyle: FontStyle.italic,

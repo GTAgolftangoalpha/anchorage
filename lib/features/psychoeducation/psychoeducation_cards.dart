@@ -80,8 +80,8 @@ class PsychoeducationData {
           'trauma-informed therapist can help.\n\n'
           'Note: If your relationship with sexual arousal involves past '
           'trauma, the suggestions in this card may feel difficult. You do '
-          'not need to work through this alone. A psychologist or '
-          'trauma-informed therapist can help you explore this at a pace '
+          'not need to work through this alone. A mental health professional '
+          'or trauma-informed therapist can help you explore this at a pace '
           'that is right for you.',
       icon: Icons.lightbulb_outline,
     ),
