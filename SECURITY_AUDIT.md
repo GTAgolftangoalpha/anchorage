@@ -53,6 +53,12 @@ Last verified: 8 April 2026
 - Default catch-all rule denies all other access
 - No public read or write access to any collection
 
+### Firebase Realtime Database
+
+Not used by this app. Only Cloud Firestore is used for cloud storage. No
+`database` block is present in `firebase.json` and no `database.rules.json`
+file exists in the project. No Realtime Database rules to configure.
+
 ### Client-Side Keys
 
 | Key | Location | Risk Level | Notes |
@@ -92,9 +98,16 @@ Cloud Functions environment config only.
 
 ## 4. Screen Protection
 
-- `FLAG_SECURE` set on `MainActivity` window in `onCreate()`
-- Prevents screenshots and screen recording across all Flutter screens
-- Protects: urge logs, lapse logs, reflection journals, journey stats, export screen, intercept screens
+- `FLAG_SECURE` set globally on the `MainActivity` window in `onCreate()`.
+- A single window-level flag covers every Flutter screen and every dialog
+  (intercept bottom sheet, urge log, reflect journal, journey/stats,
+  lapse log, export screen, paywall, settings, etc.) because all Flutter
+  rendering happens inside that activity's window.
+- Global application is preferred over per-screen flags because a new
+  sensitive screen added in the future is automatically protected; there
+  is no risk of forgetting to wire up FLAG_SECURE on a specific route.
+- Screenshots and screen recording are blocked at the OS level; the
+  Android recent-apps thumbnail is also blanked.
 
 ## 5. Code Obfuscation
 

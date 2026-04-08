@@ -1,4 +1,4 @@
-// SendGrid key lives in Cloud Functions env only — never in client code.
+// SendGrid key lives in Cloud Functions env only - never in client code.
 class AppConfig {
   // Replace with your RevenueCat production API key before release.
   // RevenueCat public keys are safe to ship in client code by design.

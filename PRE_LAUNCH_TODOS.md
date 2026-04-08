@@ -5,7 +5,7 @@ Last updated: 8 April 2026
 This file tracks remaining items that must be addressed before V1 launch on
 Google Play. Items are grouped by category and ordered by blocking severity.
 
-## Blocking — Must Complete Before Submission
+## Blocking - Must Complete Before Submission
 
 - [ ] Replace `revenueCatKey` placeholder in `lib/core/config/app_config.dart`
       with the production RevenueCat public API key. The runtime guard throws
@@ -19,7 +19,7 @@ Google Play. Items are grouped by category and ordered by blocking severity.
 - [ ] Build signed AAB: `flutter build appbundle --release`
 - [ ] Upload AAB to Google Play internal testing track.
 
-## Non-Blocking — Should Complete Before Public Launch
+## Non-Blocking - Should Complete Before Public Launch
 
 - [ ] Update SendGrid accountability partner invitation template to clearly
       include opt-out instructions per ANCHORAGE privacy policy. The email
