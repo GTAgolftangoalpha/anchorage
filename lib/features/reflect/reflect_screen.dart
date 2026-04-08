@@ -24,6 +24,7 @@ class _ReflectScreenState extends State<ReflectScreen> {
     ('\uD83D\uDE24', 'Frustrated'),
     ('\uD83D\uDE30', 'Anxious'),
     ('\uD83D\uDE14', 'Down'),
+    ('\u2754', 'Not sure'),
   ];
 
   static const _triggers = [
