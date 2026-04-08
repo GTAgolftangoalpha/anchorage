@@ -106,16 +106,18 @@ class LegalHtml {
 
 <p>ANCHORAGE is published by <strong>Golf Tango Alpha Pty Ltd</strong> (ABN pending). This policy explains what data we collect, how we use it, and your rights.</p>
 
-<h2>1. What We Collect</h2>
+<h2>1. Age</h2>
+<p>ANCHORAGE is intended for adults aged 18 and over. By using the app you confirm you are at least 18 years old.</p>
+
+<h2>2. What We Collect</h2>
 <p>We collect the following:</p>
 <ul>
   <li><strong>Email address</strong>, provided during onboarding</li>
-  <li><strong>Date of birth and gender</strong>, provided during onboarding (used to personalise your experience; stored on-device only)</li>
   <li><strong>Usage data</strong>, including streak counts and anonymous identifiers used to run your account</li>
   <li><strong>Anonymised crash reports</strong>, to help us fix bugs and improve the app</li>
 </ul>
 
-<h2>2. What We Do Not Collect</h2>
+<h2>3. Data Stored Locally on Your Device</h2>
 <p>The following stays on your device and is never sent to our servers:</p>
 <ul>
   <li>Browsing history and blocked domains</li>
@@ -123,10 +125,12 @@ class LegalHtml {
   <li>Urge log content and notes</li>
   <li>Lapse log content</li>
   <li>Free-text fields (values, motivations, reflection notes) entered during onboarding or in-app use</li>
+  <li>Date of birth and gender (optional), provided during onboarding for age verification and app personalisation. Stored locally on your device only. Never transmitted to our servers.</li>
 </ul>
+<p>We do not have access to anything you write in free-text fields within the app. Journal entries, urge log notes, and reflection entries are stored locally on your device and are never transmitted to our servers.</p>
 <p>We do not use advertising trackers or fingerprinting. We do not sell or share your data with third parties for marketing.</p>
 
-<h2>3. How We Use Your Data</h2>
+<h2>4. How We Use Your Data</h2>
 <p>We use your data to:</p>
 <ul>
   <li>Run your account and personalise your experience</li>
@@ -135,13 +139,13 @@ class LegalHtml {
   <li>Process subscription payments through Google Play</li>
 </ul>
 
-<h2>4. Content Filtering</h2>
+<h2>5. Content Filtering</h2>
 <p>ANCHORAGE uses a local VPN to filter content entirely on your device. No browsing data or DNS queries leave your device. Your internet traffic is not intercepted or proxied by us.</p>
 
-<h2>5. Data Retention</h2>
+<h2>6. Data Retention</h2>
 <p>Local data stays on your device until you clear app data or uninstall ANCHORAGE. Server-side data is deleted within 30 days of a deletion request. You can delete all your data at any time from Settings.</p>
 
-<h2>6. Your Rights</h2>
+<h2>7. Your Rights</h2>
 <p>Under the Australian Privacy Act 1988, you have the right to:</p>
 <ul>
   <li><strong>Access</strong> your data by emailing us</li>
@@ -149,10 +153,10 @@ class LegalHtml {
 </ul>
 <p>We will respond to all requests within 30 days.</p>
 
-<h2>7. Changes</h2>
+<h2>8. Changes</h2>
 <p>We may update this policy from time to time. Material changes will be communicated through an in-app notice.</p>
 
-<h2>8. Contact</h2>
+<h2>9. Contact</h2>
 <div class="contact-box">
   <p>Email: <a href="mailto:hello@getanchorage.app">hello@getanchorage.app</a></p>
   <p>Published by Golf Tango Alpha Pty Ltd</p>
