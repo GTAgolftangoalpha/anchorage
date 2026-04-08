@@ -73,6 +73,9 @@ Future<void> main() async {
     debugPrint('[ANCHORAGE] Anonymous sign-in failed: $e');
   }
 
+  // Fail fast if RevenueCat key hasn't been set for this build.
+  AppConfig.assertKeysConfigured();
+
   // RevenueCat
   await Purchases.setLogLevel(LogLevel.debug);
   await Purchases.configure(

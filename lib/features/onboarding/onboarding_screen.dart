@@ -1,6 +1,8 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../core/constants/app_colors.dart';
 import '../../models/guardable_app.dart';
 import '../../services/accountability_service.dart';
@@ -37,6 +39,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   int? _selectedBirthYear;
   bool _dobSkipped = false;
   String? _selectedUsageFrequency;
+
+  // Age gate (blocks onboarding if under 18)
+  bool _isUnderage = false;
 
   // Screen 3: Values
   final Set<String> _selectedValues = {};
@@ -217,6 +222,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
   @override
   Widget build(BuildContext context) {
+    if (_isUnderage) return _buildAgeGateBlocker();
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -447,6 +453,101 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     );
   }
 
+  // == Age gate blocker (shown if user enters DOB under 18) =================
+
+  Future<void> _openFindAHelpline() async {
+    final uri = Uri.parse('https://www.findahelpline.com');
+    try {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (_) {}
+  }
+
+  Widget _buildAgeGateBlocker() {
+    final theme = Theme.of(context);
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        backgroundColor: AppColors.navy,
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: Column(
+              children: [
+                const Spacer(),
+                const AnchorLogo(size: 64, color: AppColors.white),
+                const SizedBox(height: 32),
+                Text(
+                  'ANCHORAGE is for adults 18 and over.',
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    color: AppColors.white,
+                    fontWeight: FontWeight.w700,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  'If you are under 18 and struggling, please talk to a '
+                  'trusted adult, your school counsellor, or visit '
+                  'findahelpline.com for free support.',
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: AppColors.white.withAlpha(200),
+                    height: 1.6,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const Spacer(),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: _openFindAHelpline,
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.seafoam,
+                      foregroundColor: AppColors.navy,
+                      minimumSize: const Size(0, 52),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      'VISIT FINDAHELPLINE.COM',
+                      style: TextStyle(
+                        letterSpacing: 1,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    onPressed: () => SystemNavigator.pop(),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.white,
+                      side: BorderSide(color: AppColors.white.withAlpha(80)),
+                      minimumSize: const Size(0, 52),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      'CLOSE',
+                      style: TextStyle(
+                        letterSpacing: 1,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 32),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   // == Screen 2: About You (Gender + Birth Year + Usage Frequency) ========
 
   bool get _dobAnswered => _selectedBirthYear != null || _dobSkipped;
@@ -470,6 +571,21 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               onChanged: (DateTime dateTime) {
                 Navigator.pop(ctx);
                 final year = dateTime.year;
+                final currentYear = DateTime.now().year;
+                // Conservative check: if the user could not yet have turned 18
+                // this calendar year, block the flow. This errs on the side of
+                // caution when the user has only provided a year.
+                if (currentYear - year < 18) {
+                  FirebaseAnalytics.instance
+                      .logEvent(name: 'onboarding_age_gate_triggered');
+                  setState(() {
+                    _isUnderage = true;
+                    _selectedBirthYear = null;
+                    _dobSkipped = false;
+                  });
+                  UserPreferencesService.instance.setBirthYear(null);
+                  return;
+                }
                 setState(() {
                   _selectedBirthYear = year;
                   _dobSkipped = false;
