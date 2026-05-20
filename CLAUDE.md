@@ -1,10 +1,10 @@
-# ANCHORAGE — Claude Code Project Context
+# ANCHORAGE -- Claude Code Project Context
 
 ## Company
-**Golf Tango Alpha Pty Ltd** (GTA) — this is the ONLY legal entity that appears in the app, store listings, marketing, and all external materials. Jackie's name NEVER appears anywhere. The developer is anonymous by design.
+**Golf Tango Alpha Pty Ltd** (GTA) -- this is the ONLY legal entity that appears in the app, store listings, marketing, and all external materials. Jackie's name NEVER appears anywhere. The developer is anonymous by design.
 
 ## What this app is
-Android app for pornography/compulsive internet use recovery. ACT-informed (Acceptance and Commitment Therapy), shame-free, secular positioning. Deliberate contrast to faith-based competitors like Covenant Eyes. Nautical theme — anchor imagery, ocean language throughout.
+Android app for pornography/compulsive internet use recovery. ACT-informed (Acceptance and Commitment Therapy), shame-free, secular positioning. Deliberate contrast to faith-based competitors like Covenant Eyes. Nautical theme -- anchor imagery, ocean language throughout.
 
 ## Tech stack
 - Flutter / Android (no iOS yet)
@@ -22,8 +22,9 @@ Android app for pornography/compulsive internet use recovery. ACT-informed (Acce
 - Tone: calm, clinical, grounded, matter-of-fact
 
 ## Subscription tiers
-- **Harbour** — free tier
-- **Storm** — $19.99 AUD/month or yearly equivalent
+- **Harbour** -- free tier
+- **ANCHORAGE+** -- paid tier (founding member pricing $9.99 AUD/month)
+- Storm Mode was removed from V1 after safety review. Do not re-add.
 - Only two tiers, no other naming
 
 ## Core features built
@@ -42,7 +43,7 @@ Android app for pornography/compulsive internet use recovery. ACT-informed (Acce
 `C:\Users\jacki\AndroidStudioProjects\anchorage\` (confirm actual path if different)
 
 ## Build status
-W1–W7 of 8-week build plan complete.
+W1-W7 of 8-week build plan complete.
 Outstanding W8 tasks:
 - Landing page (getanchorage.app on Cloudflare)
 - Signed APK/AAB
@@ -69,7 +70,7 @@ n8n automation stack designed for marketing
 - Follow existing Flutter project structure
 - All copy must pass ACT-alignment check (shame-free, values-focused)
 - RevenueCat product IDs must match store listing exactly
-- Keep Harbour/Storm tier names consistent everywhere
+- Keep Harbour/ANCHORAGE+ tier names consistent everywhere
 
 ## What NOT to do
 - Do not add subscription tiers or rename existing ones without explicit instruction

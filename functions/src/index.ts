@@ -78,7 +78,7 @@ export const revenueCatWebhook = functions.https.onRequest(
       premium = false;
     } else if (eventType === "CANCELLATION") {
       // Cancellation means auto-renew off, but entitlement remains until period ends.
-      // Don't revoke yet — EXPIRATION will fire when it actually lapses.
+      // Don't revoke yet -- EXPIRATION will fire when it actually lapses.
       res.status(200).send("OK");
       return;
     }
@@ -180,7 +180,7 @@ export const onPartnerInvited = functions.firestore.onDocumentCreated(
           .get();
         if (existingPartners.data().count > FREE_TIER_PARTNER_LIMIT) {
           functions.logger.warn(
-            `[onPartnerInvited] Free user ${userId} exceeded partner limit — skipping email`
+            `[onPartnerInvited] Free user ${userId} exceeded partner limit -- skipping email`
           );
           return;
         }
