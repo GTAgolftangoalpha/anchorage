@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -5,6 +7,13 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
     // Firebase
     id("com.google.gms.google-services")
+}
+
+val keystoreProperties = Properties().apply {
+    val file = rootProject.file("app/keystore.properties")
+    if (file.exists()) {
+        file.inputStream().use { load(it) }
+    }
 }
 
 android {
@@ -24,9 +33,13 @@ android {
     signingConfigs {
         create("release") {
             storeFile = file("anchorage-release.keystore")
-            storePassword = System.getenv("ANCHORAGE_STORE_PASSWORD") ?: "anchorage2026release"
+            storePassword = System.getenv("ANCHORAGE_STORE_PASSWORD")
+                ?: keystoreProperties.getProperty("storePassword")
+                ?: error("Missing ANCHORAGE_STORE_PASSWORD env var or storePassword in keystore.properties")
             keyAlias = "anchorage-release"
-            keyPassword = System.getenv("ANCHORAGE_KEY_PASSWORD") ?: "anchorage2026release"
+            keyPassword = System.getenv("ANCHORAGE_KEY_PASSWORD")
+                ?: keystoreProperties.getProperty("keyPassword")
+                ?: error("Missing ANCHORAGE_KEY_PASSWORD env var or keyPassword in keystore.properties")
         }
     }
 

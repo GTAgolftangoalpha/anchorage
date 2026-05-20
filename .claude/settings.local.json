@@ -36,7 +36,25 @@
       "Bash(wc:*)",
       "Bash(cat:*)",
       "Bash(cd /c/Users/jacki/AndroidStudioProjects/anchorage && ls lib/services/*.dart 2>&1)",
-      "Bash(cd /c/Users/jacki/AndroidStudioProjects/anchorage && flutter pub add pdf 2>&1)"
+      "Bash(cd /c/Users/jacki/AndroidStudioProjects/anchorage && flutter pub add pdf 2>&1)",
+      "Bash(cd /c/Users/jacki/AndroidStudioProjects/anchorage && flutter pub get 2>&1)",
+      "Bash(cd /c/Users/jacki/AndroidStudioProjects/anchorage && git add -A && git status 2>&1)",
+      "Bash(cd /c/Users/jacki/AndroidStudioProjects/anchorage && git log --oneline -4 && git push origin master 2>&1)",
+      "Bash(cd /c/Users/jacki/AndroidStudioProjects/anchorage && git add android/app/src/main/kotlin/com/anchorage/anchorage/AnchorageVpnService.kt && git commit -m \"$\\(cat <<'EOF'\nfix: correct whitelist suffix matching for subdomain blocking\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\" && git push origin master 2>&1)",
+      "Bash(cd /c/Users/jacki/AndroidStudioProjects/anchorage && git add android/app/src/main/kotlin/com/anchorage/anchorage/OverlayService.kt android/app/src/main/kotlin/com/anchorage/anchorage/AppGuardService.kt && git commit -m \"$\\(cat <<'EOF'\nfix: launch ANCHORAGE to foreground on overlay dismiss to block guarded app re-entry\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\" && git push origin master 2>&1)",
+      "Bash(cd /c/Users/jacki/AndroidStudioProjects/anchorage && git add lib/features/exercises/box_breathing_screen.dart && git commit -m \"$\\(cat <<'EOF'\nfix: box breathing hold countdown and ACT-consistent completion screen\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\" && git push origin master 2>&1)",
+      "Bash(echo ImageMagick not found:*)",
+      "Bash(python --version 2>&1 && python -c \"from PIL import Image; print\\('Pillow available'\\)\" 2>&1)",
+      "Bash(cd /c/Users/jacki/AndroidStudioProjects/anchorage && dart run flutter_launcher_icons 2>&1)",
+      "Bash(cd /c/Users/jacki/AndroidStudioProjects/anchorage && python -c \"\nimport urllib.request\nimport sys\n\nurl = 'https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/porn/hosts'\nprint\\(f'Downloading from {url}...'\\)\nresponse = urllib.request.urlopen\\(url, timeout=60\\)\nraw = response.read\\(\\).decode\\('utf-8'\\)\nlines = raw.splitlines\\(\\)\ndomains = []\nfor line in lines:\n    line = line.strip\\(\\)\n    if line.startswith\\('0.0.0.0 '\\):\n        parts = line.split\\(\\)\n        if len\\(parts\\) >= 2:\n            domain = parts[1]\n            if domain != '0.0.0.0' and not domain.startswith\\('localhost'\\):\n                domains.append\\(domain\\)\n\nout_path = 'android/app/src/main/assets/blocklist.txt'\nwith open\\(out_path, 'w', newline='\\\\n'\\) as f:\n    for d in domains:\n        f.write\\(d + '\\\\n'\\)\n\nprint\\(f'Written {len\\(domains\\)} domains to {out_path}'\\)\n\n# Verify no ad/tracker domains\ntest_domains = ['taboola.com', 'doubleclick.net', 'googlesyndication.com', 'googleadservices.com', 'facebook.com']\ndomain_set = set\\(domains\\)\nfor td in test_domains:\n    found = td in domain_set\n    print\\(f'  {td}: {\\\\\"FOUND \\(BAD\\)\\\\\" if found else \\\\\"not found \\(good\\)\\\\\"}'\\)\n\" 2>&1)",
+      "Bash(cd /c/Users/jacki/AndroidStudioProjects/anchorage && python -c \"\nimport urllib.request\n\nurl = 'https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/porn-only/hosts'\nprint\\(f'Downloading from {url}...'\\)\nresponse = urllib.request.urlopen\\(url, timeout=60\\)\nraw = response.read\\(\\).decode\\('utf-8'\\)\nlines = raw.splitlines\\(\\)\ndomains = []\nfor line in lines:\n    line = line.strip\\(\\)\n    if line.startswith\\('0.0.0.0 '\\):\n        parts = line.split\\(\\)\n        if len\\(parts\\) >= 2:\n            domain = parts[1]\n            if domain != '0.0.0.0' and not domain.startswith\\('localhost'\\):\n                domains.append\\(domain\\)\n\nout_path = 'android/app/src/main/assets/blocklist.txt'\nwith open\\(out_path, 'w', newline='\\\\n'\\) as f:\n    for d in domains:\n        f.write\\(d + '\\\\n'\\)\n\nprint\\(f'Written {len\\(domains\\)} domains to {out_path}'\\)\n\n# Verify no ad/tracker domains\ntest_domains = ['taboola.com', 'doubleclick.net', 'googlesyndication.com', 'googleadservices.com', 'facebook.com', 'google-analytics.com', 'mixpanel.com']\ndomain_set = set\\(domains\\)\nfor td in test_domains:\n    found = td in domain_set\n    print\\(f'  {td}: {\\\\\"FOUND \\(BAD\\)\\\\\" if found else \\\\\"not found \\(good\\)\\\\\"}'\\)\n\n# Show first 10 domains\nprint\\('First 10 domains:'\\)\nfor d in domains[:10]:\n    print\\(f'  {d}'\\)\n\" 2>&1)",
+      "Bash(cd /c/Users/jacki/AndroidStudioProjects/anchorage && git commit -m \"$\\(cat <<'EOF'\nfix: switch to porn-only blocklist to eliminate over-blocking of legitimate apps and sites\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\" && git push origin master 2>&1)",
+      "Bash(test:*)",
+      "Bash(find:*)",
+      "Bash(cd C:\\\\Users\\\\jacki\\\\AndroidStudioProjects\\\\anchorage:*)",
+      "Bash(git:*)",
+      "Bash(ls:*)",
+      "Bash(cd /c/Users/jacki/AndroidStudioProjects/anchorage/functions && npx tsc 2>&1)"
     ]
   }
 }

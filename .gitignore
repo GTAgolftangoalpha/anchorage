@@ -49,6 +49,9 @@ functions/.env
 functions/.env.local
 *.env
 
+# Firebase config (contains project IDs, API keys)
+**/google-services.json
+
 # Release keystore and credentials
 KEYSTORE_CREDENTIALS.txt
 *.keystore
