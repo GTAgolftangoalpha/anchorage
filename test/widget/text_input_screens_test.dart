@@ -6,7 +6,6 @@ import 'package:anchorage/features/relapse_log/relapse_log_screen.dart';
 import 'package:anchorage/services/premium_service.dart';
 import 'package:anchorage/services/reflect_service.dart';
 import 'package:anchorage/services/relapse_service.dart';
-import 'package:anchorage/services/user_preferences_service.dart';
 
 void main() {
   setUp(() {
