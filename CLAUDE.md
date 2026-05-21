@@ -77,3 +77,41 @@ n8n automation stack designed for marketing
 - Do not add Jackie's name, real name, or any personal identifier
 - Do not add religious or faith-based language
 - Do not use shame or failure framing in any user-facing copy
+- Do not use em dashes in any UI text, comments, or strings
+
+## Test suite
+
+### Running tests
+```bash
+# Unit + widget tests (no device needed)
+flutter test
+
+# Single test file
+flutter test test/unit/urge_log_service_test.dart
+
+# Integration tests (requires device or emulator)
+flutter test integration_test/onboarding_flow_test.dart
+flutter test integration_test/underage_block_test.dart
+flutter test integration_test/urge_log_gating_test.dart
+flutter test integration_test/feedback_test.dart
+
+# Static analysis
+flutter analyze --no-fatal-infos
+
+# Coverage report
+flutter test --coverage
+# Coverage file: coverage/lcov.info
+```
+
+### Test structure
+- `test/unit/` -- pure logic tests (services, models, algorithms)
+- `test/widget/` -- widget rendering, content presence/absence, regression
+- `integration_test/` -- full-flow tests requiring device or emulator
+
+### Device-only manual tests (not automatable)
+- VPN permission grant and DNS blocking of a known blocked domain
+- Accessibility Service interception of a guarded app
+- FLAG_SECURE screenshot blocking on sensitive screens
+- RevenueCat purchase flow in Play Store closed testing
+- SendGrid accountability partner email arriving in real inbox
+- Firebase Cloud Function rate limiting against live calls
